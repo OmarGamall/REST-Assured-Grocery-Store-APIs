@@ -8,6 +8,7 @@ import test.GroceryStore.com.models.ErrorResponse;
 import test.GroceryStore.com.models.Product;
 import test.GroceryStore.com.models.ProductCategory;
 import test.GroceryStore.com.models.ProductsQueryParams;
+import test.GroceryStore.com.services.ProductService;
 
 
 public class ProductTest
@@ -104,17 +105,16 @@ public class ProductTest
     @Test
     public void testGetSingleProductById()
     {
-        int productId = 1225;
-        Response response = ProductApi.getProductById(productId);
+        Product product = ProductService.getRandomAvailableProduct();
+        Response response = ProductApi.getProductById(product.getId());
         // Verify the response status code
         Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of product");
         // Deserialize the response to a Product object
         Product responseProduct = response.as(Product.class);
-
         // Test the Response Body
-        Assert.assertEquals(responseProduct.getId(), 1225, "Product ID is not correct");
-        Assert.assertEquals(responseProduct.getCategory(), "fresh-produce" , "Product category is not correct");
-        Assert.assertEquals(responseProduct.getName(), "1/2 in. Brushless Hammer Drill", "Product name is not correct");
+        Assert.assertEquals(responseProduct.getId(), product.getId(), "Product ID is not correct");
+        Assert.assertEquals(responseProduct.getCategory(), product.getCategory(), "Product category is not correct");
+        Assert.assertEquals(responseProduct.getName(), product.getName(), "Product name is not correct");
         Assert.assertTrue(responseProduct.isInStock(), "Product stock status is not correct");
     }
 
