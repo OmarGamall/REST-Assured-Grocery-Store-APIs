@@ -2,6 +2,7 @@ package test.GroceryStore.com.apis;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.testng.annotations.Optional;
 import test.GroceryStore.com.models.ProductsQueryParams;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
@@ -28,6 +29,22 @@ public class ProductApi {
                     .extract().response();
         }
 
+    public static Response getAllProducts(String category, Boolean available, Integer results) {
+        return given()
+                .baseUri(BASE_URI)
+                .contentType(ContentType.JSON)
+                // If any of these are null, REST Assured completely drops them from the query string!
+                .queryParam("category", category)
+                .queryParam("available", available)
+                .queryParam("results", results)
+                .log().all()
+                .when()
+                .get(PRODUCTS_ENDPOINT)
+                .then()
+                .log().all()
+                .extract().response();
+    }
+
         public static Response getProductById(int productId) {
             return given()
                     .baseUri(BASE_URI)
@@ -40,4 +57,6 @@ public class ProductApi {
                     .log().all()
                     .extract().response();
         }
+
+
 }

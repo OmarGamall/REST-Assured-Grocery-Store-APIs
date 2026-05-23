@@ -129,6 +129,43 @@ public class ProductTest {
         // Verify the error message
         Assert.assertTrue(errorResponse.getError().contains("No product with id"), "Expected error message to contain 'Product not found'");
         Assert.assertTrue(errorResponse.getError().contains(Integer.toString(productId)), "Expected error message to contain the invalid product ID");
+    }
 
+    @Test
+    public void getProductsWithInvalidCategory() {
+        Response response = ProductApi.getAllProducts("invalid-category", null, null);
+        // Deserialize the response to error message
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 400, "Expected status code 400 for invalid category");
+        // Verify the error message
+        Assert.assertTrue(errorResponse.getError().contains("Invalid value for query parameter 'category'"), "Expected error message to contain 'Invalid category'");
+    }
+
+    @Test
+    public void getProductsWithInvalidResults() {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setResults(-1); // Invalid results value
+        Response response = ProductApi.getAllProducts(queryParams);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 400, "Expected status code 400 for invalid results parameter");
+        // Deserialize the response to error message
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        // Verify the error message
+        Assert.assertTrue(errorResponse.getError().contains("Invalid value for query parameter 'results'"), "Expected error message to contain 'Invalid results'");
+    }
+
+    @Test
+    public void getProductsWithZeroResults() {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setResults(0); // Zero results value
+        Response response = ProductApi.getAllProducts(queryParams);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for zero results parameter");
+        // Deserialize the response to an array of Product objects
+        Product[] products = response.as(Product[].class);
+        // Verify that the products array is not null and has zero products
+        Assert.assertNotNull(products, "Expected non-null products array");
+        Assert.assertEquals(products.length, 0, "Expected zero products in the response");
     }
 }
