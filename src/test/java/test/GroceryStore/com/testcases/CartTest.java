@@ -1,4 +1,4 @@
-package test.GroceryStore.com;
+package test.GroceryStore.com.testcases;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
@@ -8,6 +8,7 @@ import test.GroceryStore.com.models.CartItemResponse;
 import test.GroceryStore.com.models.CartResponse;
 import test.GroceryStore.com.models.Product;
 import test.GroceryStore.com.services.ProductService;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.testng.Assert.*;

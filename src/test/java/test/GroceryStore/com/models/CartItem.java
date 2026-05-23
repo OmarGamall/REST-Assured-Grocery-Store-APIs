@@ -9,6 +9,7 @@ public class CartItem {
     private String cartId;
     private String productId;
     private Integer quantity;
+    private Integer id;
 
     public CartItem(String cartId, String productId, Integer quantity) {
         this.cartId = cartId;
@@ -42,6 +43,15 @@ public class CartItem {
 
     public CartItem setQuantity(Integer quantity) {
         this.quantity = quantity;
+        return this;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public CartItem setId(Integer id) {
+        this.id = id;
         return this;
     }
 }

@@ -36,4 +36,17 @@ public class CartApi {
                 .log().all()
                 .extract().response();
     }
+
+    public static Response getCartItems(String cartId) {
+        return given()
+                .baseUri(BASE_URI)
+                .contentType(ContentType.JSON)
+                .pathParam("cartId", cartId)
+                .log().all()
+                .when()
+                .get(CART_ITEMS_ENDPOINT)
+                .then()
+                .log().all()
+                .extract().response();
+    }
 }
