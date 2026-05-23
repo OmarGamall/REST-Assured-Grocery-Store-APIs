@@ -121,4 +121,37 @@ public class CartTest {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertTrue(errorResponse.getError().contains("The quantity requested exceeds the current stock"), "Expected error message to indicate quantity exceeds stock");
     }
+
+    @Test
+    public void testAddItemWithZeroQuantityToCart() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        int zeroQuantity = 0;
+
+        // 2. Act
+        Response response = CartApi.addItemToCart(new CartItem(cartId, String.valueOf(product.getId()), zeroQuantity));
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with zero quantity to cart");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("Quantity must be at least 1"), "Expected error message to indicate quantity must be at least 1");
+    }
+
+    @Test
+    public void testAddItemWithNegativeQuantityToCart() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        int negativeQuantity = -5;
+
+        // 2. Act
+        Response response = CartApi.addItemToCart(new CartItem(cartId, String.valueOf(product.getId()), negativeQuantity));
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with negative quantity to cart");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("Quantity must be at least 1"), "Expected error message to indicate quantity must be at least 1");
+    }
+
 }
