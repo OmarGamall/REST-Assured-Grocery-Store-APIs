@@ -143,7 +143,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getProductsWithInvalidResults() {
+    public void getProductsWithResultsBelowBounds() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(-1); // Invalid results value
         Response response = ProductApi.getAllProducts(queryParams);
@@ -167,5 +167,18 @@ public class ProductTest {
         // Verify that the products array is not null and has zero products
         Assert.assertNotNull(products, "Expected non-null products array");
         Assert.assertEquals(products.length, 0, "Expected zero products in the response");
+    }
+
+    @Test
+    public void getProductsWithResultsExceedingBounds() {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setResults(1000); // Exceeding total products
+        Response response = ProductApi.getAllProducts(queryParams);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 400, "Expected status code 400 for results parameter exceeding total products");
+        // Deserialize the response to error message
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        // Verify the error message
+        Assert.assertTrue(errorResponse.getError().contains("Invalid value for query parameter 'results'"), "Expected error message to contain 'Invalid results'");
     }
 }
