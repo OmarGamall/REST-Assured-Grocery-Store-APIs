@@ -2,12 +2,13 @@ package test.GroceryStore.com;
 import static io.restassured.RestAssured.*;
 import io.restassured.response.Response;
 import test.GroceryStore.com.apis.ProductApi;
+import test.GroceryStore.com.models.ErrorResponse;
 import test.GroceryStore.com.models.Product;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import test.GroceryStore.com.models.ProductCategory;
 import test.GroceryStore.com.models.ProductsQueryParams;
 
-import java.util.ArrayList;
 
 public class ProductTest {
     @Test
@@ -29,27 +30,105 @@ public class ProductTest {
     }
 
     @Test
+    public void getAllNonAvailableProducts() {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setAvailable(false);
+        Response response = ProductApi.getAllProducts(queryParams);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+        // Deserialize the response to an array of Product objects
+        Product[] products = response.as(Product[].class);
+        // Verify that the products array is not null and has at least one product
+        Assert.assertNotNull(products, "Expected non-null products array");
+        Assert.assertTrue(products.length > 0, "Expected at least one product in the response");
+        // Verify that all products in the response are available
+        for (Product product : products) {
+            Assert.assertFalse(product.isInStock(), "Expected product to be in stock");
+        }
+    }
+
+    @Test
+    public void getProductsByCategory() {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
+        Response response = ProductApi.getAllProducts(queryParams);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+        // Deserialize the response to an array of Product objects
+        Product[] products = response.as(Product[].class);
+        // Verify that the products array is not null and has at least one product
+        Assert.assertNotNull(products, "Expected non-null products array");
+        Assert.assertTrue(products.length > 0, "Expected at least one product in the response");
+        // Verify that all products in the response belong to the specified category
+        for (Product product : products) {
+            Assert.assertEquals(product.getCategory(), ProductCategory.FRESH_PRODUCE.getValue(), "Expected product category to be 'fresh-produce'");
+        }
+    }
+
+    @Test
+    public void getProductsWithLimit() {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setResults(5);
+        Response response = ProductApi.getAllProducts(queryParams);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+        // Deserialize the response to an array of Product objects
+        Product[] products = response.as(Product[].class);
+        // Verify that the products array is not null and has at most 5 products
+        Assert.assertNotNull(products, "Expected non-null products array");
+        Assert.assertTrue(products.length <= 5, "Expected at most 5 products in the response");
+    }
+
+    @Test
+    public void getAvailableProductsByCategoryWithLimit() {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
+        queryParams.setAvailable(true);
+        queryParams.setResults(3);
+        Response response = ProductApi.getAllProducts(queryParams);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+        // Deserialize the response to an array of Product objects
+        Product[] products = response.as(Product[].class);
+        // Verify that the products array is not null and has at most 3 products
+        Assert.assertNotNull(products, "Expected non-null products array");
+        Assert.assertTrue(products.length <= 3, "Expected at most 3 products in the response");
+        // Verify that all products in the response belong to the specified category and are available
+        for (Product product : products) {
+            Assert.assertEquals(product.getCategory(), ProductCategory.FRESH_PRODUCE.getValue(), "Expected product category to be 'fresh-produce'");
+            Assert.assertTrue(product.isInStock(), "Expected product to be in stock");
+        }
+    }
+
+    @Test
     public void getSingleProductById()
     {
-        Product response;
-
-        response = given()
-                .baseUri("https://simple-grocery-store-api.click")
-                .pathParams("productId", 1225)
-                .log().all()
-        .when()
-                .get("/products/{productId}")
-        .then()
-                .log().all()
-                .statusCode(200)
-                .extract().as(Product.class);
+        int productId = 1225;
+        Response response = ProductApi.getProductById(productId);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of product");
+        // Deserialize the response to a Product object
+        Product responseProduct = response.as(Product.class);
 
         // Test the Response Body
-        Assert.assertEquals(response.getId(), 1225, "Product ID is not correct");
-        Assert.assertEquals(response.getCategory(), "fresh-produce" , "Product category is not correct");
-        Assert.assertEquals(response.getName(), "1/2 in. Brushless Hammer Drill", "Product name is not correct");
-        Assert.assertTrue(response.isInStock(), "Product stock status is not correct");
+        Assert.assertEquals(responseProduct.getId(), 1225, "Product ID is not correct");
+        Assert.assertEquals(responseProduct.getCategory(), "fresh-produce" , "Product category is not correct");
+        Assert.assertEquals(responseProduct.getName(), "1/2 in. Brushless Hammer Drill", "Product name is not correct");
+        Assert.assertTrue(responseProduct.isInStock(), "Product stock status is not correct");
+    }
 
+    @Test
+    public void getSingleProductByInvalidId()
+    {
+        int productId = 9999; // Assuming this ID does not exist
+        Response response = ProductApi.getProductById(productId);
+        // Deserialize the response to error message
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        // Verify the response status code
+        Assert.assertEquals(response.getStatusCode(), 404, "Expected status code 404 for non-existent product");
+        // Verify the error message
+        Assert.assertTrue(errorResponse.getError().contains("No product with id"), "Expected error message to contain 'Product not found'");
+        Assert.assertTrue(errorResponse.getError().contains(Integer.toString(productId)), "Expected error message to contain the invalid product ID");
 
     }
 }

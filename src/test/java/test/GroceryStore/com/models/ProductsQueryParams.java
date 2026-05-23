@@ -4,24 +4,24 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductsQueryParams {
-    private String category;
+    private ProductCategory category;
     private Boolean available;
     private Integer results;
 
     public ProductsQueryParams() {
     }
 
-    public ProductsQueryParams(String category, Boolean available, Integer results) {
+    public ProductsQueryParams(ProductCategory category, Boolean available, Integer results) {
         this.category = category;
         this.available = available;
         this.results = results;
     }
 
-    public String getCategory() {
+    public ProductCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(ProductCategory category) {
         this.category = category;
     }
 
