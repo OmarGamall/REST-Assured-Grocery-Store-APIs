@@ -105,4 +105,20 @@ public class CartTest {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertTrue(errorResponse.getError().contains("This product is not in stock and cannot be ordered"), "Expected error message to indicate product is not available");
     }
+
+    @Test
+    public void testAddQuantityExceedingStockToCart() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        int quantityExceedingStock =  product.getCurrentStock() + 1;
+
+        // 2. Act
+        Response response = CartApi.addItemToCart(new CartItem(cartId, String.valueOf(product.getId()), quantityExceedingStock));
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding quantity exceeding stock to cart");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("The quantity requested exceeds the current stock"), "Expected error message to indicate quantity exceeds stock");
+    }
 }
