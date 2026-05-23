@@ -29,7 +29,25 @@ public class CartTest {
         int quantity = ProductService.getRandomQuantity(product);
 
         // 2. Act
-        CartItemResponse addResponse = CartSteps.addItemToCart(cartId, String.valueOf(product.getId()), quantity);
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), quantity);
+
+        // 3. Assert
+        CartItem[] cartItems = CartSteps.getCartItems(cartId);
+        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+        assertEquals(cartItems[0].getProductId(), String.valueOf(product.getId()), "Product ID mismatch in cart");
+        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in cart");
+        assertEquals(cartItems[0].getId(), addResponse.getItemId(), "Item ID mismatch in cart");
+    }
+
+    @Test
+    public void testAddItemToCartWithQuantitySameAsStock() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        int quantity = product.getCurrentStock(); // Use the current stock as the quantity
+
+        // 2. Act
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), quantity);
 
         // 3. Assert
         CartItem[] cartItems = CartSteps.getCartItems(cartId);
@@ -59,7 +77,7 @@ public class CartTest {
 
         // 2. Act
         for (int i = 0; i < numberOfItemsToAdd; i++) {
-            CartSteps.addItemToCart(cartId, String.valueOf(products[i].getId()), quantities[i]);
+            CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(products[i].getId()), quantities[i]);
         }
 
         // 3. Assert
@@ -80,7 +98,7 @@ public class CartTest {
         int quantity = ProductService.getRandomQuantity(product);
 
         // 2. Act
-        CartSteps.addItemToCart(cartId, String.valueOf(product.getId()), quantity);
+        CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), quantity);
         Response duplicateAddResponse = CartApi.addItemToCart(new CartItem(cartId, String.valueOf(product.getId()), quantity));
 
 
@@ -152,6 +170,35 @@ public class CartTest {
         assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with negative quantity to cart");
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertTrue(errorResponse.getError().contains("Quantity must be at least 1"), "Expected error message to indicate quantity must be at least 1");
+    }
+
+    @Test
+    public void testGetCartItemsForEmptyCart() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+
+        // 2. Act
+        CartItem[] cartItems = CartSteps.getCartItems(cartId);
+
+        // 3. Assert
+        assertNotNull(cartItems, "Expected non-null array of cart items");
+        assertEquals(cartItems.length, 0, "Expected no items in the cart");
+    }
+
+    @Test
+    public void testAddItemWithInvalidProductIdToCart() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        String invalidProductId = "999999"; // Assuming this product ID does not exist
+        int quantity = 1;
+
+        // 2. Act
+        Response response = CartApi.addItemToCart(new CartItem(cartId, invalidProductId, quantity));
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with invalid product ID to cart");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("Invalid or missing productId"), "Expected error message to indicate product not found");
     }
 
 }

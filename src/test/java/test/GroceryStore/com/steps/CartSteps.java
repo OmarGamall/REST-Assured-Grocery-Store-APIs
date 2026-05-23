@@ -24,7 +24,7 @@ public class CartSteps {
     /**
      * Adds an item to the cart and returns the response metadata.
      */
-    public static CartItemResponse addItemToCart(String cartId, String productId, int quantity) {
+    public static CartItemResponse addItemToCartAndGetResponse(String cartId, String productId, int quantity) {
         CartItem cartItem = new CartItem(cartId, productId, quantity);
         Response response = CartApi.addItemToCart(cartItem);
         assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
@@ -34,6 +34,17 @@ public class CartSteps {
         assertNotNull(responseBody.getItemId(), "Expected 'itemId' to be returned");
         return responseBody;
     }
+    // Overloaded method to allow passing a CartItem object directly
+    public static CartItemResponse addItemToCartAndGetResponse(CartItem cartItem) {
+        Response response = CartApi.addItemToCart(cartItem);
+        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
+
+        CartItemResponse responseBody = response.as(CartItemResponse.class);
+        assertTrue(responseBody.getCreated(), "Expected 'created' to be true in response");
+        assertNotNull(responseBody.getItemId(), "Expected 'itemId' to be returned");
+        return responseBody;
+    }
+
 
     /**
      * Fetches the list of items inside a cart.
