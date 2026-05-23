@@ -10,9 +10,10 @@ import test.GroceryStore.com.models.ProductCategory;
 import test.GroceryStore.com.models.ProductsQueryParams;
 
 
-public class ProductTest {
+public class ProductTest
+{
     @Test
-    public void getAllAvailableProducts() {
+    public void testGetAllAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(true);
         Response response = ProductApi.getAllProducts(queryParams);
@@ -30,7 +31,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getAllNonAvailableProducts() {
+    public void testGetAllNonAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(false);
         Response response = ProductApi.getAllProducts(queryParams);
@@ -48,7 +49,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getProductsByCategory() {
+    public void testGetProductsByCategory() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
         Response response = ProductApi.getAllProducts(queryParams);
@@ -66,7 +67,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getProductsWithLimit() {
+    public void testGetProductsWithLimit() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(5);
         Response response = ProductApi.getAllProducts(queryParams);
@@ -80,7 +81,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getAvailableProductsByCategoryWithLimit() {
+    public void testGetAvailableProductsByCategoryWithLimit() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
         queryParams.setAvailable(true);
@@ -101,7 +102,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getSingleProductById()
+    public void testGetSingleProductById()
     {
         int productId = 1225;
         Response response = ProductApi.getProductById(productId);
@@ -118,7 +119,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getSingleProductByInvalidId()
+    public void testGetSingleProductByInvalidId()
     {
         int productId = 9999; // Assuming this ID does not exist
         Response response = ProductApi.getProductById(productId);
@@ -132,7 +133,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getProductsWithInvalidCategory() {
+    public void testGetProductsWithInvalidCategory() {
         Response response = ProductApi.getAllProducts("invalid-category", null, null);
         // Deserialize the response to error message
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
@@ -143,7 +144,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getProductsWithResultsBelowBounds() {
+    public void testGetProductsWithResultsBelowBounds() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(-1); // Invalid results value
         Response response = ProductApi.getAllProducts(queryParams);
@@ -156,7 +157,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getProductsWithZeroResults() {
+    public void testGetProductsWithZeroResults() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(0); // Zero results value
         Response response = ProductApi.getAllProducts(queryParams);
@@ -170,7 +171,7 @@ public class ProductTest {
     }
 
     @Test
-    public void getProductsWithResultsExceedingBounds() {
+    public void testGetProductsWithResultsExceedingBounds() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(1000); // Exceeding total products
         Response response = ProductApi.getAllProducts(queryParams);
