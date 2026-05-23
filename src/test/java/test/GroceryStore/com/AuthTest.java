@@ -37,7 +37,20 @@ public class AuthTest {
         assertEquals(response.getStatusCode(), 400, "Expected status code 400 for missing clientName"); // Verify bad request status code
         // Verify the error message in the response
         ErrorResponse errorResponse = response.as(ErrorResponse.class); // Deserialize response to Error object
-        System.out.println("Error Message: " + errorResponse.getError());
         assertTrue(errorResponse.getError().contains("missing client name")); // Verify error message contains expected text
+    }
+
+    @Test
+    public void registerApiClientWithInvalidEmailFormat() {
+        String randomClientName = "Client_" + UUID.randomUUID().toString().substring(0, 8);
+        Client clientData = new Client();
+        clientData.setClientName(randomClientName);
+        clientData.setClientEmail("invalid-email-format"); // Set an invalid email format
+        Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
+        // Verify the response status code
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for invalid email format"); // Verify bad request status code
+        // Verify the error message in the response
+        ErrorResponse errorResponse = response.as(ErrorResponse.class); // Deserialize response to Error object
+        assertTrue(errorResponse.getError().contains("Invalid or missing client email")); // Verify error message contains expected text
     }
 }
