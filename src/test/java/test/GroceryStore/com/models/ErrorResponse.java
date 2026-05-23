@@ -1,6 +1,9 @@
-package models;
+package test.GroceryStore.com.models;
 
-public class Error {
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ErrorResponse {
     private String error;
 
     public String getError() {

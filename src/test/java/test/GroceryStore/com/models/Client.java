@@ -1,4 +1,4 @@
-package models;
+package test.GroceryStore.com.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

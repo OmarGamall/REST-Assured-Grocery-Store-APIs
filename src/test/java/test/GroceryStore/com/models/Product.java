@@ -1,4 +1,4 @@
-package models;
+package test.GroceryStore.com.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -83,8 +83,4 @@ public class Product {
     public void setId(Integer id) {
         this.id = id;
     }
-
-
-
-
 }
