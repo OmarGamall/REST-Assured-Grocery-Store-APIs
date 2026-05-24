@@ -3,6 +3,10 @@ package test.GroceryStore.com.apis;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import test.GroceryStore.com.models.CartItem;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static io.restassured.RestAssured.*;
 
 public class CartApi {
@@ -18,6 +22,19 @@ public class CartApi {
                 .log().all()
                 .when()
                 .post(CARTS_ENDPOINT)
+                .then()
+                .log().all()
+                .extract().response();
+    }
+
+    public static Response getCartById(String cartId) {
+        return given()
+                .baseUri(BASE_URI)
+                .contentType(ContentType.JSON)
+                .pathParam("cartId", cartId)
+                .log().all()
+                .when()
+                .get(CARTS_ENDPOINT + "/{cartId}")
                 .then()
                 .log().all()
                 .extract().response();
@@ -48,5 +65,28 @@ public class CartApi {
                 .then()
                 .log().all()
                 .extract().response();
+    }
+
+    public static Response modifyCartItem(String cartId, String itemId, int quantity) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("quantity", quantity);
+
+        return given()
+                .baseUri(BASE_URI)
+                .contentType(ContentType.JSON)
+                .pathParam("cartId", cartId)
+                .pathParam("itemId", itemId)
+                .body(body)
+                .log().all()
+                .when()
+                .patch(CART_ITEMS_ENDPOINT + "/{itemId}")
+                .then()
+                .log().all()
+                .extract().response();
+    }
+
+    // Overloaded method to allow passing itemId as an Integer
+    public static Response modifyCartItem(String cartId, Integer itemId, int quantity) {
+        return modifyCartItem(cartId, String.valueOf(itemId), quantity);
     }
 }

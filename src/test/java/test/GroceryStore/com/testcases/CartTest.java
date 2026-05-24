@@ -14,11 +14,22 @@ public class CartTest {
 
     @Test
     public void testCreateCart() {
-        Response response = CartApi.createCart();
-        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful cart creation");
-        CartResponse cartResponse = response.as(CartResponse.class);
+        // 1. Act (Create the Cart)
+        Response createResponse = CartApi.createCart();
+
+        // 2. Assert (Verify creation response)
+        assertEquals(createResponse.getStatusCode(), 201, "Expected status code 201 for successful cart creation");
+        CartResponse cartResponse = createResponse.as(CartResponse.class);
         assertNotNull(cartResponse.getCartId(), "Expected non-null cartId");
         assertTrue(cartResponse.getCreated(), "Expected 'created' field to be true");
+
+        // 3. Act (Retrieve the created Cart by ID)
+        Response getResponse = CartApi.getCartById(cartResponse.getCartId());
+
+        // 4. Assert (Verify retrieved cart payload details)
+        assertEquals(getResponse.getStatusCode(), 200, "Expected status code 200 for retrieving cart by ID");
+        assertNotNull(getResponse.jsonPath().getString("created"), "Expected 'created' timestamp to be present");
+        assertTrue(getResponse.jsonPath().getList("items").isEmpty(), "Expected new cart to have an empty items list");
     }
     
     @Test
@@ -199,6 +210,29 @@ public class CartTest {
         assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with invalid product ID to cart");
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertTrue(errorResponse.getError().contains("Invalid or missing productId"), "Expected error message to indicate product not found");
+    }
+
+    @Test
+    public void testModifyCartItemQuantity() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = null;
+        // Ensure we select a product with at least 2 in stock so we can modify the quantity to 2
+        do {
+            product = ProductService.getRandomAvailableProduct();
+        } while (product.getCurrentStock() != null && product.getCurrentStock() < 2);
+        
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartId, addResponse.getItemId(), 2);
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 204, "Expected status code 204 for successful item modification");
+        CartItem[] cartItems = CartSteps.getCartItems(cartId);
+        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+        assertEquals(cartItems[0].getProductId(), String.valueOf(product.getId()), "Product ID mismatch in cart");
+        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(2), "Expected updated quantity to be 2");
     }
 
 }
