@@ -31,7 +31,7 @@ public class CartTest {
         assertNotNull(getResponse.jsonPath().getString("created"), "Expected 'created' timestamp to be present");
         assertTrue(getResponse.jsonPath().getList("items").isEmpty(), "Expected new cart to have an empty items list");
     }
-    
+
     @Test
     public void testAddItemToCart() {
         // 1. Arrange
@@ -140,7 +140,7 @@ public class CartTest {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
         Product product = ProductService.getRandomAvailableProduct();
-        int quantityExceedingStock =  product.getCurrentStock() + 1;
+        int quantityExceedingStock = product.getCurrentStock() + 1;
 
         // 2. Act
         Response response = CartApi.addItemToCart(new CartItem(cartId, String.valueOf(product.getId()), quantityExceedingStock));
@@ -237,7 +237,7 @@ public class CartTest {
         do {
             product = ProductService.getRandomAvailableProduct();
         } while (product.getCurrentStock() != null && product.getCurrentStock() < 2);
-        
+
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
 
         // 2. Act
@@ -305,4 +305,88 @@ public class CartTest {
         assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity must be at least 1");
     }
 
+    @Test
+    public void testModifyCartItemToSameQuantity() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartId, addResponse.getItemId(), 1); // Modify to the same quantity
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 204, "Expected status code 204 for modifying item to the same quantity");
+        CartItem[] cartItems = CartSteps.getCartItems(cartId);
+        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+        assertEquals(cartItems[0].getProductId(), String.valueOf(product.getId()), "Product ID mismatch in cart");
+        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(1), "Expected quantity to remain unchanged at 1");
+    }
+
+    @Test
+    public void testModifyCartItemWithInvalidItemId() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+        String invalidItemId = "invalid-item-id";
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartId, invalidItemId, 2);
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for modifying item with invalid item ID");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate invalid item ID");
+    }
+
+    @Test
+    public void testModifyCartItemWithInvalidCartId() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+        String invalidCartId = "invalid-cart-id";
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(invalidCartId, addResponse.getItemId(), 2);
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for modifying item with invalid cart ID");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No cart with id"), "Expected error message to indicate invalid cart ID");
+    }
+
+    @Test
+    public void testModifyCartItemWithMissingQuantity() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartId, addResponse.getItemId(), null); // Pass null for quantity
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for modifying item with missing quantity");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity is required");
+    }
+
+    @Test
+    public void testModifyCartItemWithMismatchedCartAndItemId() {
+        // 1. Arrange
+        String cartAId = CartSteps.createCartAndGetId();
+        String cartBId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartAId, String.valueOf(product.getId()), 1);
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartBId, addResponse.getItemId(), 2);
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for mismatched cart and item ID");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+    }
 }

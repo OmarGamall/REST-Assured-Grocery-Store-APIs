@@ -67,9 +67,9 @@ public class CartApi {
                 .extract().response();
     }
 
-    public static Response modifyCartItem(String cartId, String itemId, int quantity) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("quantity", quantity);
+    public static Response modifyCartItem(String cartId, String itemId, Integer quantity) {
+        CartItem body = new CartItem();
+        body.setQuantity(quantity);
 
         return given()
                 .baseUri(BASE_URI)
@@ -86,7 +86,7 @@ public class CartApi {
     }
 
     // Overloaded method to allow passing itemId as an Integer
-    public static Response modifyCartItem(String cartId, Integer itemId, int quantity) {
+    public static Response modifyCartItem(String cartId, Integer itemId, Integer quantity) {
         return modifyCartItem(cartId, String.valueOf(itemId), quantity);
     }
 }
