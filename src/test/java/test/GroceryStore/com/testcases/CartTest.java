@@ -213,6 +213,22 @@ public class CartTest {
     }
 
     @Test
+    public void testAddItemWithInvalidCartId() {
+        // 1. Arrange
+        String invalidCartId = "invalid-cart-id";
+        Product product = ProductService.getRandomAvailableProduct();
+        int quantity = 1;
+
+        // 2. Act
+        Response response = CartApi.addItemToCart(new CartItem(invalidCartId, String.valueOf(product.getId()), quantity));
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 404, "Expected status code 400 for adding item with invalid cart ID");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No cart with id"), "Expected error message to indicate invalid cart ID");
+    }
+
+    @Test
     public void testModifyCartItemQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -233,6 +249,60 @@ public class CartTest {
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), String.valueOf(product.getId()), "Product ID mismatch in cart");
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(2), "Expected updated quantity to be 2");
+    }
+
+    @Test
+    public void testModifyCartItemQuantityExceedingStock() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = null;
+        // Ensure we select a product with at least 2 in stock so we can modify the quantity to 2
+        do {
+            product = ProductService.getRandomAvailableProduct();
+        } while (product.getCurrentStock() != null && product.getCurrentStock() < 2);
+
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+        int quantityExceedingStock = product.getCurrentStock() + 1;
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartId, addResponse.getItemId(), quantityExceedingStock);
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for modifying item quantity exceeding stock");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("The quantity requested is not available in stock"), "Expected error message to indicate quantity exceeds stock");
+    }
+
+    @Test
+    public void testModifyCartItemQuantityToZero() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartId, addResponse.getItemId(), 0);
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for modifying item quantity to zero");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity must be at least 1");
+    }
+
+    @Test
+    public void testModifyCartItemQuantityToNegative() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, String.valueOf(product.getId()), 1);
+
+        // 2. Act
+        Response response = CartApi.modifyCartItem(cartId, addResponse.getItemId(), -5);
+
+        // 3. Assert
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for modifying item quantity to negative");
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity must be at least 1");
     }
 
 }
