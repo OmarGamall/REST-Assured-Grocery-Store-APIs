@@ -7,11 +7,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class CartItem {
     @JsonIgnore
     private String cartId;
-    private String productId;
+    private Integer productId;
     private Integer quantity;
     private Integer id;
 
-    public CartItem(String cartId, String productId, Integer quantity) {
+    public CartItem(String cartId, Integer productId, Integer quantity) {
         this.cartId = cartId;
         this.productId = productId;
         this.quantity = quantity;
@@ -28,11 +28,11 @@ public class CartItem {
         return this;
     }
 
-    public String getProductId() {
+    public Integer getProductId() {
         return productId;
     }
 
-    public CartItem setProductId(String productId) {
+    public CartItem setProductId(Integer productId) {
         this.productId = productId;
         return this;
     }

@@ -24,7 +24,7 @@ public class CartSteps {
     /**
      * Adds an item to the cart and returns the response metadata.
      */
-    public static CartItemResponse addItemToCartAndGetResponse(String cartId, String productId, int quantity) {
+    public static CartItemResponse addItemToCartAndGetResponse(String cartId, Integer productId, Integer quantity) {
         CartItem cartItem = new CartItem(cartId, productId, quantity);
         Response response = CartApi.addItemToCart(cartItem);
         assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");

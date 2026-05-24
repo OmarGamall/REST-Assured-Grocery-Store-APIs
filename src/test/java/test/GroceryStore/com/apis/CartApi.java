@@ -68,8 +68,29 @@ public class CartApi extends BaseApi {
                 .extract().response();
     }
 
-    // Overloaded method to allow passing itemId as an Integer
-    public static Response modifyCartItem(String cartId, Integer itemId, Integer quantity) {
-        return modifyCartItem(cartId, String.valueOf(itemId), quantity);
+    public static Response replaceCartItem(String cartId, String itemId, CartItem cartItem) {
+        return given()
+                .spec(requestSpec)
+                .pathParam("cartId", cartId)
+                .pathParam("itemId", itemId)
+                .body(cartItem)
+                .when()
+                .put(Routes.CART_ITEM_BY_ID_ENDPOINT)
+                .then()
+                .log().all()
+                .extract().response();
+    }
+
+    public static Response replaceCartItem(String cartId, String itemId, Integer productId, Integer quantity) {
+        CartItem body = new CartItem();
+        body.setProductId(productId);
+        body.setQuantity(quantity);
+        return replaceCartItem(cartId, itemId, body);
+    }
+
+    public static Response replaceCartItem(String cartId, String itemId, Integer productId) {
+        CartItem body = new CartItem();
+        body.setProductId(productId);
+        return replaceCartItem(cartId, itemId, body);
     }
 }
