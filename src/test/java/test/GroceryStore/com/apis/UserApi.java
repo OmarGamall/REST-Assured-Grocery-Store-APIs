@@ -1,14 +1,13 @@
 package test.GroceryStore.com.apis;
 
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import static io.restassured.RestAssured.given;
 
-public class UserApi {
+public class UserApi extends BaseApi {
 
     public static Response registerClient(Object clientData) {
-        return io.restassured.RestAssured.given()
-                .baseUri(Routes.BASE_URI)
-                .contentType(ContentType.JSON)
+        return given()
+                .spec(requestSpec)
                 .body(clientData)
                 .log().all()
         .when()
