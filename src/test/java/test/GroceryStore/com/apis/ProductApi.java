@@ -10,20 +10,18 @@ import java.util.Map;
 import static io.restassured.RestAssured.*;
 
 public class ProductApi {
-        public static final String BASE_URI = "https://simple-grocery-store-api.click";
-        public static final String PRODUCTS_ENDPOINT = "/products";
 
         public static Response getAllProducts(ProductsQueryParams queryParams) {
             // Convert the POJO into a Map cleanly using Jackson
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> mappedParams = mapper.convertValue(queryParams, Map.class);
             return given()
-                    .baseUri(BASE_URI)
+                    .baseUri(Routes.BASE_URI)
                     .queryParams(mappedParams)
                     .contentType(ContentType.JSON)
                     .log().all()
             .when()
-                    .get(PRODUCTS_ENDPOINT)
+                    .get(Routes.PRODUCTS_ENDPOINT)
             .then()
                     .log().all()
                     .extract().response();
@@ -31,7 +29,7 @@ public class ProductApi {
 
     public static Response getAllProducts(String category, Boolean available, Integer results) {
         return given()
-                .baseUri(BASE_URI)
+                .baseUri(Routes.BASE_URI)
                 .contentType(ContentType.JSON)
                 // If any of these are null, REST Assured completely drops them from the query string!
                 .queryParam("category", category)
@@ -39,7 +37,7 @@ public class ProductApi {
                 .queryParam("results", results)
                 .log().all()
                 .when()
-                .get(PRODUCTS_ENDPOINT)
+                .get(Routes.PRODUCTS_ENDPOINT)
                 .then()
                 .log().all()
                 .extract().response();
@@ -47,16 +45,14 @@ public class ProductApi {
 
         public static Response getProductById(int productId) {
             return given()
-                    .baseUri(BASE_URI)
+                    .baseUri(Routes.BASE_URI)
                     .pathParam("productId", productId)
                     .contentType(ContentType.JSON)
                     .log().all()
             .when()
-                    .get(PRODUCTS_ENDPOINT + "/{productId}")
+                    .get(Routes.PRODUCT_BY_ID_ENDPOINT)
             .then()
                     .log().all()
                     .extract().response();
         }
-
-
 }
