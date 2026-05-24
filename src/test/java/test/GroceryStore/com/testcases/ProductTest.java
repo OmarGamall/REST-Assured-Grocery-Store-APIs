@@ -50,15 +50,6 @@ public class ProductTest
         }
     }
 
-    @DataProvider(name = "categoriesProvider")
-    public Object[][] categoriesProvider() {
-        ProductCategory[] categories = ProductCategory.values();
-        Object[][] data = new Object[categories.length][1];
-        for (int i = 0; i < categories.length; i++) {
-            data[i][0] = categories[i];
-        }
-        return data;
-    }
 
     @Test(dataProvider = "categoriesProvider")
     public void testGetProductsByCategory(ProductCategory category) {
@@ -185,5 +176,19 @@ public class ProductTest
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
         // Verify the error message
         Assert.assertTrue(errorResponse.getError().contains("Invalid value for query parameter 'results'"), "Expected error message to contain 'Invalid results'");
+    }
+
+
+    // ==========================================
+    // DATA PROVIDERS
+    // ==========================================
+    @DataProvider(name = "categoriesProvider")
+    public Object[][] categoriesProvider() {
+        ProductCategory[] categories = ProductCategory.values();
+        Object[][] data = new Object[categories.length][1];
+        for (int i = 0; i < categories.length; i++) {
+            data[i][0] = categories[i];
+        }
+        return data;
     }
 }

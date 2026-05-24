@@ -6,31 +6,25 @@ import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.UserApi;
 import test.GroceryStore.com.models.Client;
 import test.GroceryStore.com.models.ErrorResponse;
-
+import test.GroceryStore.com.steps.ClientSteps;
 
 import static org.testng.Assert.*;
 
 public class AuthTest {
+    
+    private static final Faker FAKER = new Faker();
+
     @Test
     public void testRegisterApiClient() {
-        Faker faker = new Faker();
-        String randomClientName = faker.name().fullName(); // Generate a random full name as client name
-        String randomEmailName = faker.internet().emailAddress(); // Generate a random email address
-        Client clientData = new Client(randomClientName, randomEmailName);
-        Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
-        // Verify the response status code
-        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful client registration");
+        Client registeredClient = ClientSteps.registerClientAndGetClientDetails();
         // Verify the token is present in the response and not null
-        assertNotNull(response.as(Client.class).getAccessToken(), "Expected non-null access token");
-        // Extract the token from the response
-        String token = response.as(Client.class).getAccessToken();
-        System.out.println("Generated Token: " + token);
+        assertNotNull(registeredClient.getAccessToken(), "Expected non-null access token");
+        System.out.println("Generated Token: " + registeredClient.getAccessToken());
     }
 
     @Test
     public void testRegisterApiClientWithNoEmail() {
-        Faker faker = new Faker();
-        String randomClientName = faker.name().fullName(); // Generate a random full name as client name
+        String randomClientName = FAKER.name().fullName(); // Generate a random full name as client name
         Client clientData = new Client(randomClientName, null);
         Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
         // Verify the response status code
@@ -42,7 +36,6 @@ public class AuthTest {
 
     @Test
     public void testRegisterApiClientWithNoClientName() {
-        Faker faker = new Faker();
         Client clientData = new Client(null, "test@example.com");
         Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
         // Verify the response status code
@@ -50,13 +43,11 @@ public class AuthTest {
         // Verify the error message in the response
         ErrorResponse errorResponse = response.as(ErrorResponse.class); // Deserialize response to Error object
         assertTrue(errorResponse.getError().contains("missing client name")); // Verify error message contains expected text
-
     }
 
     @Test
     public void testRegisterApiClientWithInvalidEmailFormat() {
-        Faker faker = new Faker();
-        String randomClientName = faker.name().fullName(); // Generate a random full name as client name
+        String randomClientName = FAKER.name().fullName(); // Generate a random full name as client name
         Client clientData = new Client();
         clientData.setClientName(randomClientName);
         clientData.setClientEmail("invalid-email-format"); // Set an invalid email format
