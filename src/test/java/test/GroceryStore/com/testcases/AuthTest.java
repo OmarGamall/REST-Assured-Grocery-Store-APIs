@@ -1,5 +1,6 @@
 package test.GroceryStore.com.testcases;
 
+import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.UserApi;
@@ -13,8 +14,9 @@ import static org.testng.Assert.*;
 public class AuthTest {
     @Test
     public void registerApiClient() {
-        String randomClientName = "Client_" + UUID.randomUUID().toString().substring(0, 8);
-        String randomEmailName = "email_" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
+        Faker faker = new Faker();
+        String randomClientName = faker.name().fullName(); // Generate a random full name as client name
+        String randomEmailName = faker.internet().emailAddress(); // Generate a random email address
         Client clientData = new Client(randomClientName, randomEmailName);
         Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
         // Verify the response status code
@@ -28,20 +30,21 @@ public class AuthTest {
 
     @Test
     public void registerApiClientWithNoEmail() {
-        String randomEmailName = "email_" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
-        Client clientData = new Client();
-        clientData.setClientEmail(randomEmailName);
+        Faker faker = new Faker();
+        String randomClientName = faker.name().fullName(); // Generate a random full name as client name
+        Client clientData = new Client(randomClientName, null);
         Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
         // Verify the response status code
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for missing clientName"); // Verify bad request status code
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for missing clientEmail"); // Verify bad request status code
         // Verify the error message in the response
         ErrorResponse errorResponse = response.as(ErrorResponse.class); // Deserialize response to Error object
-        assertTrue(errorResponse.getError().contains("missing client name")); // Verify error message contains expected text
+        assertTrue(errorResponse.getError().contains("missing client email")); // Verify error message contains expected text
     }
 
     @Test
     public void registerApiClientWithInvalidEmailFormat() {
-        String randomClientName = "Client_" + UUID.randomUUID().toString().substring(0, 8);
+        Faker faker = new Faker();
+        String randomClientName = faker.name().fullName(); // Generate a random full name as client name
         Client clientData = new Client();
         clientData.setClientName(randomClientName);
         clientData.setClientEmail("invalid-email-format"); // Set an invalid email format
