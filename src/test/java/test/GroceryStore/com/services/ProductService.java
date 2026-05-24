@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import test.GroceryStore.com.apis.ProductApi;
 import test.GroceryStore.com.models.Product;
 import test.GroceryStore.com.models.ProductsQueryParams;
+import test.GroceryStore.com.models.ProductCategory;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -70,6 +71,23 @@ public class ProductService {
         return (currentStock > 0)
                 ? ThreadLocalRandom.current().nextInt(1, Math.min(currentStock, 10) + 1)
                 : 1;
+    }
+
+    public static Product[] getAllProductsForGivenCategory(ProductCategory category) {
+        ProductsQueryParams queryParams = new ProductsQueryParams();
+        queryParams.setCategory(category);
+
+        Response response = ProductApi.getAllProducts(queryParams);
+        if (response.getStatusCode() != 200) {
+            throw new RuntimeException("Failed to fetch products for category ID: " + category.getValue());
+        }
+
+        Product[] products = response.as(Product[].class);
+        if (products == null) {
+            throw new RuntimeException("No products array in response for category ID: " + category.getValue());
+        }
+
+        return products;
     }
 
     public static boolean isProductAlreadySelected(Product[] products, Product productToCheck) {

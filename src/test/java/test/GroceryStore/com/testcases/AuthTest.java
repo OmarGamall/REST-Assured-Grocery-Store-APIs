@@ -7,13 +7,12 @@ import test.GroceryStore.com.apis.UserApi;
 import test.GroceryStore.com.models.Client;
 import test.GroceryStore.com.models.ErrorResponse;
 
-import java.util.UUID;
 
 import static org.testng.Assert.*;
 
 public class AuthTest {
     @Test
-    public void registerApiClient() {
+    public void testRegisterApiClient() {
         Faker faker = new Faker();
         String randomClientName = faker.name().fullName(); // Generate a random full name as client name
         String randomEmailName = faker.internet().emailAddress(); // Generate a random email address
@@ -29,7 +28,7 @@ public class AuthTest {
     }
 
     @Test
-    public void registerApiClientWithNoEmail() {
+    public void testRegisterApiClientWithNoEmail() {
         Faker faker = new Faker();
         String randomClientName = faker.name().fullName(); // Generate a random full name as client name
         Client clientData = new Client(randomClientName, null);
@@ -42,7 +41,20 @@ public class AuthTest {
     }
 
     @Test
-    public void registerApiClientWithInvalidEmailFormat() {
+    public void testRegisterApiClientWithNoClientName() {
+        Faker faker = new Faker();
+        Client clientData = new Client(null, "test@example.com");
+        Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
+        // Verify the response status code
+        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for missing clientName"); // Verify bad request status code
+        // Verify the error message in the response
+        ErrorResponse errorResponse = response.as(ErrorResponse.class); // Deserialize response to Error object
+        assertTrue(errorResponse.getError().contains("missing client name")); // Verify error message contains expected text
+
+    }
+
+    @Test
+    public void testRegisterApiClientWithInvalidEmailFormat() {
         Faker faker = new Faker();
         String randomClientName = faker.name().fullName(); // Generate a random full name as client name
         Client clientData = new Client();

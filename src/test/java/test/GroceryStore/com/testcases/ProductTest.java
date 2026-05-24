@@ -2,6 +2,7 @@ package test.GroceryStore.com.testcases;
 
 import io.restassured.response.Response;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.ProductApi;
 import test.GroceryStore.com.models.ErrorResponse;
@@ -49,21 +50,24 @@ public class ProductTest
         }
     }
 
-    @Test
-    public void testGetProductsByCategory() {
-        ProductsQueryParams queryParams = new ProductsQueryParams();
-        queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
-        Response response = ProductApi.getAllProducts(queryParams);
-        // Verify the response status code
-        Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
-        // Deserialize the response to an array of Product objects
-        Product[] products = response.as(Product[].class);
-        // Verify that the products array is not null and has at least one product
+    @DataProvider(name = "categoriesProvider")
+    public Object[][] categoriesProvider() {
+        ProductCategory[] categories = ProductCategory.values();
+        Object[][] data = new Object[categories.length][1];
+        for (int i = 0; i < categories.length; i++) {
+            data[i][0] = categories[i];
+        }
+        return data;
+    }
+
+    @Test(dataProvider = "categoriesProvider")
+    public void testGetProductsByCategory(ProductCategory category) {
+        Product[] products = ProductService.getAllProductsForGivenCategory(category);
+        // Verify that the products array is not null
         Assert.assertNotNull(products, "Expected non-null products array");
-        Assert.assertTrue(products.length > 0, "Expected at least one product in the response");
         // Verify that all products in the response belong to the specified category
         for (Product product : products) {
-            Assert.assertEquals(product.getCategory(), ProductCategory.FRESH_PRODUCE.getValue(), "Expected product category to be 'fresh-produce'");
+            Assert.assertEquals(product.getCategory(), category.getValue(), "Expected product category to be '" + category.getValue() + "'");
         }
     }
 
