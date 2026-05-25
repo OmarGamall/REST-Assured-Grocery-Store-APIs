@@ -37,7 +37,7 @@ public class ProductApi extends BaseApi {
                 .extract().response();
     }
 
-        public static Response getProductById(int productId) {
+        public static Response getProductById(Integer productId) {
             return given()
                     .spec(requestSpec)
                     .pathParam("productId", productId)

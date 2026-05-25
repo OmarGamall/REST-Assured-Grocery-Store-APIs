@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartItemResponse {
     private Boolean created;
-    private Integer itemId;
+    private String itemId;
 
     public CartItemResponse() {
     }
 
-    public CartItemResponse(Boolean created, Integer itemId) {
+    public CartItemResponse(Boolean created, String itemId) {
         this.created = created;
         this.itemId = itemId;
     }
@@ -23,11 +23,11 @@ public class CartItemResponse {
         this.created = created;
     }
 
-    public Integer getItemId() {
+    public String getItemId() {
         return itemId;
     }
 
-    public void setItemId(Integer itemId) {
+    public void setItemId(String itemId) {
         this.itemId = itemId;
     }
 }

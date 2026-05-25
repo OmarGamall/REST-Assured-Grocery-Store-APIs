@@ -406,7 +406,7 @@ public class CartTest {
         int replacementQuantity = 3;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
 
         // 2. Act
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId(), replacementQuantity);
@@ -429,7 +429,7 @@ public class CartTest {
         int replacementQuantity = 3;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), initialQuantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
 
         // 2. Act
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), product.getId(), replacementQuantity);
@@ -456,7 +456,7 @@ public class CartTest {
         int quantity = 2;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
 
         // 2. Act
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId(), quantity);
@@ -483,7 +483,7 @@ public class CartTest {
         int quantity = 2;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
 
         // 2. Act
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId()); // Pass null for quantity
@@ -504,7 +504,7 @@ public class CartTest {
         int quantity = 2;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
         Integer invalidProductId = 999999; // Assuming this product ID does not exist
 
         // 2. Act
@@ -524,7 +524,7 @@ public class CartTest {
         int quantity = 2;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
         String invalidCartId = "invalid-cart-id";
 
         // 2. Act
@@ -564,7 +564,7 @@ public class CartTest {
         int quantity = 2;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
 
         // 2. Act
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), nonAvailableProduct.getId(), quantity);
@@ -583,7 +583,7 @@ public class CartTest {
         int initialQuantity = 1;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
         int quantityExceedingStock = initialProduct.getCurrentStock() + 1;
 
         // 2. Act
@@ -603,7 +603,7 @@ public class CartTest {
         int initialQuantity = 1;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
         int negativeQuantity = -5;
 
         // 2. Act
@@ -623,7 +623,7 @@ public class CartTest {
         int initialQuantity = 1;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
         int zeroQuantity = 0;
 
         // 2. Act
@@ -648,7 +648,7 @@ public class CartTest {
          } while (Objects.equals(productB.getId(), productA.getId()));
 
          CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartAId, productA.getId(), 1);
-         Integer itemId = addResponse.getItemId();
+         String itemId = addResponse.getItemId();
 
          // 2. Act
          Response response = CartApi.replaceCartItem(cartBId, String.valueOf(itemId), productB.getId(), 2);
@@ -665,7 +665,7 @@ public class CartTest {
         String cartId = CartSteps.createCartAndGetId();
         Product product = ProductService.getRandomAvailableProduct();
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
-        Integer itemId = addResponse.getItemId();
+        String itemId = addResponse.getItemId();
 
         // 2. Act
         Response deleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId));
@@ -675,4 +675,50 @@ public class CartTest {
         CartItem[] cartItems = CartSteps.getCartItems(cartId);
         assertEquals(cartItems.length, 0, "Expected no items in the cart after deletion");
      }
+
+     @Test
+    public void testDeleteSameCartItemTwice() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        String itemId = addResponse.getItemId();
+
+        // 2. Act
+        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId));
+        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId));
+
+        // 3. Assert
+        assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
+        assertEquals(secondDeleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting the same item twice");
+        ErrorResponse errorResponse = secondDeleteResponse.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+     }
+
+     @Test
+    public void testDeleteMoreThanOneItemFromCart() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product1 = ProductService.getRandomAvailableProduct();
+        Product product2 = null;
+        do {
+            product2 = ProductService.getRandomAvailableProduct();
+        } while (Objects.equals(product2.getId(), product1.getId()));
+
+        CartItemResponse addResponse1 = CartSteps.addItemToCartAndGetResponse(cartId, product1.getId(), 1);
+        CartItemResponse addResponse2 = CartSteps.addItemToCartAndGetResponse(cartId, product2.getId(), 1);
+        String itemId1 = addResponse1.getItemId();
+        String itemId2 = addResponse2.getItemId();
+
+        // 2. Act
+        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId1));
+        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId2));
+
+        // 3. Assert
+        assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful deletion of first item");
+        assertEquals(secondDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful deletion of second item");
+        CartItem[] cartItems = CartSteps.getCartItems(cartId);
+        assertEquals(cartItems.length, 0, "Expected no items in the cart after deleting both items");
+     }
+
 }

@@ -54,4 +54,24 @@ public class CartSteps {
         assertEquals(response.getStatusCode(), 200, "Expected status code 200 for retrieving cart items");
         return response.as(CartItem[].class);
     }
+
+    /**
+     * Deletes an item from the cart and returns the response metadata.
+     */
+    public static Response deleteCartItem(String cartId, String itemId) {
+        return CartApi.deleteCartItem(cartId, itemId);
+    }
+
+    /**
+     * Deletes all items from the cart and returns the response metadata.
+     */
+    public static Response deleteAllCartItems(String cartId) {
+        CartItem[] items = getCartItems(cartId);
+        for (CartItem item : items) {
+            deleteCartItem(cartId, item.getId());
+        }
+        return null;
+    }
+
+
 }

@@ -2,6 +2,7 @@ package test.GroceryStore.com.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartItem {
@@ -9,7 +10,8 @@ public class CartItem {
     private String cartId;
     private Integer productId;
     private Integer quantity;
-    private Integer id;
+    @JsonProperty("id")
+    private String itemId;
 
     public CartItem(String cartId, Integer productId, Integer quantity) {
         this.cartId = cartId;
@@ -46,12 +48,12 @@ public class CartItem {
         return this;
     }
 
-    public Integer getId() {
-        return id;
+    public String getId() {
+        return itemId;
     }
 
-    public CartItem setId(Integer id) {
-        this.id = id;
+    public CartItem setId(String id) {
+        this.itemId = id;
         return this;
     }
 }
