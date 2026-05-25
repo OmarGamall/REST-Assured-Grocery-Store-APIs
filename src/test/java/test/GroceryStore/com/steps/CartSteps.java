@@ -2,9 +2,7 @@ package test.GroceryStore.com.steps;
 
 import io.restassured.response.Response;
 import test.GroceryStore.com.apis.CartApi;
-import test.GroceryStore.com.models.CartItem;
-import test.GroceryStore.com.models.CartItemResponse;
-import test.GroceryStore.com.models.CartResponse;
+import test.GroceryStore.com.models.cart.*;
 
 import static org.testng.Assert.*;
 

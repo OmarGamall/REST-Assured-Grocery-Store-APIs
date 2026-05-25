@@ -1,4 +1,4 @@
-package test.GroceryStore.com.models;
+package test.GroceryStore.com.models.cart;
 
 public class CartResponse {
     private Boolean created;

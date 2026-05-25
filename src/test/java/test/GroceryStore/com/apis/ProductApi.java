@@ -1,7 +1,7 @@
 package test.GroceryStore.com.apis;
 
 import io.restassured.response.Response;
-import test.GroceryStore.com.models.ProductsQueryParams;
+import test.GroceryStore.com.models.product.ProductsQueryParams;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 

@@ -3,7 +3,7 @@ package test.GroceryStore.com.steps;
 import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import test.GroceryStore.com.apis.UserApi;
-import test.GroceryStore.com.models.Client;
+import test.GroceryStore.com.models.client.Client;
 
 public class ClientSteps {
 

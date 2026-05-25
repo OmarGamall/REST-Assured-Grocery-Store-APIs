@@ -1,10 +1,10 @@
-package test.GroceryStore.com.models;
+package test.GroceryStore.com.models.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Client {
-    private  String clientName;
+    private String clientName;
     private String clientEmail;
     private String accessToken;
 
@@ -13,7 +13,7 @@ public class Client {
         this.clientEmail = clientEmail;
     }
 
-    public Client(){}
+    public Client() {}
 
     public String getClientName() {
         return clientName;

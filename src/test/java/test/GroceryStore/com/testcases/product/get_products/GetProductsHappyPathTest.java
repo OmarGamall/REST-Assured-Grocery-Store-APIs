@@ -4,9 +4,9 @@ import io.restassured.response.Response;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.ProductApi;
-import test.GroceryStore.com.models.Product;
-import test.GroceryStore.com.models.ProductCategory;
-import test.GroceryStore.com.models.ProductsQueryParams;
+import test.GroceryStore.com.models.product.Product;
+import test.GroceryStore.com.models.product.ProductCategory;
+import test.GroceryStore.com.models.product.ProductsQueryParams;
 import test.GroceryStore.com.services.ProductService;
 import test.GroceryStore.com.testcases.BaseTest;
 

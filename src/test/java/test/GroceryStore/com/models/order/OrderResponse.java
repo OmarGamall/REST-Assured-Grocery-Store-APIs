@@ -1,4 +1,4 @@
-package test.GroceryStore.com.models;
+package test.GroceryStore.com.models.order;
 
 public class OrderResponse {
     private Boolean created;

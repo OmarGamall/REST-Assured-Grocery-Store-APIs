@@ -3,7 +3,7 @@ package test.GroceryStore.com.testcases.product.get_product_by_id;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.ProductApi;
-import test.GroceryStore.com.models.Product;
+import test.GroceryStore.com.models.product.Product;
 import test.GroceryStore.com.services.ProductService;
 import test.GroceryStore.com.testcases.BaseTest;
 

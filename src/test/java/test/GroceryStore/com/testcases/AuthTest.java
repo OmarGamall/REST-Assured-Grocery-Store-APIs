@@ -3,7 +3,7 @@ package test.GroceryStore.com.testcases;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.UserApi;
-import test.GroceryStore.com.models.Client;
+import test.GroceryStore.com.models.client.Client;
 import test.GroceryStore.com.steps.ClientSteps;
 
 import static org.testng.Assert.*;

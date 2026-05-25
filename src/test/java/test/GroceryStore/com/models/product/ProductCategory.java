@@ -1,4 +1,4 @@
-package test.GroceryStore.com.models;
+package test.GroceryStore.com.models.product;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -31,4 +31,3 @@ public enum ProductCategory {
         throw new IllegalArgumentException("Invalid category: " + value);
     }
 }
-

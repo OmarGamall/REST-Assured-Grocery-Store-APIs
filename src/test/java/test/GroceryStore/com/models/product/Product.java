@@ -1,4 +1,4 @@
-package test.GroceryStore.com.models;
+package test.GroceryStore.com.models.product;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product {
 
-    private  Integer id;
+    private Integer id;
     private String category;
     private String name;
     private boolean inStock;

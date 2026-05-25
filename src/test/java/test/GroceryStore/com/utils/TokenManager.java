@@ -1,7 +1,7 @@
 package test.GroceryStore.com.utils;
 
 import com.github.javafaker.Faker;
-import test.GroceryStore.com.models.Client;
+import test.GroceryStore.com.models.client.Client;
 import test.GroceryStore.com.steps.ClientSteps;
 
 public class TokenManager {

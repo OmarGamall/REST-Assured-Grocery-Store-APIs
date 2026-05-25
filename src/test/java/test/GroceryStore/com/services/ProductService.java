@@ -2,9 +2,9 @@ package test.GroceryStore.com.services;
 
 import io.restassured.response.Response;
 import test.GroceryStore.com.apis.ProductApi;
-import test.GroceryStore.com.models.Product;
-import test.GroceryStore.com.models.ProductsQueryParams;
-import test.GroceryStore.com.models.ProductCategory;
+import test.GroceryStore.com.models.product.Product;
+import test.GroceryStore.com.models.product.ProductsQueryParams;
+import test.GroceryStore.com.models.product.ProductCategory;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;

@@ -3,8 +3,8 @@ package test.GroceryStore.com.testcases.cart.create;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.CartApi;
-import test.GroceryStore.com.models.CartResponse;
-import test.GroceryStore.com.models.CartItem;
+import test.GroceryStore.com.models.cart.CartResponse;
+import test.GroceryStore.com.models.cart.CartItem;
 import test.GroceryStore.com.steps.CartSteps;
 import test.GroceryStore.com.testcases.BaseTest;
 

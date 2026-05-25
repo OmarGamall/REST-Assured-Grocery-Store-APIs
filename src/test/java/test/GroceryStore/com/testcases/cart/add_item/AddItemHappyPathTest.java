@@ -1,9 +1,9 @@
 package test.GroceryStore.com.testcases.cart.add_item;
 
 import org.testng.annotations.Test;
-import test.GroceryStore.com.models.CartItem;
-import test.GroceryStore.com.models.CartItemResponse;
-import test.GroceryStore.com.models.Product;
+import test.GroceryStore.com.models.cart.CartItem;
+import test.GroceryStore.com.models.cart.CartItemResponse;
+import test.GroceryStore.com.models.product.Product;
 import test.GroceryStore.com.services.ProductService;
 import test.GroceryStore.com.steps.CartSteps;
 import test.GroceryStore.com.testcases.BaseTest;

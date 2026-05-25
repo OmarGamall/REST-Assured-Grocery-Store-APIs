@@ -1,7 +1,7 @@
 package test.GroceryStore.com.apis;
 
 import io.restassured.response.Response;
-import test.GroceryStore.com.models.OrderRequest;
+import test.GroceryStore.com.models.order.OrderRequest;
 
 import static io.restassured.RestAssured.given;
 

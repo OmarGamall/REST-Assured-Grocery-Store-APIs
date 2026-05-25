@@ -3,7 +3,7 @@ package test.GroceryStore.com.testcases.product.get_products;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.ProductApi;
-import test.GroceryStore.com.models.ProductsQueryParams;
+import test.GroceryStore.com.models.product.ProductsQueryParams;
 import test.GroceryStore.com.testcases.BaseTest;
 
 public class GetProductsValidationTest extends BaseTest {

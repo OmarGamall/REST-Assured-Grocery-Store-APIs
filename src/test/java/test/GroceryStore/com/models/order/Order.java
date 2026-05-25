@@ -1,4 +1,4 @@
-package test.GroceryStore.com.models;
+package test.GroceryStore.com.models.order;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
