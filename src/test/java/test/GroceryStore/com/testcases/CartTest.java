@@ -12,7 +12,7 @@ import java.util.Objects;
 import static org.testng.Assert.*;
 import static test.GroceryStore.com.services.ProductService.isProductAlreadySelected;
 
-public class CartTest {
+public class CartTest extends BaseTest {
 
     @Test
     public void testCreateCart() {
@@ -114,11 +114,8 @@ public class CartTest {
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), quantity);
         Response duplicateAddResponse = CartApi.addItemToCart(new CartItem(cartId, product.getId(), quantity));
 
-
         // 3. Assert
-        assertEquals(duplicateAddResponse.getStatusCode(), 400, "Expected status code 400 for adding duplicate item to cart");
-        ErrorResponse errorResponse = duplicateAddResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("This product has already been added to cart"), "Expected error message to indicate duplicate item");
+        assertErrorResponse(duplicateAddResponse, 400, "This product has already been added to cart");
     }
 
     @Test
@@ -132,9 +129,7 @@ public class CartTest {
         Response response = CartApi.addItemToCart(new CartItem(cartId, nonAvailableProduct.getId(), quantity));
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding non-available product to cart");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("This product is not in stock and cannot be ordered"), "Expected error message to indicate product is not available");
+        assertErrorResponse(response, 400, "This product is not in stock and cannot be ordered");
     }
 
     @Test
@@ -148,9 +143,7 @@ public class CartTest {
         Response response = CartApi.addItemToCart(new CartItem(cartId, product.getId(), quantityExceedingStock));
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding quantity exceeding stock to cart");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("The quantity requested exceeds the current stock"), "Expected error message to indicate quantity exceeds stock");
+        assertErrorResponse(response, 400, "The quantity requested exceeds the current stock");
     }
 
     @Test
@@ -164,9 +157,7 @@ public class CartTest {
         Response response = CartApi.addItemToCart(new CartItem(cartId, product.getId(), zeroQuantity));
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with zero quantity to cart");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Quantity must be at least 1"), "Expected error message to indicate quantity must be at least 1");
+        assertErrorResponse(response, 400, "Quantity must be at least 1");
     }
 
     @Test
@@ -180,9 +171,7 @@ public class CartTest {
         Response response = CartApi.addItemToCart(new CartItem(cartId, product.getId(), negativeQuantity));
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with negative quantity to cart");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Quantity must be at least 1"), "Expected error message to indicate quantity must be at least 1");
+        assertErrorResponse(response, 400, "Quantity must be at least 1");
     }
 
     @Test
@@ -209,9 +198,7 @@ public class CartTest {
         Response response = CartApi.addItemToCart(new CartItem(cartId, invalidProductId, quantity));
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for adding item with invalid product ID to cart");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Invalid or missing productId"), "Expected error message to indicate product not found");
+        assertErrorResponse(response, 400, "Invalid or missing productId");
     }
 
     @Test
@@ -225,9 +212,7 @@ public class CartTest {
         Response response = CartApi.addItemToCart(new CartItem(invalidCartId, product.getId(), quantity));
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 404, "Expected status code 400 for adding item with invalid cart ID");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No cart with id"), "Expected error message to indicate invalid cart ID");
+        assertErrorResponse(response, 404, "No cart with id");
     }
 
     @Test
@@ -270,9 +255,7 @@ public class CartTest {
         Response response = CartApi.modifyCartItem(cartId, String.valueOf(addResponse.getItemId()), quantityExceedingStock);
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for modifying item quantity exceeding stock");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("The quantity requested is not available in stock"), "Expected error message to indicate quantity exceeds stock");
+        assertErrorResponse(response, 400, "The quantity requested is not available in stock");
     }
 
     @Test
@@ -286,9 +269,7 @@ public class CartTest {
         Response response = CartApi.modifyCartItem(cartId, String.valueOf(addResponse.getItemId()), 0);
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for modifying item quantity to zero");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity must be at least 1");
+        assertErrorResponse(response, 400, "Invalid or missing quantity");
     }
 
     @Test
@@ -302,9 +283,7 @@ public class CartTest {
         Response response = CartApi.modifyCartItem(cartId, String.valueOf(addResponse.getItemId()), -5);
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 400, "Expected status code 400 for modifying item quantity to negative");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity must be at least 1");
+        assertErrorResponse(response, 400, "Invalid or missing quantity");
     }
 
     @Test
@@ -337,9 +316,7 @@ public class CartTest {
         Response response = CartApi.modifyCartItem(cartId, invalidItemId, 2);
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for modifying item with invalid item ID");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate invalid item ID");
+        assertErrorResponse(response, 404, "No item with id");
     }
 
     @Test
@@ -354,9 +331,7 @@ public class CartTest {
         Response response = CartApi.modifyCartItem(invalidCartId, String.valueOf(addResponse.getItemId()), 2);
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for modifying item with invalid cart ID");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No cart with id"), "Expected error message to indicate invalid cart ID");
+        assertErrorResponse(response, 404, "No cart with id");
     }
 
     @Test
@@ -370,9 +345,7 @@ public class CartTest {
         Response response = CartApi.modifyCartItem(cartId, String.valueOf(addResponse.getItemId()), null); // Pass null for quantity
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for modifying item with missing quantity");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity is required");
+        assertErrorResponse(response, 404, "Invalid or missing quantity");
     }
 
     @Test
@@ -387,9 +360,7 @@ public class CartTest {
         Response response = CartApi.modifyCartItem(cartBId, String.valueOf(addResponse.getItemId()), 2);
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 404, "Expected status code 404 for mismatched cart and item ID");
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+        assertErrorResponse(response, 404, "No item with id");
     }
 
     @Test
@@ -511,9 +482,7 @@ public class CartTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), invalidProductId, quantity);
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 400, "Expected status code 400 for replacing item with invalid product ID");
-        ErrorResponse errorResponse = replaceResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Invalid or missing productId"), "Expected error message to indicate product not found");
+        assertErrorResponse(replaceResponse, 400, "Invalid or missing productId");
     }
 
      @Test
@@ -531,9 +500,7 @@ public class CartTest {
         Response replaceResponse = CartApi.replaceCartItem(invalidCartId, String.valueOf(itemId), initialProduct.getId(), quantity);
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 404, "Expected status code 404 for replacing item with invalid cart ID");
-        ErrorResponse errorResponse = replaceResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No cart with id"), "Expected error message to indicate invalid cart ID");
+        assertErrorResponse(replaceResponse, 404, "No cart with id");
      }
 
      @Test
@@ -550,9 +517,7 @@ public class CartTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, invalidItemId, initialProduct.getId(), quantity);
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 404, "Expected status code 404 for replacing item with invalid item ID");
-        ErrorResponse errorResponse = replaceResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate invalid item ID");
+        assertErrorResponse(replaceResponse, 404, "No item with id");
      }
 
      @Test
@@ -570,9 +535,7 @@ public class CartTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), nonAvailableProduct.getId(), quantity);
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 400, "Expected status code 400 for replacing item with non-available product");
-        ErrorResponse errorResponse = replaceResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("The quantity requested is not available in stock"), "Expected error message to indicate product is not available");
+        assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
      }
 
      @Test
@@ -590,9 +553,7 @@ public class CartTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), initialProduct.getId(), quantityExceedingStock);
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 400, "Expected status code 400 for replacing item with quantity exceeding stock");
-        ErrorResponse errorResponse = replaceResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("The quantity requested is not available in stock"), "Expected error message to indicate quantity exceeds stock");
+        assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
      }
 
      @Test
@@ -610,9 +571,7 @@ public class CartTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), initialProduct.getId(), negativeQuantity);
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 400, "Expected status code 400 for replacing item with negative quantity");
-        ErrorResponse errorResponse = replaceResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity must be at least 1");
+        assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
      }
 
      @Test
@@ -630,33 +589,29 @@ public class CartTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), initialProduct.getId(), zeroQuantity);
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 400, "Expected status code 400 for replacing item with zero quantity");
-        ErrorResponse errorResponse = replaceResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("Invalid or missing quantity"), "Expected error message to indicate quantity must be at least 1");
+        assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
      }
 
      // replace an item in Cart B using Cart A's item ID - should return 404 since the item ID from Cart A does not exist in Cart B
      @Test
      public void testReplaceCartItemWithMismatchedCartAndItemId() {
-         // 1. Arrange
-         String cartAId = CartSteps.createCartAndGetId();
-         String cartBId = CartSteps.createCartAndGetId();
-         Product productA = ProductService.getRandomAvailableProduct();
-         Product productB = null;
-         do {
-             productB = ProductService.getRandomAvailableProduct();
-         } while (Objects.equals(productB.getId(), productA.getId()));
+          // 1. Arrange
+          String cartAId = CartSteps.createCartAndGetId();
+          String cartBId = CartSteps.createCartAndGetId();
+          Product productA = ProductService.getRandomAvailableProduct();
+          Product productB = null;
+          do {
+              productB = ProductService.getRandomAvailableProduct();
+          } while (Objects.equals(productB.getId(), productA.getId()));
 
-         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartAId, productA.getId(), 1);
-         String itemId = addResponse.getItemId();
+          CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartAId, productA.getId(), 1);
+          String itemId = addResponse.getItemId();
 
-         // 2. Act
-         Response response = CartApi.replaceCartItem(cartBId, String.valueOf(itemId), productB.getId(), 2);
+          // 2. Act
+          Response response = CartApi.replaceCartItem(cartBId, String.valueOf(itemId), productB.getId(), 2);
 
-         // 3. Assert
-         assertEquals(response.getStatusCode(), 404, "Expected status code 404 for mismatched cart and item ID during replacement");
-         ErrorResponse errorResponse = response.as(ErrorResponse.class);
-         assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+          // 3. Assert
+          assertErrorResponse(response, 404, "No item with id");
      }
 
      @Test
@@ -690,9 +645,7 @@ public class CartTest {
 
         // 3. Assert
         assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
-        assertEquals(secondDeleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting the same item twice");
-        ErrorResponse errorResponse = secondDeleteResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+        assertErrorResponse(secondDeleteResponse, 404, "No item with id");
      }
 
      @Test
@@ -734,9 +687,7 @@ public class CartTest {
         Response deleteResponse = CartApi.deleteCartItem(invalidCartId, itemId);
 
         // 3. Assert
-        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting item with invalid cart ID");
-        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No cart with id"), "Expected error message to indicate invalid cart ID");
+        assertErrorResponse(deleteResponse, 404, "No cart with id");
      }
 
      @Test
@@ -751,9 +702,7 @@ public class CartTest {
         Response deleteResponse = CartApi.deleteCartItem(cartId, invalidItemId);
 
         // 3. Assert
-        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting item with invalid item ID");
-        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate invalid item ID");
+        assertErrorResponse(deleteResponse, 404, "No item with id");
      }
 
      @Test
@@ -766,9 +715,7 @@ public class CartTest {
         Response deleteResponse = CartApi.deleteCartItem(cartId, itemId);
 
         // 3. Assert
-        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting item from empty cart");
-        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+        assertErrorResponse(deleteResponse, 404, "No item with id");
      }
 
      @Test
@@ -789,9 +736,7 @@ public class CartTest {
         Response deleteResponse = CartApi.deleteCartItem(cartBId, itemIdA);
 
         // 3. Assert
-        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for mismatched cart and item ID during deletion");
-        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
-        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+        assertErrorResponse(deleteResponse, 404, "No item with id");
      }
 
 }
