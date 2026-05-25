@@ -3,12 +3,15 @@ package test.GroceryStore.com.testcases;
 import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import test.GroceryStore.com.models.ErrorResponse;
+import test.GroceryStore.com.utils.TokenManager;
 
 import static org.testng.Assert.*;
 
 public class BaseTest {
 
     protected static final Faker FAKER = new Faker();
+    protected static final String TOKEN = TokenManager.getToken();
+
 
     /**
      * Reusable assertion to verify that an API response returns a specific error status code

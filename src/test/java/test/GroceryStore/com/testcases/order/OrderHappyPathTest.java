@@ -6,7 +6,6 @@ import test.GroceryStore.com.apis.OrdersApi;
 import test.GroceryStore.com.models.*;
 import test.GroceryStore.com.services.ProductService;
 import test.GroceryStore.com.steps.CartSteps;
-import test.GroceryStore.com.steps.ClientSteps;
 import test.GroceryStore.com.testcases.BaseTest;
 
 import static org.testng.Assert.*;
@@ -16,7 +15,6 @@ public class OrderHappyPathTest extends BaseTest {
     @Test
     public void testCreateRetrieveAndDeleteOrder() {
         // 1. Arrange
-        String token = ClientSteps.registerClientAndGetToken();
         String cartId = CartSteps.createCartAndGetId();
         Product product = ProductService.getRandomAvailableProduct();
         int quantity = 1;
@@ -26,7 +24,8 @@ public class OrderHappyPathTest extends BaseTest {
 
         // 2. Act - Create Order
         OrderRequest orderRequest = new OrderRequest(cartId, "Omar Gamal", "Please pack carefully");
-        Response createResponse = OrdersApi.createOrder(token, orderRequest);
+        Response createResponse = OrdersApi.createOrder(TOKEN, orderRequest);
+
 
         // 3. Assert - Create Order
         assertEquals(createResponse.getStatusCode(), 201, "Expected 201 status code for order creation");
@@ -36,7 +35,7 @@ public class OrderHappyPathTest extends BaseTest {
         assertNotNull(orderId, "Expected non-null orderId");
 
         // 4. Act & Assert - Retrieve Single Order
-        Response getResponse = OrdersApi.getOrderById(token, orderId);
+        Response getResponse = OrdersApi.getOrderById(TOKEN, orderId);
         assertEquals(getResponse.getStatusCode(), 200, "Expected 200 status code for retrieving order");
         Order order = getResponse.as(Order.class);
         assertEquals(order.getId(), orderId, "Order ID mismatch in response");
@@ -51,7 +50,7 @@ public class OrderHappyPathTest extends BaseTest {
         assertEquals(order.getItems().get(0).getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in order item");
 
         // 5. Act & Assert - Retrieve All Orders
-        Response listResponse = OrdersApi.getAllOrders(token);
+        Response listResponse = OrdersApi.getAllOrders(TOKEN);
         assertEquals(listResponse.getStatusCode(), 200, "Expected 200 status code for retrieving all orders");
         Order[] orders = listResponse.as(Order[].class);
         assertTrue(orders.length > 0, "Expected list of orders to contain at least one order");
@@ -68,13 +67,13 @@ public class OrderHappyPathTest extends BaseTest {
         assertEquals(foundOrder.getCustomerName(), "Omar Gamal", "Customer name mismatch in listed order");
 
         // 6. Act - Delete Order
-        Response deleteResponse = OrdersApi.deleteOrder(token, orderId);
+        Response deleteResponse = OrdersApi.deleteOrder(TOKEN, orderId);
 
         // 7. Assert - Delete Order
         assertEquals(deleteResponse.getStatusCode(), 204, "Expected 204 status code for successful deletion");
 
         // 8. Verify Deletion
-        Response verifyGetResponse = OrdersApi.getOrderById(token, orderId);
+        Response verifyGetResponse = OrdersApi.getOrderById(TOKEN, orderId);
         assertErrorResponse(verifyGetResponse, 404, "No order with id " + orderId);
     }
 }
