@@ -1,4 +1,4 @@
-package test.GroceryStore.com.testcases;
+package test.GroceryStore.com.testcases.product.get_products;
 
 import io.restassured.response.Response;
 import org.testng.annotations.DataProvider;
@@ -8,10 +8,11 @@ import test.GroceryStore.com.models.Product;
 import test.GroceryStore.com.models.ProductCategory;
 import test.GroceryStore.com.models.ProductsQueryParams;
 import test.GroceryStore.com.services.ProductService;
+import test.GroceryStore.com.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
-public class ProductTest extends BaseTest {
+public class GetProductsHappyPathTest extends BaseTest {
 
     @Test
     public void testGetAllAvailableProducts() {
@@ -113,51 +114,6 @@ public class ProductTest extends BaseTest {
     }
 
     @Test
-    public void testGetSingleProductById() {
-        Product product = ProductService.getRandomAvailableProduct();
-        Response response = ProductApi.getProductById(product.getId());
-        
-        // Verify the response status code
-        assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of product");
-        
-        // Deserialize the response to a Product object
-        Product responseProduct = response.as(Product.class);
-        
-        // Test the Response Body
-        assertEquals(responseProduct.getId(), product.getId(), "Product ID is not correct");
-        assertEquals(responseProduct.getCategory(), product.getCategory(), "Product category is not correct");
-        assertEquals(responseProduct.getName(), product.getName(), "Product name is not correct");
-        assertTrue(responseProduct.isInStock(), "Product stock status is not correct");
-    }
-
-    @Test
-    public void testGetSingleProductByInvalidId() {
-        int productId = 9999; // Assuming this ID does not exist
-        Response response = ProductApi.getProductById(productId);
-        
-        // Verify response code and error details
-        assertErrorResponse(response, 404, "No product with id " + productId);
-    }
-
-    @Test
-    public void testGetProductsWithInvalidCategory() {
-        Response response = ProductApi.getAllProducts("invalid-category", null, null);
-        
-        // Verify response code and error details
-        assertErrorResponse(response, 400, "Invalid value for query parameter 'category'");
-    }
-
-    @Test
-    public void testGetProductsWithResultsBelowBounds() {
-        ProductsQueryParams queryParams = new ProductsQueryParams();
-        queryParams.setResults(-1); // Invalid results value
-        Response response = ProductApi.getAllProducts(queryParams);
-        
-        // Verify response code and error details
-        assertErrorResponse(response, 400, "Invalid value for query parameter 'results'");
-    }
-
-    @Test
     public void testGetProductsWithZeroResults() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(0); // Zero results value
@@ -172,16 +128,6 @@ public class ProductTest extends BaseTest {
         // Verify that the products array is not null and has zero products
         assertNotNull(products, "Expected non-null products array");
         assertEquals(products.length, 0, "Expected zero products in the response");
-    }
-
-    @Test
-    public void testGetProductsWithResultsExceedingBounds() {
-        ProductsQueryParams queryParams = new ProductsQueryParams();
-        queryParams.setResults(1000); // Exceeding total products
-        Response response = ProductApi.getAllProducts(queryParams);
-        
-        // Verify response code and error details
-        assertErrorResponse(response, 400, "Invalid value for query parameter 'results'");
     }
 
     // ==========================================
