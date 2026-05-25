@@ -668,7 +668,7 @@ public class CartTest {
         String itemId = addResponse.getItemId();
 
         // 2. Act
-        Response deleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId));
+        Response deleteResponse = CartApi.deleteCartItem(cartId, itemId);
 
         // 3. Assert
         assertEquals(deleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
@@ -685,8 +685,8 @@ public class CartTest {
         String itemId = addResponse.getItemId();
 
         // 2. Act
-        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId));
-        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId));
+        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, itemId);
+        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, itemId);
 
         // 3. Assert
         assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
@@ -711,14 +711,87 @@ public class CartTest {
         String itemId2 = addResponse2.getItemId();
 
         // 2. Act
-        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId1));
-        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId2));
+        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, itemId1);
+        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, itemId2);
 
         // 3. Assert
         assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful deletion of first item");
         assertEquals(secondDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful deletion of second item");
         CartItem[] cartItems = CartSteps.getCartItems(cartId);
         assertEquals(cartItems.length, 0, "Expected no items in the cart after deleting both items");
+     }
+
+     @Test
+    public void testDeleteCartItemWithInvalidCartId() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        String itemId = addResponse.getItemId();
+        String invalidCartId = "invalid-cart-id";
+
+        // 2. Act
+        Response deleteResponse = CartApi.deleteCartItem(invalidCartId, itemId);
+
+        // 3. Assert
+        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting item with invalid cart ID");
+        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No cart with id"), "Expected error message to indicate invalid cart ID");
+     }
+
+     @Test
+    public void testDeleteCartItemWithInvalidItemId() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        String invalidItemId = "invalid-item-id";
+
+        // 2. Act
+        Response deleteResponse = CartApi.deleteCartItem(cartId, invalidItemId);
+
+        // 3. Assert
+        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting item with invalid item ID");
+        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate invalid item ID");
+     }
+
+     @Test
+    public void testDeleteCartItemFromEmptyCart() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        String itemId = "non-existent-item-id";
+
+        // 2. Act
+        Response deleteResponse = CartApi.deleteCartItem(cartId, itemId);
+
+        // 3. Assert
+        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for deleting item from empty cart");
+        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
+     }
+
+     @Test
+    public void testDeleteCartItemWithMismatchedCartAndItemId() {
+        // 1. Arrange
+        String cartAId = CartSteps.createCartAndGetId();
+        String cartBId = CartSteps.createCartAndGetId();
+        Product productA = ProductService.getRandomAvailableProduct();
+        Product productB = null;
+        do {
+            productB = ProductService.getRandomAvailableProduct();
+        } while (Objects.equals(productB.getId(), productA.getId()));
+
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartAId, productA.getId(), 1);
+        String itemIdA = addResponse.getItemId();
+
+        // 2. Act
+        Response deleteResponse = CartApi.deleteCartItem(cartBId, itemIdA);
+
+        // 3. Assert
+        assertEquals(deleteResponse.getStatusCode(), 404, "Expected status code 404 for mismatched cart and item ID during deletion");
+        ErrorResponse errorResponse = deleteResponse.as(ErrorResponse.class);
+        assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
      }
 
 }
