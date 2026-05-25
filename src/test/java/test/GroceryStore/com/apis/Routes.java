@@ -16,4 +16,9 @@ public class Routes {
 
     // Authentication Endpoints
     public static final String REGISTER_CLIENT_ENDPOINT = "/api-clients";
+
+    // Orders Endpoints
+    public static final String ORDERS_ENDPOINT = "/orders";
+    public static final String ORDER_BY_ID_ENDPOINT = "/orders/{orderId}";
 }
+
