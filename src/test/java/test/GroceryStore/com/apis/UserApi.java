@@ -9,7 +9,6 @@ public class UserApi extends BaseApi {
         return given()
                 .spec(requestSpec)
                 .body(clientData)
-                .log().all()
         .when()
                 .post(Routes.REGISTER_CLIENT_ENDPOINT)
         .then()

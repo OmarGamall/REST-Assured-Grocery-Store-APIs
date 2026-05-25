@@ -15,7 +15,6 @@ public class AuthTest extends BaseTest {
         Client registeredClient = ClientSteps.registerClientAndGetClientDetails();
         // Verify the token is present in the response and not null
         assertNotNull(registeredClient.getAccessToken(), "Expected non-null access token");
-        System.out.println("Generated Token: " + registeredClient.getAccessToken());
     }
 
     @Test
@@ -47,5 +46,21 @@ public class AuthTest extends BaseTest {
         
         // Verify response code and error details
         assertErrorResponse(response, 400, "Invalid or missing client email");
+    }
+
+    @Test
+    public void testRegisterApiClientWithEmailAlreadyExists()
+    {
+        String randomClientName1 = FAKER.name().fullName();
+        String randomEmail = FAKER.internet().emailAddress();
+        Client clientData1 = new Client(randomClientName1, randomEmail);
+        UserApi.registerClient(clientData1); // Register the first client
+
+        String randomClientName2 = FAKER.name().fullName();
+        Client clientData2 = new Client(randomClientName2, randomEmail); // Use the same email for the second client
+        Response response = UserApi.registerClient(clientData2); // Attempt to register the second client
+
+        // Verify response code and error details
+        assertErrorResponse(response, 409, "API client already registered. Try a different email");
     }
 }

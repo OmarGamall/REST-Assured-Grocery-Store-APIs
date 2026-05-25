@@ -10,7 +10,11 @@ import static org.testng.Assert.*;
 public class BaseTest {
 
     protected static final Faker FAKER = new Faker();
-    protected static final String TOKEN = TokenManager.getToken();
+
+    protected String getToken() {
+        return TokenManager.getToken();
+    }
+
 
 
     /**
