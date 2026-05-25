@@ -658,4 +658,21 @@ public class CartTest {
          ErrorResponse errorResponse = response.as(ErrorResponse.class);
          assertTrue(errorResponse.getError().contains("No item with id"), "Expected error message to indicate item not found in cart");
      }
+
+     @Test
+    public void testDeleteCartItem() {
+        // 1. Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        Integer itemId = addResponse.getItemId();
+
+        // 2. Act
+        Response deleteResponse = CartApi.deleteCartItem(cartId, String.valueOf(itemId));
+
+        // 3. Assert
+        assertEquals(deleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
+        CartItem[] cartItems = CartSteps.getCartItems(cartId);
+        assertEquals(cartItems.length, 0, "Expected no items in the cart after deletion");
+     }
 }

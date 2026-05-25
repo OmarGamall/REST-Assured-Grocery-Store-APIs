@@ -93,4 +93,16 @@ public class CartApi extends BaseApi {
         body.setProductId(productId);
         return replaceCartItem(cartId, itemId, body);
     }
+
+    public static Response deleteCartItem(String cartId, String itemId) {
+        return given()
+                .spec(requestSpec)
+                .pathParam("cartId", cartId)
+                .pathParam("itemId", itemId)
+                .when()
+                .delete(Routes.CART_ITEM_BY_ID_ENDPOINT)
+                .then()
+                .log().all()
+                .extract().response();
+    }
 }
