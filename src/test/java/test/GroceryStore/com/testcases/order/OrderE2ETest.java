@@ -11,7 +11,7 @@ import test.GroceryStore.com.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
-public class OrderHappyPathTest extends BaseTest {
+public class OrderE2ETest extends BaseTest {
 
     @Test
     public void testCreateRetrieveAndDeleteOrder() {
@@ -26,7 +26,6 @@ public class OrderHappyPathTest extends BaseTest {
         // 2. Act - Create Order
         OrderRequest orderRequest = new OrderRequest(cartId, "Omar Gamal", "Please pack carefully");
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
-
 
         // 3. Assert - Create Order
         assertEquals(createResponse.getStatusCode(), 201, "Expected 201 status code for order creation");
