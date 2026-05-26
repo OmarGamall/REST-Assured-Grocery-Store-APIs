@@ -3,6 +3,7 @@ package test.GroceryStore.com.testcases.order.get_single;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.OrdersApi;
+import test.GroceryStore.com.models.cart.CartItem;
 import test.GroceryStore.com.models.order.Order;
 import test.GroceryStore.com.models.order.OrderRequest;
 import test.GroceryStore.com.models.order.OrderResponse;
@@ -19,13 +20,14 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
     public void testGetSingleOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        int quantity = ProductService.getRandomQuantity(product);
-        CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), quantity);
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId);
+        String customerName = FAKER.name().fullName();
+        String comment = FAKER.lorem().sentence();
+        OrderRequest orderRequest = new OrderRequest(cartId, customerName, comment);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar GetSingle", "Fragile items");
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
+        // Extract the order ID from the creation response
         String orderId = createResponse.as(OrderResponse.class).getOrderId();
 
         // Act
@@ -35,42 +37,43 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         assertEquals(response.getStatusCode(), 200, "Expected 200 status code for order lookup");
         Order order = response.as(Order.class);
         assertEquals(order.getId(), orderId, "Order ID mismatch in lookup");
-        assertEquals(order.getCustomerName(), "Omar GetSingle", "Customer name mismatch");
-        assertEquals(order.getComment(), "Fragile items", "Comment mismatch");
+        assertEquals(order.getCustomerName(), customerName, "Customer name mismatch");
+        assertEquals(order.getComment(), comment, "Comment mismatch");
         assertNotNull(order.getCreated(), "Created timestamp should not be null");
         assertNotNull(order.getItems(), "Order items list should not be null");
         assertEquals(order.getItems().size(), 1);
-        assertEquals(order.getItems().get(0).getProductId(), product.getId());
-        assertEquals(order.getItems().get(0).getQuantity(), Integer.valueOf(quantity));
-
-        // Clean up
-        OrdersApi.deleteOrder(getToken(), orderId);
+        assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
+        assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
     }
 
     @Test
     public void testGetSingleOrderInvoiceSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId);
+        String customerName = FAKER.name().fullName();
+        String comment = FAKER.lorem().sentence();
+        OrderRequest orderRequest = new OrderRequest(cartId, customerName, comment);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Invoice");
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
+        // Extract the order ID from the creation response
         String orderId = createResponse.as(OrderResponse.class).getOrderId();
 
         // Act
-        Response response = OrdersApi.getOrderById(getToken(), orderId, true);
+        Response response = OrdersApi.getOrderById(getToken(), orderId, true); // Pass 'true' to request invoice details
 
         // Assert
-        assertEquals(response.getStatusCode(), 200, "Expected 200 status code for retrieving PDF invoice");
-        // Verify response content-type is pdf or octet-stream (since it's a file download)
-        String contentType = response.getHeader("Content-Type");
-        assertNotNull(contentType, "Expected non-null Content-Type for invoice");
-        assertTrue(contentType.contains("pdf") || contentType.contains("application"), 
-                "Expected invoice response Content-Type to match PDF or binary format, but got: " + contentType);
-
-        // Clean up
-        OrdersApi.deleteOrder(getToken(), orderId);
+        assertEquals(response.getStatusCode(), 200, "Expected 200 status code for order lookup");
+        Order order = response.as(Order.class);
+        assertEquals(order.getId(), orderId, "Order ID mismatch in lookup");
+        assertEquals(order.getCustomerName(), customerName, "Customer name mismatch");
+        assertEquals(order.getComment(), comment, "Comment mismatch");
+        assertNotNull(order.getCreated(), "Created timestamp should not be null");
+        assertNotNull(order.getItems(), "Order items list should not be null");
+        assertEquals(order.getItems().size(), 1);
+        assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
+        assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
+        assertNotNull(order.getInvoice(), "Invoice details should be present when requested");
     }
 }

@@ -11,6 +11,8 @@ public class Order {
     private String created;
     private String comment;
 
+    private String invoice; // Optional field for invoice details
+
     public Order() {}
 
     public String getId() {
@@ -52,4 +54,11 @@ public class Order {
     public void setComment(String comment) {
         this.comment = comment;
     }
-}
+
+    public String getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(String invoice) {
+        this.invoice = invoice;
+    }}

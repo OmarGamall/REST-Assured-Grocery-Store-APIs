@@ -25,7 +25,7 @@ public class GetSingleOrderValidationTest extends BaseTest {
     }
 
     @Test
-    public void testGetSingleOrderWithNonExistentId() {
+    public void testGetSingleOrderWithInvalidOrderId() {
         // Act
         Response response = OrdersApi.getOrderById(getToken(), "non_existent_order_id_12345");
 
