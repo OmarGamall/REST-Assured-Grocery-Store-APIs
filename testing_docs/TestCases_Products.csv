@@ -1,0 +1,67 @@
+Test ID,Title,"Type
+ (Positive/Negative)",Requirement Traceability,Pre-conditions,Test Execution Steps,Expected Result,Risk Level
+TC_PROD_001,"Verify that GET /products returns 200 OK and only in-stock products when 
+available query parameter is set to true",Positive,GET /products (available=true),Products exist in the inventory with both inStock=true and inStock=false.,"1. Send a GET request to /products with available query parameter set to true.
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Iterate through each product in the response array and check its inStock status.","• HTTP Status: 200 OK
+• Response body contains a JSON array of products.
+• Every product in the array has ""inStock"": true.",Major
+TC_PROD_002,Verify that GET /products returns 200 OK and only out-of-stock products when available query parameter is set to false,Positive,GET /products (available=false),Products exist in the inventory with both inStock=true and inStock=false.,"1. Send a GET request to /products with available query parameter set to false.
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Iterate through each product in the response array and check its inStock status.","• HTTP Status: 200 OK
+• Response body contains a JSON array of products.
+• Every product in the array has ""inStock"": false.",Major
+TC_PROD_003,Verify that GET /products returns 200 OK and products belonging to the specified category when category query parameter is provided,Positive,GET /products (category),"Products exist in the inventory for all valid categories (meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee).","1. Send a GET request to /products with category query parameter set to a valid category (e.g., coffee).
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Iterate through each product in the response and verify its category.","• HTTP Status: 200 OK
+• Response body contains a JSON array of products.
+• Every product in the array has its category property match the requested category.",Major
+TC_PROD_004,Verify that GET /products returns 200 OK and limits the number of products to the value of results query parameter when results parameter is between 1 and 20,Positive,GET /products (results),At least 5 products exist in the inventory.,"1. Send a GET request to /products with results query parameter set to 5.
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Count the number of products in the returned array.","• HTTP Status: 200 OK
+• Response body contains a JSON array of products.
+• The size of the returned array is less than or equal to 5.",Major
+TC_PROD_005,"Verify that GET /products returns 200 OK and filters products by category, availability, and limit when category, available, and results query parameters are provided",Positive,"GET /products (category, available, results)",Products exist in the inventory matching the category and availability filters.,"1. Send a GET request to /products with query parameters: category=fresh-produce, available=true, and results=3.
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Verify the size of the returned array and check the attributes of each product.","• HTTP Status: 200 OK
+• Response body contains a JSON array of products.
+• The size of the returned array is less than or equal to 3.
+• Every product in the array has ""category"": ""fresh-produce"" and ""inStock"": true.",Major
+TC_PROD_006,Verify that GET /products returns 200 OK and zero products when results query parameter is set to 0,Positive,GET /products (results=0),Products exist in the inventory.,"1. Send a GET request to /products with results query parameter set to 0.
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Verify the size of the returned array.","• HTTP Status: 200 OK
+• Response body contains an empty JSON array [].",Minor
+TC_PROD_007,Verify that GET /products returns 400 Bad Request and validation error when an invalid category query parameter is provided,Negative,GET /products (category),None.,"1. Send a GET request to /products with category query parameter set to ""invalid-category"".
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Verify the error message details in the response body.","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid value for query parameter 'category'""}",Major
+TC_PROD_008,"Verify that GET /products returns 400 Bad Request and validation error when results query parameter is below 0 (e.g., -1)",Negative,GET /products (results),None.,"1. Send a GET request to /products with results query parameter set to -1.
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Verify the error message details in the response body.","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid value for query parameter 'results'""}",Major
+TC_PROD_009,"Verify that GET /products returns 400 Bad Request and validation error when results query parameter exceeds 20 (e.g., 1000)",Negative,GET /products (results),None.,"1. Send a GET request to /products with results query parameter set to 1000.
+2. Retrieve the response.
+3. Verify the HTTP status code.
+4. Verify the error message details in the response body.","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid value for query parameter 'results'""}",Major
+TC_PROD_010,Verify that GET /products/{productId} returns 200 OK and product details when a valid product ID is requested,Positive,GET /products/:productId (productId),A valid product exists in the inventory.,"1. Retrieve a valid product from the inventory to obtain its ID.
+2. Send a GET request to /products/{productId} using that valid ID.
+3. Retrieve the response.
+4. Verify the HTTP status code.
+5. Deserialize the response and compare the fields (id, category, name, inStock) with the expected product details.","• HTTP Status: 200 OK
+• Response body contains a single product object matching the requested product ID.
+• The product object has correct id, category, name, and inStock details.",Critical
+TC_PROD_011,Verify that GET /products/{productId} returns 404 Not Found and error message when a non-existent product ID is requested,Negative,GET /products/:productId (productId),None.,"1. Define a non-existent product ID (e.g., 9999).
+2. Send a GET request to /products/9999.
+3. Retrieve the response.
+4. Verify the HTTP status code.
+5. Verify the error message details in the response body.","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No product with id 9999""}",Critical

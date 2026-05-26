@@ -1,0 +1,34 @@
+"Test ID","Title","Type (Positive/Negative)","Requirement Traceability","Pre-conditions","Test Execution Steps","Expected Result","Risk Level"
+"TC_AUTH_001","Verify that POST /api-clients returns 201 Created and access token when registering a new API client with valid name and unique email","Positive","POST /api-clients","None.","1. Generate a random client name and a unique email address using Faker.
+2. Send a POST request to /api-clients with clientName and clientEmail in JSON format.
+3. Retrieve the response.
+4. Verify the HTTP status code.
+5. Verify that the response body contains a non-null accessToken.","• HTTP Status: 201 Created
+• Response body contains a JSON object with accessToken.","Critical"
+"TC_AUTH_002","Verify that POST /api-clients returns 400 Bad Request and validation error when clientEmail is missing","Negative","POST /api-clients (clientEmail)","None.","1. Generate a random client name and set the email address to null.
+2. Send a POST request to /api-clients with clientName and without clientEmail (or null).
+3. Retrieve the response.
+4. Verify the HTTP status code.
+5. Verify the error message details in the response body.","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""missing client email""}","Critical"
+"TC_AUTH_003","Verify that POST /api-clients returns 400 Bad Request and validation error when clientName is missing","Negative","POST /api-clients (clientName)","None.","1. Generate a valid unique email address and set the client name to null.
+2. Send a POST request to /api-clients with clientEmail and without clientName (or null).
+3. Retrieve the response.
+4. Verify the HTTP status code.
+5. Verify the error message details in the response body.","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""missing client name""}","Critical"
+"TC_AUTH_004","Verify that POST /api-clients returns 400 Bad Request and validation error when clientEmail has an invalid email format","Negative","POST /api-clients (clientEmail)","None.","1. Generate a random client name.
+2. Set the email address to an invalid format (e.g., ""invalid-email-format"").
+3. Send a POST request to /api-clients with clientName and the invalid clientEmail.
+4. Retrieve the response.
+5. Verify the HTTP status code.
+6. Verify the error message details in the response body.","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid or missing client email""}","Critical"
+"TC_AUTH_005","Verify that POST /api-clients returns 409 Conflict and validation error when registering a client with an email address that is already registered","Negative","POST /api-clients","An API client has already been registered with a specific email.","1. Generate a random client name and a unique email address.
+2. Register the first client with this email to establish the pre-condition.
+3. Generate another random client name.
+4. Attempt to register the second client using the exact same email address.
+5. Retrieve the response.
+6. Verify the HTTP status code.
+7. Verify the error message details in the response body.","• HTTP Status: 409 Conflict
+• Response body contains an error object: {""error"": ""API client already registered. Try a different email""}","Critical"
