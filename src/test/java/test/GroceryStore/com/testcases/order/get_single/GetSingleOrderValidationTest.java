@@ -36,24 +36,22 @@ public class GetSingleOrderValidationTest extends BaseTest {
     @Test
     public void testGetSingleOrderBelongingToDifferentClient() {
         // Arrange - Register another client and place an order under their account
-        String otherToken = ClientSteps.registerClientAndGetToken();
+        String FirstClientToken = ClientSteps.registerClientAndGetToken();
         
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        CartSteps.addRandomItemToCart(cartId);
 
         OrderRequest orderRequest = new OrderRequest(cartId, "Other Customer");
-        Response createResponse = OrdersApi.createOrder(otherToken, orderRequest);
+        Response createResponse = OrdersApi.createOrder(FirstClientToken, orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
+        // Extract the order ID from the creation response
         String orderId = createResponse.as(OrderResponse.class).getOrderId();
 
         // Act - Attempt to retrieve other client's order using our main token
-        Response response = OrdersApi.getOrderById(getToken(), orderId);
+        String SecondClientToken = ClientSteps.registerClientAndGetToken();
+        Response response = OrdersApi.getOrderById(SecondClientToken, orderId);
 
         // Assert - Should return 404 Not Found (or 404 No order with id)
         assertErrorResponse(response, 404, "No order with id");
-
-        // Clean up other client's order
-        OrdersApi.deleteOrder(otherToken, orderId);
     }
 }

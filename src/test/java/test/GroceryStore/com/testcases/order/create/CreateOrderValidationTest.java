@@ -90,6 +90,21 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(secondResponse, 400, "Invalid or missing cartId");
     }
 
+    @Test
+    public void testCreateOrderWithInvalidCustomerName() {
+        // Arrange
+        String cartId = CartSteps.createCartAndGetId();
+        Product product = ProductService.getRandomAvailableProduct();
+        CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+
+        OrderRequest orderRequest = new OrderRequest(cartId, ""); // Empty customer name
+
+        // Act
+        Response response = OrdersApi.createOrder(getToken(), orderRequest);
+
+        // Assert
+        assertErrorResponse(response, 400, "customer name");
+    }
 
     @Test
     public void testCreateOrderWithExcessiveCommentLength() {
