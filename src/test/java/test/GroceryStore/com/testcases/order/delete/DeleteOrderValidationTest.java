@@ -25,7 +25,37 @@ public class DeleteOrderValidationTest extends BaseTest {
     }
 
     @Test
-    public void testDeleteOrderWithNonExistentId() {
+    public void testDeleteOrderWithMissingToken() {
+        // Act
+        Response response = OrdersApi.deleteOrder(null, "some-order-id");
+        // Assert
+        assertErrorResponse(response, 401, "bearer token");
+    }
+
+    @Test
+    public void testDeleteSameOrderMultipleTimes() {
+        // Arrange - Create an order to delete
+        String cartId = CartSteps.createCartAndGetId();
+        CartSteps.addRandomItemToCart(cartId);
+
+        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Delete Twice");
+        Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
+        assertEquals(createResponse.getStatusCode(), 201);
+        String orderId = createResponse.as(OrderResponse.class).getOrderId();
+
+        // Act - First deletion attempt
+        Response firstDeleteResponse = OrdersApi.deleteOrder(getToken(), orderId);
+        assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected 204 status code for first deletion");
+
+        // Act - Second deletion attempt on the same order
+        Response secondDeleteResponse = OrdersApi.deleteOrder(getToken(), orderId);
+
+        // Assert - Should return 404 (No order with id) since it's already deleted
+        assertErrorResponse(secondDeleteResponse, 404, "No order with id " + orderId);
+    }
+
+    @Test
+    public void testDeleteOrderWithInvalidOrderId() {
         // Act
         Response response = OrdersApi.deleteOrder(getToken(), "non_existent_order_id_12345");
 
@@ -36,24 +66,22 @@ public class DeleteOrderValidationTest extends BaseTest {
     @Test
     public void testDeleteOrderBelongingToDifferentClient() {
         // Arrange - Register other client and place an order
-        String otherToken = ClientSteps.registerClientAndGetToken();
+        String FirstClientToken = ClientSteps.registerClientAndGetToken();
         
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        CartSteps.addRandomItemToCart(cartId);
 
         OrderRequest orderRequest = new OrderRequest(cartId, "Original Name");
-        Response createResponse = OrdersApi.createOrder(otherToken, orderRequest);
+        Response createResponse = OrdersApi.createOrder(FirstClientToken, orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
+        // Extract Order Id
         String orderId = createResponse.as(OrderResponse.class).getOrderId();
 
-        // Act - Attempt to delete other client's order using our token
-        Response response = OrdersApi.deleteOrder(getToken(), orderId);
+        // Act - Attempt to delete First client's order using other client's token
+        String SecondClientToken = ClientSteps.registerClientAndGetToken();
+        Response response = OrdersApi.deleteOrder(SecondClientToken, orderId);
 
         // Assert - Should return 404 (No order with id)
         assertErrorResponse(response, 404, "No order with id");
-
-        // Clean up other client's order using their token
-        OrdersApi.deleteOrder(otherToken, orderId);
     }
 }
