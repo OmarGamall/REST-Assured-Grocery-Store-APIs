@@ -1,0 +1,249 @@
+"Test ID","Title","Type (Positive/Negative)","Requirement Traceability","Pre-conditions","Test Execution Steps","Expected Result","Risk Level"
+"TC_CART_001","Verify that POST /carts returns 201 Created and cartId when creating a new cart, and GET /carts/{cartId} returns 200 OK and empty items list","Positive","POST /carts, GET /carts/:cartId","None.","1. Send an empty POST request to /carts.
+2. Verify response status code is 201 and retrieve the cartId.
+3. Send a GET request to /carts/{cartId} using the created cartId.
+4. Verify status code is 200.
+5. Check that the created timestamp is present and the items list is empty.","• HTTP Status for creation: 201 Created
+• Response body contains created=true and a non-null cartId.
+• HTTP Status for retrieval: 200 OK
+• Response body contains cart details with an empty items array.","Critical"
+"TC_CART_002","Verify that GET /carts/{cartId}/items returns 200 OK and an empty items list when a new empty cart is requested","Positive","GET /carts/:cartId/items","A new empty cart is created.","1. Create a new empty cart and retrieve its cartId.
+2. Send a GET request to /carts/{cartId}/items.
+3. Verify status code is 200 and the response body returns an empty array.","• HTTP Status: 200 OK
+• Response body contains an empty JSON array of items [].","Major"
+"TC_CART_003","Verify that POST /carts/{cartId}/items returns 201 Created and successfully adds an item when a valid productId and quantity are provided","Positive","POST /carts/:cartId/items","A valid empty cart exists, and a valid available product exists.","1. Create a new empty cart and retrieve cartId.
+2. Retrieve a random available product and determine a random quantity less than or equal to stock.
+3. Send a POST request to /carts/{cartId}/items with productId and quantity.
+4. Verify status code is 201 and retrieve the itemId from the response.
+5. Send a GET request to /carts/{cartId}/items and verify the cart contains exactly 1 item matching the added productId, quantity, and itemId.","• HTTP Status: 201 Created
+• Response body contains created=true and a non-null itemId.
+• Retrieval of cart items verifies the product was added with the specified quantity and itemId.","Critical"
+"TC_CART_004","Verify that POST /carts/{cartId}/items returns 201 Created and adds the item when quantity is exactly equal to the product's current stock","Positive","POST /carts/:cartId/items","A valid empty cart exists, and a valid available product exists.","1. Create a new empty cart and retrieve cartId.
+2. Retrieve a random available product and set quantity to its exact currentStock.
+3. Send a POST request to /carts/{cartId}/items with productId and quantity equal to stock.
+4. Verify status code is 201 and retrieve itemId.
+5. Retrieve cart items and verify the product is added with the exact stock quantity.","• HTTP Status: 201 Created
+• The item is successfully added and matches the exact stock quantity when retrieved.","Major"
+"TC_CART_005","Verify that POST /carts/{cartId}/items returns 201 Created for multiple unique products added sequentially to the same cart","Positive","POST /carts/:cartId/items","A valid empty cart exists.","1. Create a new empty cart and retrieve cartId.
+2. Retrieve 10 random unique available products and random valid quantities.
+3. Sequentially send POST requests to /carts/{cartId}/items for each of the 10 items.
+4. Verify status code is 201 for each addition.
+5. Send a GET request to /carts/{cartId}/items and verify it contains exactly 10 items with correct productId and quantity pairings.","• HTTP Status: 201 Created for all 10 requests.
+• Retrieval of cart items returns an array of size 10 containing all added products with their correct quantities.","Critical"
+"TC_CART_006","Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when attempting to add a product that has already been added to the cart","Negative","POST /carts/:cartId/items","A valid cart exists containing a specific product.","1. Create a cart and add an available product with a valid quantity.
+2. Attempt to add the exact same product again to the same cart.
+3. Retrieve the response.
+4. Verify the HTTP status code is 400.
+5. Verify the error response contains ""This product has already been added to cart"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""This product has already been added to cart""}","Major"
+"TC_CART_007","Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when attempting to add an out-of-stock product","Negative","POST /carts/:cartId/items","An empty cart exists, and an out-of-stock (inStock=false) product exists in the inventory.","1. Create a cart.
+2. Retrieve a random non-available product.
+3. Send a POST request to add this product with quantity = 1.
+4. Retrieve the response.
+5. Verify the HTTP status code is 400.
+6. Verify the error response contains ""This product is not in stock and cannot be ordered"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""This product is not in stock and cannot be ordered""}","Major"
+"TC_CART_008","Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when the requested quantity exceeds the product's current stock","Negative","POST /carts/:cartId/items","A valid empty cart exists, and a valid available product exists.","1. Create a cart.
+2. Retrieve a random available product and get its current stock.
+3. Send a POST request to add the product with quantity set to currentStock + 1.
+4. Retrieve the response.
+5. Verify the HTTP status code is 400.
+6. Verify the error response contains ""The quantity requested exceeds the current stock"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""The quantity requested exceeds the current stock""}","Major"
+"TC_CART_009","Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when adding an item with a quantity of 0","Negative","POST /carts/:cartId/items","A valid empty cart exists, and a valid available product exists.","1. Create a cart.
+2. Retrieve a random available product.
+3. Send a POST request to add the product with quantity set to 0.
+4. Retrieve the response.
+5. Verify the HTTP status code is 400.
+6. Verify the error response contains ""Quantity must be at least 1"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Quantity must be at least 1""}","Major"
+"TC_CART_010","Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when adding an item with a negative quantity","Negative","POST /carts/:cartId/items","A valid empty cart exists, and a valid available product exists.","1. Create a cart.
+2. Retrieve a random available product.
+3. Send a POST request to add the product with quantity set to a negative value (e.g., -5).
+4. Retrieve the response.
+5. Verify the HTTP status code is 400.
+6. Verify the error response contains ""Quantity must be at least 1"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Quantity must be at least 1""}","Major"
+"TC_CART_011","Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when adding an item with an invalid or non-existent productId","Negative","POST /carts/:cartId/items","A valid empty cart exists.","1. Create a cart.
+2. Set productId to a non-existent ID (e.g., 999999).
+3. Send a POST request to add this product to the cart with quantity = 1.
+4. Retrieve the response.
+5. Verify the HTTP status code is 400.
+6. Verify the error response contains ""Invalid or missing productId"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid or missing productId""}","Major"
+"TC_CART_012","Verify that POST /carts/{cartId}/items returns 404 Not Found and validation error when the cartId is invalid or non-existent","Negative","POST /carts/:cartId/items","None.","1. Set cartId to ""invalid-cart-id"".
+2. Retrieve a random available product.
+3. Send a POST request to add this product to the invalid cart ID with quantity = 1.
+4. Retrieve the response.
+5. Verify the HTTP status code is 404.
+6. Verify the error response contains ""No cart with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No cart with id""}","Major"
+"TC_CART_013","Verify that DELETE /carts/{cartId}/items/{itemId} returns 204 No Content and successfully deletes the item from the cart","Positive","DELETE /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a new cart.
+2. Retrieve a random available product and add it to the cart, obtaining the itemId.
+3. Send a DELETE request to /carts/{cartId}/items/{itemId}.
+4. Verify the status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify the items list is empty.","• HTTP Status: 204 No Content
+• Retrieval of cart items verifies that the item is no longer in the cart.","Critical"
+"TC_CART_014","Verify that DELETE /carts/{cartId}/items/{itemId} returns 204 No Content for sequential deletions of multiple items in the same cart","Positive","DELETE /carts/:cartId/items/:itemId","A cart exists containing two unique items.","1. Create a cart.
+2. Add two unique available products to the cart, obtaining their respective itemId1 and itemId2.
+3. Send a DELETE request for itemId1 and verify status code is 204.
+4. Send a DELETE request for itemId2 and verify status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify that the items list is empty.","• HTTP Status: 204 No Content for both requests.
+• Retrieval of cart items verifies that both items have been removed.","Major"
+"TC_CART_015","Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to delete the same item a second time","Negative","DELETE /carts/:cartId/items/:itemId","A cart exists containing one item which is deleted once.","1. Create a cart.
+2. Add an available product to the cart and retrieve its itemId.
+3. Delete the item and verify status code is 204.
+4. Attempt to delete the same item again.
+5. Retrieve the response and verify the HTTP status code is 404.
+6. Verify the error response contains ""No item with id"".","• First delete returns 204 No Content.
+• Second delete returns 404 Not Found with an error object containing the message ""No item with id"".","Major"
+"TC_CART_016","Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the cartId is invalid or non-existent","Negative","DELETE /carts/:cartId/items/:itemId","A valid item has been added to a valid cart.","1. Create a cart.
+2. Add an available product and retrieve its itemId.
+3. Set invalidCartId to ""invalid-cart-id"".
+4. Send a DELETE request for the item using invalidCartId.
+5. Retrieve the response and verify status code is 404.
+6. Verify the error response contains ""No cart with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No cart with id""}","Major"
+"TC_CART_017","Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the itemId is invalid or non-existent","Negative","DELETE /carts/:cartId/items/:itemId","A cart exists containing one valid item.","1. Create a cart.
+2. Add a product to the cart.
+3. Send a DELETE request with an invalid itemId like ""invalid-item-id"".
+4. Retrieve the response and verify status code is 404.
+5. Verify the error response contains ""No item with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No item with id""}","Major"
+"TC_CART_018","Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to delete an item from an empty cart","Negative","DELETE /carts/:cartId/items/:itemId","A valid empty cart exists.","1. Create a new cart.
+2. Send a DELETE request with a non-existent item ID ""non-existent-item-id"".
+3. Retrieve the response and verify status code is 404.
+4. Verify the error response contains ""No item with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No item with id""}","Major"
+"TC_CART_019","Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to delete an item using a different cartId than the one it belongs to","Negative","DELETE /carts/:cartId/items/:itemId","Two separate carts exist. Cart A has an item added.","1. Create Cart A and Cart B.
+2. Add a product to Cart A and retrieve its itemIdA.
+3. Send a DELETE request to delete itemIdA but specifying the path parameter cartId as Cart B's ID.
+4. Retrieve the response and verify status code is 404.
+5. Verify the error response contains ""No item with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No item with id""}","Major"
+"TC_CART_020","Verify that PATCH /carts/{cartId}/items/{itemId} returns 204 No Content and successfully updates the quantity of an item in the cart","Positive","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item. The product has a stock of at least 2.","1. Create a cart.
+2. Retrieve a product with stock >= 2 and add it to the cart with quantity = 1, obtaining the itemId.
+3. Send a PATCH request to /carts/{cartId}/items/{itemId} with a request body specifying a new quantity of 2.
+4. Verify the status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify the quantity of the item is updated to 2.","• HTTP Status: 204 No Content
+• Retrieval of cart items verifies that the item quantity is updated to 2.","Major"
+"TC_CART_021","Verify that PATCH /carts/{cartId}/items/{itemId} returns 204 No Content when updating the quantity to the same value","Positive","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item with quantity = 1.","1. Create a cart.
+2. Add a product to the cart with quantity = 1, obtaining the itemId.
+3. Send a PATCH request to /carts/{cartId}/items/{itemId} with quantity = 1.
+4. Verify the status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify the quantity remains 1.","• HTTP Status: 204 No Content
+• Retrieval of cart items verifies that the item quantity remains unchanged.","Major"
+"TC_CART_022","Verify that PATCH /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when the modified quantity exceeds the product's current stock","Negative","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart.
+2. Retrieve a product with stock >= 2 and add it to the cart with quantity = 1, obtaining the itemId.
+3. Determine quantityExceedingStock = currentStock + 1.
+4. Send a PATCH request to /carts/{cartId}/items/{itemId} with the quantity exceeding stock.
+5. Retrieve the response and verify the HTTP status code is 400.
+6. Verify the error response contains ""The quantity requested is not available in stock"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""The quantity requested is not available in stock""}","Major"
+"TC_CART_023","Verify that PATCH /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when modifying the quantity of an item to 0","Negative","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart and add an available product, obtaining the itemId.
+2. Send a PATCH request to /carts/{cartId}/items/{itemId} with quantity set to 0.
+3. Retrieve the response and verify the HTTP status code is 400.
+4. Verify the error response contains ""Invalid or missing quantity"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid or missing quantity""}","Major"
+"TC_CART_024","Verify that PATCH /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when modifying the quantity of an item to a negative number","Negative","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart and add an available product, obtaining the itemId.
+2. Send a PATCH request to /carts/{cartId}/items/{itemId} with quantity set to -5.
+3. Retrieve the response and verify the HTTP status code is 400.
+4. Verify the error response contains ""Invalid or missing quantity"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid or missing quantity""}","Major"
+"TC_CART_025","Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the itemId is invalid or non-existent","Negative","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart and add an available product.
+2. Send a PATCH request with an invalid itemId like ""invalid-item-id"" and quantity = 2.
+3. Retrieve the response and verify status code is 404.
+4. Verify the error response contains ""No item with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No item with id""}","Major"
+"TC_CART_026","Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the cartId is invalid or non-existent","Negative","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart and add an available product, obtaining the itemId.
+2. Send a PATCH request using an invalid cartId like ""invalid-cart-id"" for the valid itemId with quantity = 2.
+3. Retrieve the response and verify status code is 404.
+4. Verify the error response contains ""No cart with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No cart with id""}","Major"
+"TC_CART_027","Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the quantity parameter is missing or null","Negative","PATCH /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart and add an available product, obtaining the itemId.
+2. Send a PATCH request to /carts/{cartId}/items/{itemId} with a request body where the quantity parameter is null or missing.
+3. Retrieve the response.
+4. Verify the HTTP status code is 404.
+5. Verify the error message details in the response body.","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""Invalid or missing quantity""}","Major"
+"TC_CART_028","Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to modify an item using a different cartId than the one it belongs to","Negative","PATCH /carts/:cartId/items/:itemId","Two separate carts exist. Cart A has an item added.","1. Create Cart A and Cart B.
+2. Add a product to Cart A and retrieve its itemId.
+3. Send a PATCH request to modify the item specifying the path parameter cartId as Cart B's ID, with quantity = 2.
+4. Retrieve the response and verify status code is 404.
+5. Verify the error response contains ""No item with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No item with id""}","Major"
+"TC_CART_029","Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and successfully replaces both the product and its quantity","Positive","PUT /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart.
+2. Add a product with quantity = 1, obtaining the itemId.
+3. Send a PUT request to /carts/{cartId}/items/{itemId} with a new available productId and quantity = 3.
+4. Verify the status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify the cart contains exactly 1 item with the replaced product and quantity.","• HTTP Status: 204 No Content
+• Retrieval of cart items verifies that the item has been replaced with the new product and quantity.","Major"
+"TC_CART_030","Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and updates the quantity when the productId is unchanged but the quantity is modified","Positive","PUT /carts/:cartId/items/:itemId","A cart exists containing one item.","1. Create a cart.
+2. Add a product with quantity = 1, obtaining the itemId.
+3. Send a PUT request to /carts/{cartId}/items/{itemId} with the same productId and a new quantity of 3.
+4. Verify the status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify the cart contains exactly 1 item with the same product and quantity = 3.","• HTTP Status: 204 No Content
+• Retrieval of cart items verifies that the item quantity is updated.","Major"
+"TC_CART_031","Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and replaces the product while keeping the quantity unchanged","Positive","PUT /carts/:cartId/items/:itemId","A cart exists containing one item with quantity = 2.","1. Create a cart.
+2. Add a product with quantity = 2, obtaining the itemId.
+3. Send a PUT request to /carts/{cartId}/items/{itemId} with a new available productId and quantity = 2.
+4. Verify the status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify the cart contains exactly 1 item with the new product and quantity = 2.","• HTTP Status: 204 No Content
+• Retrieval of cart items verifies that the product is replaced and the quantity remains 2.","Major"
+"TC_CART_032","Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and replaces the product while keeping the previous quantity when the quantity parameter is omitted","Positive","PUT /carts/:cartId/items/:itemId","A cart exists containing one item with quantity = 2.","1. Create a cart.
+2. Add a product with quantity = 2, obtaining the itemId.
+3. Send a PUT request to /carts/{cartId}/items/{itemId} with a new available productId and no quantity field (null).
+4. Verify the status code is 204.
+5. Send a GET request to /carts/{cartId}/items and verify the cart contains exactly 1 item with the new product and quantity remains 2.","• HTTP Status: 204 No Content
+• The product is successfully replaced, and the quantity remains at its previous value (2).","Major"
+"TC_CART_033","Verify that PUT /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when replacing an item with an invalid or non-existent productId","Negative","PUT /carts/:cartId/items/:itemId","A cart exists containing one valid item.","1. Create a cart.
+2. Add an available product with quantity = 2, obtaining the itemId.
+3. Set invalidProductId to 999999.
+4. Send a PUT request to replace the item with the invalid productId and quantity = 2.
+5. Retrieve the response and verify the HTTP status code is 400.
+6. Verify the error response contains ""Invalid or missing productId"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid or missing productId""}","Major"
+"TC_CART_034","Verify that PUT /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the cartId is invalid or non-existent","Negative","PUT /carts/:cartId/items/:itemId","A cart exists containing one valid item.","1. Create a cart.
+2. Add a product with quantity = 2, obtaining the itemId.
+3. Send a PUT request with invalidCartId = ""invalid-cart-id"" using the valid itemId with the same product and quantity.
+4. Retrieve the response and verify status code is 404.
+5. Verify the error response contains ""No cart with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No cart with id""}","Major"
+"TC_CART_035","Verify that PUT /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the itemId is invalid or non-existent","Negative","PUT /carts/:cartId/items/:itemId","A cart exists containing one valid item.","1. Create a cart.
+2. Add a product with quantity = 2.
+3. Send a PUT request with an invalid itemId = ""invalid-item-id"" for the same product and quantity.
+4. Retrieve the response and verify status code is 404.
+5. Verify the error response contains ""No item with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No item with id""}","Major"
+"TC_CART_036","Verify that PUT /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when replacing an item with an out-of-stock product","Negative","PUT /carts/:cartId/items/:itemId","A cart exists containing one valid item, and a non-available product exists in the inventory.","1. Create a cart.
+2. Add a product with quantity = 2, obtaining the itemId.
+3. Retrieve a random non-available product.
+4. Send a PUT request to replace the item with the non-available product's ID and quantity = 2.
+5. Retrieve the response and verify the HTTP status code is 400.
+6. Verify the error response contains ""The quantity requested is not available in stock"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""The quantity requested is not available in stock""}","Major"
+"TC_CART_037","Verify that PUT /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when the replacement quantity exceeds the product's current stock","Negative","PUT /carts/:cartId/items/:itemId","A cart exists containing one valid item.","1. Create a cart.
+2. Add a product with quantity = 1, obtaining the itemId.
+3. Set quantityExceedingStock = currentStock + 1.
+4. Send a PUT request to replace the item with the same product and the quantity exceeding stock.
+5. Retrieve the response and verify the HTTP status code is 400.
+6. Verify the error response contains ""The quantity requested is not available in stock"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""The quantity requested is not available in stock""}","Major"
+"TC_CART_038","Verify that PUT /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when replacing an item with a negative quantity","Negative","PUT /carts/:cartId/items/:itemId","A cart exists containing one valid item.","1. Create a cart.
+2. Add a product with quantity = 1, obtaining the itemId.
+3. Send a PUT request to replace the item with the same product and a negative quantity (e.g., -5).
+4. Retrieve the response and verify the HTTP status code is 400.
+5. Verify the error response contains ""Invalid or missing quantity"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid or missing quantity""}","Major"
+"TC_CART_039","Verify that PUT /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when replacing an item with a quantity of 0","Negative","PUT /carts/:cartId/items/:itemId","A cart exists containing one valid item.","1. Create a cart.
+2. Add a product with quantity = 1, obtaining the itemId.
+3. Send a PUT request to replace the item with the same product and quantity set to 0.
+4. Retrieve the response and verify the HTTP status code is 400.
+5. Verify the error response contains ""Invalid or missing quantity"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""Invalid or missing quantity""}","Major"
+"TC_CART_040","Verify that PUT /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to replace an item using a different cartId than the one it belongs to","Negative","PUT /carts/:cartId/items/:itemId","Two separate carts exist. Cart A has an item added.","1. Create Cart A and Cart B.
+2. Add a product to Cart A and retrieve its itemId.
+3. Send a PUT request to replace the item in Cart B, using Cart A's itemId in the path, with a replacement product and quantity = 2.
+4. Retrieve the response and verify status code is 404.
+5. Verify the error response contains ""No item with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object: {""error"": ""No item with id""}","Major"
