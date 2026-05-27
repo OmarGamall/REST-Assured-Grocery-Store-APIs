@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.CartApi;
 import test.GroceryStore.com.models.cart.CartItemResponse;
+import test.GroceryStore.com.models.cart.CartItem;
 import test.GroceryStore.com.models.product.Product;
 import test.GroceryStore.com.services.ProductService;
 import test.GroceryStore.com.steps.CartSteps;
@@ -19,9 +20,8 @@ public class DeleteItemValidationTest extends BaseTest {
     public void testDeleteSameCartItemTwice() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
-        String itemId = addResponse.getItemId();
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
+        String itemId = cartItem.getItemId();
 
         // 2. Act
         Response firstDeleteResponse = CartApi.deleteCartItem(cartId, itemId);
@@ -36,9 +36,8 @@ public class DeleteItemValidationTest extends BaseTest {
     public void testDeleteCartItemWithInvalidCartId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
-        String itemId = addResponse.getItemId();
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
+        String itemId = cartItem.getItemId();
         String invalidCartId = "invalid-cart-id";
 
         // 2. Act
@@ -52,8 +51,7 @@ public class DeleteItemValidationTest extends BaseTest {
     public void testDeleteCartItemWithInvalidItemId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        CartSteps.addRandomItemToCart(cartId, 1);
         String invalidItemId = "invalid-item-id";
 
         // 2. Act
@@ -81,14 +79,8 @@ public class DeleteItemValidationTest extends BaseTest {
         // 1. Arrange
         String cartAId = CartSteps.createCartAndGetId();
         String cartBId = CartSteps.createCartAndGetId();
-        Product productA = ProductService.getRandomAvailableProduct();
-        Product productB = null;
-        do {
-            productB = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(productB.getId(), productA.getId()));
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartAId, productA.getId(), 1);
-        String itemIdA = addResponse.getItemId();
+        CartItem cartItemA = CartSteps.addRandomItemToCart(cartAId, 1);
+        String itemIdA = cartItemA.getItemId();
 
         // 2. Act
         Response deleteResponse = CartApi.deleteCartItem(cartBId, itemIdA);

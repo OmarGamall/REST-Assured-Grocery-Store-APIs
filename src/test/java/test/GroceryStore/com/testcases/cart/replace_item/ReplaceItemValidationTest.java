@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.CartApi;
 import test.GroceryStore.com.models.cart.CartItemResponse;
+import test.GroceryStore.com.models.cart.CartItem;
 import test.GroceryStore.com.models.product.Product;
 import test.GroceryStore.com.services.ProductService;
 import test.GroceryStore.com.steps.CartSteps;
@@ -17,15 +18,11 @@ public class ReplaceItemValidationTest extends BaseTest {
     public void testReplaceCartItemWithInvalidProductId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product initialProduct = ProductService.getRandomAvailableProduct();
-        int quantity = 2;
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        String itemId = addResponse.getItemId();
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
         Integer invalidProductId = 999999;
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), invalidProductId, quantity);
+        Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), invalidProductId, 1);
 
         // 3. Assert
         assertErrorResponse(replaceResponse, 400, "Invalid or missing productId");
@@ -35,15 +32,11 @@ public class ReplaceItemValidationTest extends BaseTest {
     public void testReplaceCartItemWithInvalidCartId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product initialProduct = ProductService.getRandomAvailableProduct();
-        int quantity = 2;
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        String itemId = addResponse.getItemId();
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
         String invalidCartId = "invalid-cart-id";
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(invalidCartId, String.valueOf(itemId), initialProduct.getId(), quantity);
+        Response replaceResponse = CartApi.replaceCartItem(invalidCartId, cartItem.getItemId(), cartItem.getProductId(), 1);
 
         // 3. Assert
         assertErrorResponse(replaceResponse, 404, "No cart with id");
@@ -53,14 +46,11 @@ public class ReplaceItemValidationTest extends BaseTest {
     public void testReplaceCartItemWithInvalidItemId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product initialProduct = ProductService.getRandomAvailableProduct();
-        int quantity = 2;
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
         String invalidItemId = "invalid-item-id";
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, invalidItemId, initialProduct.getId(), quantity);
+        Response replaceResponse = CartApi.replaceCartItem(cartId, invalidItemId, cartItem.getProductId(), 1);
 
         // 3. Assert
         assertErrorResponse(replaceResponse, 404, "No item with id");
@@ -70,15 +60,11 @@ public class ReplaceItemValidationTest extends BaseTest {
     public void testReplaceCartItemWithNonAvailableProduct() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product initialProduct = ProductService.getRandomAvailableProduct();
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
         Product nonAvailableProduct = ProductService.getRandomNonAvailableProduct();
-        int quantity = 2;
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), quantity);
-        String itemId = addResponse.getItemId();
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), nonAvailableProduct.getId(), quantity);
+        Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), nonAvailableProduct.getId(), 1);
 
         // 3. Assert
         assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
@@ -91,12 +77,11 @@ public class ReplaceItemValidationTest extends BaseTest {
         Product initialProduct = ProductService.getRandomAvailableProduct();
         int initialQuantity = 1;
 
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
-        String itemId = addResponse.getItemId();
+        CartItem cartItem = CartSteps.addItemToCart(cartId, initialProduct.getId(), initialQuantity);
         int quantityExceedingStock = initialProduct.getCurrentStock() + 1;
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), initialProduct.getId(), quantityExceedingStock);
+        Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), initialProduct.getId(), quantityExceedingStock);
 
         // 3. Assert
         assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
@@ -106,15 +91,10 @@ public class ReplaceItemValidationTest extends BaseTest {
     public void testReplaceCartItemWithNegativeQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product initialProduct = ProductService.getRandomAvailableProduct();
-        int initialQuantity = 1;
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
-        String itemId = addResponse.getItemId();
-        int negativeQuantity = -5;
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), initialProduct.getId(), negativeQuantity);
+        Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), cartItem.getProductId(), -5);
 
         // 3. Assert
         assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
@@ -124,15 +104,10 @@ public class ReplaceItemValidationTest extends BaseTest {
     public void testReplaceCartItemWithZeroQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product initialProduct = ProductService.getRandomAvailableProduct();
-        int initialQuantity = 1;
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
-        String itemId = addResponse.getItemId();
-        int zeroQuantity = 0;
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), initialProduct.getId(), zeroQuantity);
+        Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), cartItem.getProductId(), 0);
 
         // 3. Assert
         assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
@@ -143,17 +118,14 @@ public class ReplaceItemValidationTest extends BaseTest {
         // 1. Arrange
         String cartAId = CartSteps.createCartAndGetId();
         String cartBId = CartSteps.createCartAndGetId();
-        Product productA = ProductService.getRandomAvailableProduct();
+        CartItem cartItemA = CartSteps.addRandomItemToCart(cartAId, 1);
         Product productB = null;
         do {
             productB = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(productB.getId(), productA.getId()));
-
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartAId, productA.getId(), 1);
-        String itemId = addResponse.getItemId();
+        } while (Objects.equals(productB.getId(), cartItemA.getProductId()));
 
         // 2. Act
-        Response response = CartApi.replaceCartItem(cartBId, String.valueOf(itemId), productB.getId(), 2);
+        Response response = CartApi.replaceCartItem(cartBId, cartItemA.getItemId(), productB.getId(), 1);
 
         // 3. Assert
         assertErrorResponse(response, 404, "No item with id");

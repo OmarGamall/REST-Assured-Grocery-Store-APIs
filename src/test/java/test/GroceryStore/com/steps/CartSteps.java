@@ -51,16 +51,35 @@ public class CartSteps {
         return responseBody;
     }
 
+    /**
+     * Adds an item to the cart and returns the fully populated CartItem with itemId.
+     */
+    public static CartItem addItemToCart(String cartId, Integer productId, Integer quantity) {
+        CartItem cartItem = CartItem.builder()
+                .cartId(cartId)
+                .productId(productId)
+                .quantity(quantity)
+                .build();
+        CartItemResponse responseBody = addItemToCartAndGetResponse(cartItem);
+        cartItem.setItemId(responseBody.getItemId());
+        return cartItem;
+    }
+
+    /**
+     * Adds a random available product to the cart and returns the fully populated CartItem.
+     */
     public static CartItem addRandomItemToCart(String cartId) {
         Product product = ProductService.getRandomAvailableProduct();
         int quantity = ProductService.getRandomQuantity(product);
-        CartItem cartItem = CartItem.builder()
-                .cartId(cartId)
-                .productId(product.getId())
-                .quantity(quantity)
-                .build();
-        addItemToCartAndGetResponse(cartItem);
-        return cartItem;
+        return addItemToCart(cartId, product.getId(), quantity);
+    }
+
+    /**
+     * Adds a random available product to the cart with a specific quantity and returns the fully populated CartItem.
+     */
+    public static CartItem addRandomItemToCart(String cartId, Integer quantity) {
+        Product product = ProductService.getRandomAvailableProduct();
+        return addItemToCart(cartId, product.getId(), quantity);
     }
 
     /**

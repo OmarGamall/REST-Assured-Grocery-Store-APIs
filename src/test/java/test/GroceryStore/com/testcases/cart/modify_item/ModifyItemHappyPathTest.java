@@ -24,10 +24,10 @@ public class ModifyItemHappyPathTest extends BaseTest {
             product = ProductService.getRandomAvailableProduct();
         } while (product.getCurrentStock() != null && product.getCurrentStock() < 2);
 
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        CartItem cartItem = CartSteps.addItemToCart(cartId, product.getId(), 1);
 
         // 2. Act
-        Response response = CartApi.modifyCartItem(cartId, String.valueOf(addResponse.getItemId()), 2);
+        Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), 2);
 
         // 3. Assert
         assertEquals(response.getStatusCode(), 204, "Expected status code 204 for successful item modification");
@@ -42,10 +42,10 @@ public class ModifyItemHappyPathTest extends BaseTest {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
         Product product = ProductService.getRandomAvailableProduct();
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        CartItem cartItem = CartSteps.addItemToCart(cartId, product.getId(), 1);
 
         // 2. Act
-        Response response = CartApi.modifyCartItem(cartId, String.valueOf(addResponse.getItemId()), 1); // Modify to the same quantity
+        Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), 1); // Modify to the same quantity
 
         // 3. Assert
         assertEquals(response.getStatusCode(), 204, "Expected status code 204 for modifying item to the same quantity");

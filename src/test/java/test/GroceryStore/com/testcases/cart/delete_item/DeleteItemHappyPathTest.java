@@ -20,9 +20,8 @@ public class DeleteItemHappyPathTest extends BaseTest {
     public void testDeleteCartItem() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
-        String itemId = addResponse.getItemId();
+        CartItem cartItem = CartSteps.addRandomItemToCart(cartId, 1);
+        String itemId = cartItem.getItemId();
 
         // 2. Act
         Response deleteResponse = CartApi.deleteCartItem(cartId, itemId);
@@ -37,20 +36,18 @@ public class DeleteItemHappyPathTest extends BaseTest {
     public void testDeleteMoreThanOneItemFromCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product1 = ProductService.getRandomAvailableProduct();
+        CartItem cartItem1 = CartSteps.addRandomItemToCart(cartId, 1);
+
         Product product2 = null;
         do {
             product2 = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(product2.getId(), product1.getId()));
+        } while (Objects.equals(product2.getId(), cartItem1.getProductId()));
 
-        CartItemResponse addResponse1 = CartSteps.addItemToCartAndGetResponse(cartId, product1.getId(), 1);
-        CartItemResponse addResponse2 = CartSteps.addItemToCartAndGetResponse(cartId, product2.getId(), 1);
-        String itemId1 = addResponse1.getItemId();
-        String itemId2 = addResponse2.getItemId();
+        CartItem cartItem2 = CartSteps.addItemToCart(cartId, product2.getId(), 1);
 
         // 2. Act
-        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, itemId1);
-        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, itemId2);
+        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, cartItem1.getItemId());
+        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, cartItem2.getItemId());
 
         // 3. Assert
         assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful deletion of first item");
