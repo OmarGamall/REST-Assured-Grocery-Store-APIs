@@ -39,6 +39,10 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
 
         // Assert
         assertEquals(response.getStatusCode(), 200, "Expected 200 status code for order lookup");
+        
+        // Validate the response JSON schema
+        assertResponseSchema(response, "schemas/order-schema.json");
+        
         Order order = response.as(Order.class);
         assertEquals(order.getId(), orderId, "Order ID mismatch in lookup");
         assertEquals(order.getCustomerName(), customerName, "Customer name mismatch");

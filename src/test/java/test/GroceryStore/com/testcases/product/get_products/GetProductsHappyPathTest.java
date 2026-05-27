@@ -23,6 +23,9 @@ public class GetProductsHappyPathTest extends BaseTest {
         // Verify the response status code
         assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
         
+        // Validate the response JSON schema
+        assertResponseSchema(response, "schemas/products-list-schema.json");
+        
         // Deserialize the response to an array of Product objects
         Product[] products = response.as(Product[].class);
         

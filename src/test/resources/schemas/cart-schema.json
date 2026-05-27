@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cart",
+  "type": "object",
+  "properties": {
+    "created": { "type": "string" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "productId": { "type": "integer" },
+          "quantity": { "type": "integer" }
+        },
+        "required": ["id", "productId", "quantity"]
+      }
+    }
+  },
+  "required": ["created", "items"]
+}

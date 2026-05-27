@@ -6,6 +6,7 @@ import test.GroceryStore.com.models.ErrorResponse;
 import test.GroceryStore.com.utils.TokenManager;
 
 import static org.testng.Assert.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 public class BaseTest {
 
@@ -15,7 +16,15 @@ public class BaseTest {
         return TokenManager.getToken();
     }
 
-
+    /**
+     * Reusable assertion to verify that an API response matches a JSON schema file.
+     *
+     * @param response   The RestAssured Response object.
+     * @param schemaPath The path to the schema file relative to classpath (e.g. "schemas/product-schema.json").
+     */
+    protected void assertResponseSchema(Response response, String schemaPath) {
+        response.then().assertThat().body(matchesJsonSchemaInClasspath(schemaPath));
+    }
 
     /**
      * Reusable assertion to verify that an API response returns a specific error status code
@@ -28,6 +37,9 @@ public class BaseTest {
     protected void assertErrorResponse(Response response, int expectedStatusCode, String expectedErrorMessage) {
         assertEquals(response.getStatusCode(), expectedStatusCode, 
             String.format("Expected status code %d but got %d", expectedStatusCode, response.getStatusCode()));
+        
+        // Validate error schema before deserialization
+        assertResponseSchema(response, "schemas/error-schema.json");
         
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
         assertNotNull(errorResponse, "Expected response body to be deserializable into ErrorResponse");

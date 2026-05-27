@@ -34,6 +34,10 @@ public class CreateOrderHappyPathTest extends BaseTest {
 
         // Assert - Creation Status first
         assertEquals(response.getStatusCode(), 201, "Expected 201 status code for order creation");
+        
+        // Validate order creation response schema
+        assertResponseSchema(response, "schemas/order-created-schema.json");
+        
         OrderResponse orderResponse = response.as(OrderResponse.class);
         assertTrue(orderResponse.getCreated(), "Expected 'created' flag to be true");
         assertNotNull(orderResponse.getOrderId(), "Expected a non-null order ID");

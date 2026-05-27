@@ -19,6 +19,10 @@ public class CreateCartTest extends BaseTest {
 
         // 2. Assert (Verify creation response)
         assertEquals(createResponse.getStatusCode(), 201, "Expected status code 201 for successful cart creation");
+        
+        // Validate cart creation response schema
+        assertResponseSchema(createResponse, "schemas/cart-created-schema.json");
+        
         CartResponse cartResponse = createResponse.as(CartResponse.class);
         assertNotNull(cartResponse.getCartId(), "Expected non-null cartId");
         assertTrue(cartResponse.getCreated(), "Expected 'created' field to be true");
@@ -28,6 +32,10 @@ public class CreateCartTest extends BaseTest {
 
         // 4. Assert (Verify retrieved cart payload details)
         assertEquals(getResponse.getStatusCode(), 200, "Expected status code 200 for retrieving cart by ID");
+        
+        // Validate retrieved cart schema
+        assertResponseSchema(getResponse, "schemas/cart-schema.json");
+        
         assertNotNull(getResponse.jsonPath().getString("created"), "Expected 'created' timestamp to be present");
         assertTrue(getResponse.jsonPath().getList("items").isEmpty(), "Expected new cart to have an empty items list");
     }

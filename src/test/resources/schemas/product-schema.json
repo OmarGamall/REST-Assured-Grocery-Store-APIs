@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Product",
+  "type": "object",
+  "properties": {
+    "id": { "type": "integer" },
+    "category": { "type": "string" },
+    "name": { "type": "string" },
+    "inStock": { "type": "boolean" },
+    "manufacturer": { "type": ["string", "null"] },
+    "price": { "type": "number" },
+    "current-stock": { "type": ["integer", "null"] }
+  },
+  "required": ["id", "category", "name", "inStock", "price"]
+}

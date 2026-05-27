@@ -25,6 +25,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Dynamic Test Data**: Leverages JavaFaker to dynamically produce unique names, emails, and comments for registration and order creation.
 - **Automatic Token Management**: Automatically registers a fresh client at suite startup or utilizes a predefined token from `config.properties` to authenticate bearer token endpoints.
 - **Object-Oriented Mapping**: Uses Jackson Databind for smooth serialization and deserialization of JSON request/response payloads to strongly typed DTOs.
+- **Contract Testing & Schema Validation**: Integrates the Rest-Assured JSON Schema Validator to dynamically validate API response payloads against pre-defined JSON schemas (`draft-07`), ensuring structural integrity and preventing regression issues from API contract changes.
 - **Boilerplate Reduction & Fluent Builders**: Integrates Project Lombok to eliminate verbose DTO boilerplate (getters, setters, toString) and implements the **Builder Design Pattern** (`@Builder`) for highly readable, flexible, and type-safe object instantiations, replacing rigid overloaded constructors.
 - **Detailed Test Reports**: Features clear step-by-step test execution logic in Markdown and CSV formats for import into Excel or Google Sheets.
 
@@ -49,6 +50,7 @@ The automation suite covers the following API modules:
 
 - **Language**: Java 21
 - **API Client**: Rest-Assured (v5.5.6)
+- **Schema Validation**: Rest-Assured JSON Schema Validator (v5.5.6)
 - **Test Framework**: TestNG (v7.10.2)
 - **JSON Processing**: Jackson Databind (v2.17.0)
 - **Data Generation**: JavaFaker (v1.0.2)
