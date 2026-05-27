@@ -28,7 +28,7 @@ public class AddItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in cart");
-        assertEquals(cartItems[0].getId(), addResponse.getItemId(), "Item ID mismatch in cart");
+        assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
     }
 
     @Test
@@ -46,7 +46,7 @@ public class AddItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in cart");
-        assertEquals(cartItems[0].getId(), addResponse.getItemId(), "Item ID mismatch in cart");
+        assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
     }
 
     @Test

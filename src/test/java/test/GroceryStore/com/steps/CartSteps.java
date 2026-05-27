@@ -109,7 +109,7 @@ public class CartSteps {
     public static Response deleteAllCartItems(String cartId) {
         CartItem[] items = getCartItems(cartId);
         for (CartItem item : items) {
-            deleteCartItem(cartId, item.getId());
+            deleteCartItem(cartId, item.getItemId());
         }
         return null;
     }

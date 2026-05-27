@@ -17,10 +17,4 @@ public class Client {
     private String clientName;
     private String clientEmail;
     private String accessToken;
-
-    // Custom constructor for compatibility
-    public Client(String clientName, String clientEmail) {
-        this.clientName = clientName;
-        this.clientEmail = clientEmail;
-    }
 }

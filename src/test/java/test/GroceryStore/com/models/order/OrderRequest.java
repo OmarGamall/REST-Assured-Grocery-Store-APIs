@@ -17,10 +17,4 @@ public class OrderRequest {
     private String cartId;
     private String customerName;
     private String comment;
-
-    // Custom constructor to maintain compatibility with existing tests
-    public OrderRequest(String cartId, String customerName) {
-        this.cartId = cartId;
-        this.customerName = customerName;
-    }
 }

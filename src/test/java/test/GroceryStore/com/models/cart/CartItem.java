@@ -29,16 +29,4 @@ public class CartItem {
         this.productId = productId;
         this.quantity = quantity;
     }
-
-    // Custom getter/setter to maintain compatibility with getId() and setId()
-    @JsonIgnore
-    public String getId() {
-        return itemId;
-    }
-
-    @JsonIgnore
-    public CartItem setId(String id) {
-        this.itemId = id;
-        return this;
-    }
 }
