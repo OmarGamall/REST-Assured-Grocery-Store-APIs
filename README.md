@@ -70,7 +70,8 @@ The automation suite covers the following API modules:
 └── src/
     └── test/
         ├── resources/
-        │   └── config.properties       # Configuration details (token, client details)
+        │   ├── config.properties       # Configuration details (token, client details)
+        │   └── schemas/                # Predefined JSON schemas for contract testing & validation
         └── java/
             └── test/
                 └── GroceryStore/
