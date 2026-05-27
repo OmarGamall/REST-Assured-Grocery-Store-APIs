@@ -1,0 +1,151 @@
+"Test ID","Title","Type (Positive/Negative)","Requirement Traceability","Pre-conditions","Test Execution Steps","Expected Result","Risk Level"
+"TC_ORDER_001","Verify that POST /orders returns 201 Created and orderId when creating an order with one cart item, and that the cart is deleted","Positive","POST /orders, GET /carts/:cartId, GET /orders/:orderId","Valid authentication token, a cart exists with one item.","1. Create a cart and add one random available product.
+2. Send a POST request to /orders with the cartId, a random customer name, and comment using the bearer token.
+3. Verify status code is 201 and retrieve the orderId.
+4. Send a GET request to /carts/{cartId} and verify status code is 404.
+5. Retrieve the order by ID and verify its fields match.","• HTTP Status: 201 Created with orderId and created=true.
+• HTTP Status for GET cart: 404 Not Found (since cart is deleted upon order creation).
+• HTTP Status for GET order: 200 OK with correct details and items.","Critical"
+"TC_ORDER_002","Verify that POST /orders returns 201 Created and orderId when creating an order with a cart containing multiple unique items, and that the cart is deleted","Positive","POST /orders, GET /carts/:cartId, GET /orders/:orderId","Valid authentication token, a cart exists containing 5 unique items.","1. Create a cart.
+2. Add 5 unique available products to the cart.
+3. Send a POST request to /orders with the cartId, customer name, and comment.
+4. Verify status code is 201 and retrieve the orderId.
+5. Send a GET request to /carts/{cartId} and verify status code is 404.
+6. Retrieve the order by ID and verify it contains all 5 items with matching product IDs and quantities.","• HTTP Status: 201 Created with orderId.
+• HTTP Status for GET cart: 404 Not Found (since cart is deleted upon order creation).
+• HTTP Status for lookup: 200 OK and the order items list matches the 5 unique items in the cart.","Critical"
+"TC_ORDER_003","Verify that POST /orders returns 401 Unauthorized and validation error when an invalid bearer token is used","Negative","POST /orders","A cart exists with items.","1. Create a cart and add one random available item.
+2. Send a POST request to /orders with the cartId and customer name using an invalid token (e.g., ""invalid_token_12345"").
+3. Retrieve the response and verify status code is 401.
+4. Verify the error response contains ""Invalid bearer token"".","• HTTP Status: 401 Unauthorized
+• Response body contains an error object: {""error"": ""Invalid bearer token""}","Critical"
+"TC_ORDER_004","Verify that POST /orders returns 400 Bad Request and validation error when attempting to place an order with an empty cart","Negative","POST /orders","Valid authentication token, a valid empty cart exists.","1. Create a new empty cart and retrieve cartId.
+2. Send a POST request to /orders with the cartId and customer name using the valid token.
+3. Retrieve the response and verify status code is 400.
+4. Verify the error response contains ""cart is empty"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object: {""error"": ""cart is empty""}","Major"
+"TC_ORDER_005","Verify that POST /orders returns 400 Bad Request and validation error when placing an order with an invalid or non-existent cartId","Negative","POST /orders","Valid authentication token.","1. Define an invalid cart ID (e.g., ""non_existent_cart_id_12345"").
+2. Send a POST request to /orders with the invalid cart ID and customer name using the valid token.
+3. Retrieve the response and verify status code is 400.
+4. Verify the error response contains ""cartId"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object containing ""cartId"" validation details.","Major"
+"TC_ORDER_006","Verify that POST /orders returns 400 Bad Request and validation error when customerName parameter is missing or null","Negative","POST /orders","Valid authentication token, a cart exists with one item.","1. Create a cart and add one available item.
+2. Send a POST request to /orders with cartId and customerName set to null using the valid token.
+3. Retrieve the response and verify status code is 400.
+4. Verify the error response contains ""customer name"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object containing ""customer name"" validation details.","Major"
+"TC_ORDER_007","Verify that POST /orders returns 400 Bad Request and validation error when attempting to place a duplicate order using the same cartId","Negative","POST /orders","Valid authentication token, a cart exists with one item.","1. Create a cart and add an available product.
+2. Send a POST request to place the first order. Verify status code is 201.
+3. Attempt to place a second order using the exact same cartId.
+4. Retrieve the response and verify status code is 400.
+5. Verify the error response contains ""Invalid or missing cartId"".","• First order creation returns 201 Created.
+• Second order creation returns 400 Bad Request with an error object containing ""Invalid or missing cartId"".","Major"
+"TC_ORDER_008","Verify that POST /orders returns 400 Bad Request and validation error when customerName is empty","Negative","POST /orders","Valid authentication token, a cart exists with one item.","1. Create a cart and add one available item.
+2. Send a POST request to /orders with cartId and customerName set to """" using the valid token.
+3. Retrieve the response and verify status code is 400.
+4. Verify the error response contains ""customer name"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object containing ""customer name"" validation details.","Major"
+"TC_ORDER_009","Verify that POST /orders returns 400 Bad Request and validation error when the comment length is excessively long","Negative","POST /orders","Valid authentication token, a cart exists with one item.","1. Create a cart and add one available item.
+2. Generate an excessively long comment string (e.g., 10000 characters).
+3. Send a POST request to /orders with cartId, customer name, and the long comment.
+4. Retrieve the response and verify status code is 400.
+5. Verify the error response contains ""comment"".","• HTTP Status: 400 Bad Request
+• Response body contains an error object containing ""comment"" validation details.","Minor"
+"TC_ORDER_010","Verify that DELETE /orders/{orderId} returns 204 No Content and successfully deletes the order","Positive","DELETE /orders/:orderId","Valid authentication token, an order exists.","1. Create a cart and add an item.
+2. Place an order to obtain orderId.
+3. Send a DELETE request to /orders/{orderId} using the bearer token.
+4. Verify the status code is 204.
+5. Send a GET request to /orders/{orderId} and verify status code is 404.","• HTTP Status: 204 No Content
+• Verification lookup returns 404 Not Found with error message ""No order with id [orderId]"".","Critical"
+"TC_ORDER_011","Verify that DELETE /orders/{orderId} returns 401 Unauthorized and validation error when an invalid bearer token is used","Negative","DELETE /orders/:orderId","None.","1. Send a DELETE request to /orders/some-order-id using ""invalid_token_12345"" as the token.
+2. Retrieve the response and verify status code is 401.
+3. Verify the error response contains ""bearer token"".","• HTTP Status: 401 Unauthorized
+• Response body contains an error object containing ""bearer token"".","Critical"
+"TC_ORDER_012","Verify that DELETE /orders/{orderId} returns 401 Unauthorized and validation error when bearer token is missing or null","Negative","DELETE /orders/:orderId","None.","1. Send a DELETE request to /orders/some-order-id without any bearer token (null).
+2. Retrieve the response and verify status code is 401.
+3. Verify the error response contains ""bearer token"".","• HTTP Status: 401 Unauthorized
+• Response body contains an error object containing ""bearer token"".","Critical"
+"TC_ORDER_013","Verify that DELETE /orders/{orderId} returns 404 Not Found and validation error when attempting to delete the same order a second time","Negative","DELETE /orders/:orderId","Valid authentication token, an order exists.","1. Create a cart and add an item.
+2. Place an order to obtain orderId.
+3. Send a DELETE request to /orders/{orderId} and verify status code is 204.
+4. Attempt to send a DELETE request to the same orderId again.
+5. Retrieve the response and verify status code is 404.
+6. Verify the error response contains ""No order with id [orderId]"".","• First deletion returns 204 No Content.
+• Second deletion returns 404 Not Found with error message ""No order with id [orderId]"".","Major"
+"TC_ORDER_014","Verify that DELETE /orders/{orderId} returns 404 Not Found and validation error when the orderId is invalid or non-existent","Negative","DELETE /orders/:orderId","Valid authentication token.","1. Send a DELETE request to /orders/non_existent_order_id_12345 using the valid token.
+2. Retrieve the response and verify status code is 404.
+3. Verify the error response contains ""No order with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object containing ""No order with id"".","Major"
+"TC_ORDER_015","Verify that DELETE /orders/{orderId} returns 404 Not Found and validation error when attempting to delete an order belonging to a different API client","Negative","DELETE /orders/:orderId","Two separate registered API clients.","1. Register Client A and obtain FirstClientToken.
+2. Create a cart, add an item, and place an order using FirstClientToken to obtain orderId.
+3. Register Client B and obtain SecondClientToken.
+4. Send a DELETE request to delete orderId using SecondClientToken.
+5. Retrieve the response and verify status code is 404.
+6. Verify the error response contains ""No order with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object containing ""No order with id"".","Critical"
+"TC_ORDER_016","Verify that GET /orders returns 200 OK and an array containing all orders placed by the authenticated API client","Positive","GET /orders","Valid authentication token, at least one order exists for the client.","1. Create a cart, add an item, and place an order using the valid token to obtain orderId.
+2. Send a GET request to /orders using the bearer token.
+3. Verify status code is 200.
+4. Verify that the response body is a non-empty array of orders containing the placed order with matching customer name, comment, items, and quantities.","• HTTP Status: 200 OK
+• Response body contains an array of orders containing the specific order placed with matching fields.","Critical"
+"TC_ORDER_017","Verify that GET /orders returns 401 Unauthorized and validation error when an invalid bearer token is used","Negative","GET /orders","None.","1. Send a GET request to /orders using ""invalid_token_12345"" as the token.
+2. Retrieve the response and verify status code is 401.
+3. Verify the error response contains ""bearer token"".","• HTTP Status: 401 Unauthorized
+• Response body contains an error object containing ""bearer token"".","Critical"
+"TC_ORDER_018","Verify that GET /orders/{orderId} returns 200 OK and order details when retrieving a valid order by ID","Positive","GET /orders/:orderId (orderId)","Valid authentication token, an order exists.","1. Create a cart, add an item, and place an order using the valid token to obtain orderId.
+2. Send a GET request to /orders/{orderId} using the bearer token.
+3. Verify status code is 200.
+4. Verify that the response body is a JSON object with matching id, customerName, comment, created timestamp, and items.","• HTTP Status: 200 OK
+• Response body contains the correct order details matching the requested order ID.","Critical"
+"TC_ORDER_019","Verify that GET /orders/{orderId} returns 200 OK and includes invoice details when query parameter invoice is set to true","Positive","GET /orders/:orderId (orderId, invoice=true)","Valid authentication token, an order exists.","1. Create a cart, add an item, and place an order using the valid token to obtain orderId.
+2. Send a GET request to /orders/{orderId} with query parameter invoice set to true using the bearer token.
+3. Verify status code is 200.
+4. Verify that the response body contains the order details and the invoice details are not null.","• HTTP Status: 200 OK
+• Response body includes order details with invoice field present.","Major"
+"TC_ORDER_020","Verify that GET /orders/{orderId} returns 401 Unauthorized and validation error when an invalid bearer token is used","Negative","GET /orders/:orderId","None.","1. Send a GET request to /orders/some-order-id using ""invalid_token_12345"" as the token.
+2. Retrieve the response and verify status code is 401.
+3. Verify the error response contains ""bearer token"".","• HTTP Status: 401 Unauthorized
+• Response body contains an error object containing ""bearer token"".","Critical"
+"TC_ORDER_021","Verify that GET /orders/{orderId} returns 404 Not Found and validation error when the orderId is invalid or non-existent","Negative","GET /orders/:orderId (orderId)","Valid authentication token.","1. Send a GET request to /orders/non_existent_order_id_12345 using the valid token.
+2. Retrieve the response and verify status code is 404.
+3. Verify the error response contains ""No order with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object containing ""No order with id"".","Major"
+"TC_ORDER_022","Verify that GET /orders/{orderId} returns 404 Not Found and validation error when attempting to retrieve an order belonging to a different API client","Negative","GET /orders/:orderId (orderId)","Two separate registered API clients.","1. Register Client A and obtain FirstClientToken.
+2. Create a cart, add an item, and place an order using FirstClientToken to obtain orderId.
+3. Register Client B and obtain SecondClientToken.
+4. Send a GET request to retrieve orderId using SecondClientToken.
+5. Retrieve the response and verify status code is 404.
+6. Verify the error response contains ""No order with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object containing ""No order with id"".","Critical"
+"TC_ORDER_023","Verify that PATCH /orders/{orderId} returns 204 No Content and updates the order's customerName and comment fields","Positive","PATCH /orders/:orderId","Valid authentication token, an order exists.","1. Create a cart, add an item, and place an order to obtain orderId.
+2. Send a PATCH request to /orders/{orderId} with new customerName and comment values in JSON format using the bearer token.
+3. Verify the status code is 204.
+4. Retrieve the order by ID and verify that customerName and comment fields match the updated values.","• HTTP Status: 204 No Content
+• Retrieval of the order verifies that customerName and comment were successfully updated.","Major"
+"TC_ORDER_024","Verify that PATCH /orders/{orderId} returns 401 Unauthorized and validation error when an invalid bearer token is used","Negative","PATCH /orders/:orderId","An order exists.","1. Create a cart, add an item, and place an order using the valid token to obtain orderId.
+2. Send a PATCH request to /orders/{orderId} with customerName and comment fields using an invalid token (e.g., ""invalid_token_12345"").
+3. Retrieve the response and verify status code is 401.
+4. Verify the error response contains ""bearer token"".","• HTTP Status: 401 Unauthorized
+• Response body contains an error object containing ""bearer token"".","Critical"
+"TC_ORDER_025","Verify that PATCH /orders/{orderId} returns 404 Not Found and validation error when the orderId is invalid or non-existent","Negative","PATCH /orders/:orderId","Valid authentication token.","1. Send a PATCH request to /orders/non_existent_order_id_12345 with update details using the valid token.
+2. Retrieve the response and verify status code is 404.
+3. Verify the error response contains ""No order with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object containing ""No order with id"".","Major"
+"TC_ORDER_026","Verify that PATCH /orders/{orderId} returns 404 Not Found and validation error when attempting to update an order belonging to a different API client","Negative","PATCH /orders/:orderId","Two separate registered API clients.","1. Register Client A and obtain firstClientToken.
+2. Create a cart, add an item, and place an order using firstClientToken to obtain orderId.
+3. Register Client B and obtain secondClientToken.
+4. Send a PATCH request to update orderId using secondClientToken.
+5. Retrieve the response and verify status code is 404.
+6. Verify the error response contains ""No order with id"".","• HTTP Status: 404 Not Found
+• Response body contains an error object containing ""No order with id"".","Critical"
+"TC_ORDER_027","Verify the end-to-end flow of creating a new order, retrieving it by ID, verifying it in the orders list, deleting it, and verifying its deletion returns 404","Positive","POST /orders, GET /orders/:orderId, GET /orders, DELETE /orders/:orderId","Valid authentication token, an available product exists, and a new cart with the product added exists.","1. Create a new cart and add a valid available product with quantity = 1.
+2. Send a POST request to /orders with the cartId, customerName, and comment using the bearer token.
+3. Verify status code is 201 and retrieve the orderId.
+4. Send a GET request to /orders/{orderId}. Verify status code is 200, and details match.
+5. Send a GET request to /orders. Verify status code is 200 and the list contains the created order.
+6. Send a DELETE request to /orders/{orderId}. Verify status code is 204.
+7. Send a GET request to /orders/{orderId} and verify status code is 404.","• Order creation returns 201 Created and orderId.
+• Order lookup returns 200 OK with correct customerName, comment, and items.
+• Order list lookup returns 200 OK and contains the created order.
+• Deletion returns 204 No Content.
+• Verification lookup returns 404 Not Found with error message ""No order with id [orderId]"".","Critical"

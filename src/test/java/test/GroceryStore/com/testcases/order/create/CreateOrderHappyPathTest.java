@@ -70,6 +70,10 @@ public class CreateOrderHappyPathTest extends BaseTest {
         assertTrue(orderResponse.getCreated(), "Expected 'created' flag to be true");
         assertNotNull(orderResponse.getOrderId(), "Expected a non-null order ID");
 
+        // Verify the cart has been automatically deleted after order placement
+        Response getCartResponse = CartApi.getCartById(cartId);
+        assertErrorResponse(getCartResponse, 404, "No cart with id " + cartId);
+
         // Retrieve the order details
         Order createdOrder = OrderSteps.getOrderById(getToken(), orderResponse.getOrderId());
         // Assert - Order details validation
