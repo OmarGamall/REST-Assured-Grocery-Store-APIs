@@ -37,5 +37,4 @@ public class DeleteOrderHappyPathTest extends BaseTest {
         assertErrorResponse(getResponse, 404, "No order with id " + orderId);
     }
 
-
 }

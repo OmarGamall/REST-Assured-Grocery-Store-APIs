@@ -3,6 +3,7 @@ package test.GroceryStore.com.testcases.order.update;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import test.GroceryStore.com.apis.OrdersApi;
+import test.GroceryStore.com.models.cart.CartItem;
 import test.GroceryStore.com.models.order.Order;
 import test.GroceryStore.com.models.order.OrderRequest;
 import test.GroceryStore.com.models.order.OrderResponse;
@@ -19,8 +20,7 @@ public class UpdateOrderHappyPathTest extends BaseTest {
     public void testUpdateOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
-        CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
+        CartSteps.addRandomItemToCart(cartId);
 
         OrderRequest orderRequest = new OrderRequest(cartId, "Original Name", "Original Comment");
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
@@ -47,7 +47,5 @@ public class UpdateOrderHappyPathTest extends BaseTest {
         assertEquals(updatedOrder.getCustomerName(), updatedName, "Customer name was not updated");
         assertEquals(updatedOrder.getComment(), updatedComment, "Comment was not updated");
 
-        // Clean up
-        OrdersApi.deleteOrder(getToken(), orderId);
     }
 }
