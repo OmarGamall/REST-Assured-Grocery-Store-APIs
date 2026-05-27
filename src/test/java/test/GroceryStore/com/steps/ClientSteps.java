@@ -39,7 +39,10 @@ public class ClientSteps {
     public static Client registerClientAndGetClientDetails() {
         String randomClientName = FAKER.name().fullName();
         String randomEmailName = FAKER.internet().emailAddress();
-        Client clientData = new Client(randomClientName, randomEmailName);
+        Client clientData = Client.builder()
+                .clientName(randomClientName)
+                .clientEmail(randomEmailName)
+                .build();
         
         return registerClientAndGetClientDetails(clientData);
     }

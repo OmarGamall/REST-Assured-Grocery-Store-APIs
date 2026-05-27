@@ -1,27 +1,17 @@
 package test.GroceryStore.com.models.cart;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class CartResponse {
     private Boolean created;
     private String cartId;
-
-    public CartResponse() {
-    }
-
-    public CartResponse(Boolean created, String cartId) {
-        this.created = created;
-        this.cartId = cartId;
-    }
-
-    public Boolean getCreated() {
-        return created;
-    }
-    public void setCreated(Boolean created) {
-        this.created = created;
-    }
-    public String getCartId() {
-        return cartId;
-    }
-    public void setCartId(String cartId) {
-        this.cartId = cartId;
-    }
 }

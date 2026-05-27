@@ -24,7 +24,11 @@ public class GetAllOrdersHappyPathTest extends BaseTest {
         String customerName = FAKER.name().fullName();
         String comment = FAKER.lorem().sentence();
 
-        OrderRequest orderRequest = new OrderRequest(cartId, customerName, comment);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName(customerName)
+                .comment(comment)
+                .build();
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201, "Expected 201 status code for order creation");
         String orderId = createResponse.as(OrderResponse.class).getOrderId();

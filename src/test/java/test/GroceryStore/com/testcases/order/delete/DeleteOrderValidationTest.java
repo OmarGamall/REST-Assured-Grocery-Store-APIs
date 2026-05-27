@@ -38,7 +38,10 @@ public class DeleteOrderValidationTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Delete Twice");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Omar Delete Twice")
+                .build();
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
         String orderId = createResponse.as(OrderResponse.class).getOrderId();
@@ -71,7 +74,10 @@ public class DeleteOrderValidationTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Original Name");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Original Name")
+                .build();
         Response createResponse = OrdersApi.createOrder(FirstClientToken, orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
         // Extract Order Id

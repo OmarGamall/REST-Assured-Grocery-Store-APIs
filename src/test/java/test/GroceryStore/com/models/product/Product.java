@@ -2,85 +2,31 @@ package test.GroceryStore.com.models.product;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product {
 
     private Integer id;
     private String category;
     private String name;
-    private boolean inStock;
+    private Boolean inStock;
     private String manufacturer;
     private Float price;
     @JsonProperty("current-stock")
     private Integer currentStock;
 
-    public Product(Integer id, String category, String name, boolean inStock, String manufacturer, Float price, Integer currentStock) {
-        this.id = id;
-        this.category = category;
-        this.name = name;
-        this.inStock = inStock;
-        this.manufacturer = manufacturer;
-        this.price = price;
-        this.currentStock = currentStock;
-    }
-
-    public Product() {
-    }
-
-    public Integer getCurrentStock() {
-        return currentStock;
-    }
-
-    public void setCurrentStock(Integer currentStock) {
-        this.currentStock = currentStock;
-    }
-
-    public Float getPrice() {
-        return price;
-    }
-
-    public void setPrice(Float price) {
-        this.price = price;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    public boolean isInStock() {
+    // Custom getter to maintain compatibility with existing tests calling isInStock()
+    public Boolean isInStock() {
         return inStock;
-    }
-
-    public void setInStock(boolean inStock) {
-        this.inStock = inStock;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 }

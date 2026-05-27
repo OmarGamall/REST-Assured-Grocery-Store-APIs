@@ -24,9 +24,10 @@ public class UpdateOrderValidationTest extends BaseTest {
         Order order = OrderSteps.createOrderAndGetOrderDetails();
 
         // Act
-        OrderRequest updateRequest = new OrderRequest();
-        updateRequest.setCustomerName("Updated Name");
-        updateRequest.setComment("Updated Comment");
+        OrderRequest updateRequest = OrderRequest.builder()
+                .customerName("Updated Name")
+                .comment("Updated Comment")
+                .build();
         Response response = OrdersApi.updateOrder("invalid_token_12345", order.getId(), updateRequest);
 
         // Assert
@@ -36,10 +37,10 @@ public class UpdateOrderValidationTest extends BaseTest {
     @Test
     public void testUpdateOrderWithNonExistentId() {
         // Arrange
-        OrderRequest updateRequest = new OrderRequest();
-        updateRequest.setCustomerName("Updated Name");
-        updateRequest.setComment("Updated Comment");
-        updateRequest.setCustomerName("Validation Name");
+        OrderRequest updateRequest = OrderRequest.builder()
+                .customerName("Validation Name")
+                .comment("Updated Comment")
+                .build();
 
         // Act
         Response response = OrdersApi.updateOrder(getToken(), "non_existent_order_id_12345", updateRequest);
@@ -57,15 +58,19 @@ public class UpdateOrderValidationTest extends BaseTest {
         Product product = ProductService.getRandomAvailableProduct();
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Original Name");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Original Name")
+                .build();
         Response createResponse = OrdersApi.createOrder(firstClientToken, orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
         String orderId = createResponse.as(OrderResponse.class).getOrderId();
 
         // Prepare update body
-        OrderRequest updateRequest = new OrderRequest();
-        updateRequest.setCustomerName("Attempted Hack Name");
-        updateRequest.setComment("Attempted Hack Comment");
+        OrderRequest updateRequest = OrderRequest.builder()
+                .customerName("Attempted Hack Name")
+                .comment("Attempted Hack Comment")
+                .build();
         String secondClientToken = ClientSteps.registerClientAndGetToken(); // Using our token, not the first client's token
 
         // Act - Attempt to update other client's order using our token

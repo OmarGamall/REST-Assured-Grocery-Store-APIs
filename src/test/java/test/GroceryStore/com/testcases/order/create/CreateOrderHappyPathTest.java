@@ -23,7 +23,11 @@ public class CreateOrderHappyPathTest extends BaseTest {
         CartItem cartItem = CartSteps.addRandomItemToCart(cartId);
         String customerName = FAKER.name().fullName();
         String comment = FAKER.lorem().sentence();
-        OrderRequest orderRequest = new OrderRequest(cartId, customerName, comment);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName(customerName)
+                .comment(comment)
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
@@ -59,7 +63,11 @@ public class CreateOrderHappyPathTest extends BaseTest {
         CartItem[] cartItems = CartSteps.AddMultipleRandomItemsToCart(cartId, numberOfItemsToAdd); // Add 5 random items to the cart
         String customerName = FAKER.name().fullName();
         String comment = FAKER.lorem().sentence();
-        OrderRequest orderRequest = new OrderRequest(cartId, customerName, comment);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName(customerName)
+                .comment(comment)
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
