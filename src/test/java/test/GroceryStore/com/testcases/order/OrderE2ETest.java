@@ -13,7 +13,7 @@ import static org.testng.Assert.*;
 
 public class OrderE2ETest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_027: Verify end-to-end flow of creating, retrieving, and deleting an order")
     public void testCreateRetrieveAndDeleteOrder() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

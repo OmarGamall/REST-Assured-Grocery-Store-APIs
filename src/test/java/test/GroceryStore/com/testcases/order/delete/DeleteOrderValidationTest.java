@@ -15,7 +15,7 @@ import static org.testng.Assert.assertEquals;
 
 public class DeleteOrderValidationTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_011: Verify error when deleting order with invalid token")
     public void testDeleteOrderWithInvalidToken() {
         // Act
         Response response = OrdersApi.deleteOrder("invalid_token_12345", "some-order-id");
@@ -24,7 +24,7 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, "bearer token");
     }
 
-    @Test
+    @Test(description = "TC_ORDER_012: Verify error when deleting order with missing token")
     public void testDeleteOrderWithMissingToken() {
         // Act
         Response response = OrdersApi.deleteOrder(null, "some-order-id");
@@ -32,7 +32,7 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, "bearer token");
     }
 
-    @Test
+    @Test(description = "TC_ORDER_013: Verify error when deleting same order a second time")
     public void testDeleteSameOrderMultipleTimes() {
         // Arrange - Create an order to delete
         String cartId = CartSteps.createCartAndGetId();
@@ -57,7 +57,7 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(secondDeleteResponse, 404, "No order with id " + orderId);
     }
 
-    @Test
+    @Test(description = "TC_ORDER_014: Verify error when deleting non-existent orderId")
     public void testDeleteOrderWithInvalidOrderId() {
         // Act
         Response response = OrdersApi.deleteOrder(getToken(), "non_existent_order_id_12345");
@@ -66,7 +66,7 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 404, "No order with id");
     }
 
-    @Test
+    @Test(description = "TC_ORDER_015: Verify error when deleting order belonging to another client")
     public void testDeleteOrderBelongingToDifferentClient() {
         // Arrange - Register other client and place an order
         String FirstClientToken = ClientSteps.registerClientAndGetToken();

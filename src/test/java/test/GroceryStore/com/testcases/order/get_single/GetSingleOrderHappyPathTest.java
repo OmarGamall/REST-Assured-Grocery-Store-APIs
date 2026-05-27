@@ -16,7 +16,7 @@ import static org.testng.Assert.*;
 
 public class GetSingleOrderHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_018: Verify retrieving single order by ID")
     public void testGetSingleOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -50,7 +50,7 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
     }
 
-    @Test
+    @Test(description = "TC_ORDER_019: Verify retrieving single order with invoice details")
     public void testGetSingleOrderInvoiceSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

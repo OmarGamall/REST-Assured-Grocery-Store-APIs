@@ -16,7 +16,7 @@ import static org.testng.Assert.*;
 
 public class CreateOrderHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_001: Verify creating an order with one cart item")
     public void testCreateOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -55,7 +55,7 @@ public class CreateOrderHappyPathTest extends BaseTest {
         assertEquals(createdOrder.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
     }
 
-    @Test
+    @Test(description = "TC_ORDER_002: Verify creating an order with multiple unique cart items")
     public void testCreateOrderWithCartHasMultipleItemsSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

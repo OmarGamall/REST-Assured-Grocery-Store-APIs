@@ -15,7 +15,7 @@ import static test.GroceryStore.com.services.ProductService.isProductAlreadySele
 
 public class AddItemHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_CART_003: Verify adding an item to cart successfully")
     public void testAddItemToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -43,7 +43,7 @@ public class AddItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
     }
 
-    @Test
+    @Test(description = "TC_CART_004: Verify adding item with quantity equal to stock")
     public void testAddItemToCartWithQuantitySameAsStock() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -71,7 +71,7 @@ public class AddItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
     }
 
-    @Test
+    @Test(description = "TC_CART_005: Verify adding multiple unique products to cart")
     public void testAddMultipleItemsToCartNoDuplicates() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

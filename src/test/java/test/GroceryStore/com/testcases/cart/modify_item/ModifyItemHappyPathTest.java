@@ -14,7 +14,7 @@ import static org.testng.Assert.*;
 
 public class ModifyItemHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_CART_020: Verify modifying cart item quantity")
     public void testModifyCartItemQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -37,7 +37,7 @@ public class ModifyItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(2), "Expected updated quantity to be 2");
     }
 
-    @Test
+    @Test(description = "TC_CART_021: Verify modifying cart item to the same quantity")
     public void testModifyCartItemToSameQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

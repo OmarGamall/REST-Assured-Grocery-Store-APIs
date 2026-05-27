@@ -7,7 +7,7 @@ import test.GroceryStore.com.testcases.BaseTest;
 
 public class GetAllOrdersValidationTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_017: Verify error when retrieving all orders with invalid token")
     public void testGetAllOrdersWithInvalidToken() {
         // Act
         Response response = OrdersApi.getAllOrders("invalid_token_12345");

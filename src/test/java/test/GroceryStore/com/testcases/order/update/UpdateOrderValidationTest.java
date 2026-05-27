@@ -18,7 +18,7 @@ import static org.testng.Assert.assertTrue;
 
 public class UpdateOrderValidationTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_024: Verify error when updating order with invalid token")
     public void testUpdateOrderWithInvalidToken() {
         // Arrange
         Order order = OrderSteps.createOrderAndGetOrderDetails();
@@ -34,7 +34,7 @@ public class UpdateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, "bearer token");
     }
 
-    @Test
+    @Test(description = "TC_ORDER_025: Verify error when updating order with non-existent orderId")
     public void testUpdateOrderWithNonExistentId() {
         // Arrange
         OrderRequest updateRequest = OrderRequest.builder()
@@ -49,7 +49,7 @@ public class UpdateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 404, "No order with id");
     }
 
-    @Test
+    @Test(description = "TC_ORDER_026: Verify error when updating order belonging to another client")
     public void testUpdateOrderBelongingToDifferentClient() {
         // Arrange - Register other client and place an order
         String firstClientToken = ClientSteps.registerClientAndGetToken();

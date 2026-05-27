@@ -11,7 +11,7 @@ import static org.testng.Assert.*;
 
 public class GetProductByIdHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_PROD_010: Verify retrieving product details by valid ID")
     public void testGetSingleProductById() {
         Product product = ProductService.getRandomAvailableProduct();
         Response response = ProductApi.getProductById(product.getId());

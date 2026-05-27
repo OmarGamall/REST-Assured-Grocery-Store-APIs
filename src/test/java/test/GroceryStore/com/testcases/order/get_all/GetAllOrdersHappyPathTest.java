@@ -16,7 +16,7 @@ import static org.testng.Assert.*;
 
 public class GetAllOrdersHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_016: Verify retrieving all orders for authenticated client")
     public void testGetAllOrdersForCustomerSuccessfully() {
         // Arrange - Ensure there is at least one order
         String cartId = CartSteps.createCartAndGetId();

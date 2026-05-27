@@ -7,7 +7,7 @@ import test.GroceryStore.com.testcases.BaseTest;
 
 public class GetProductByIdValidationTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_PROD_011: Verify error when retrieving product with non-existent ID")
     public void testGetSingleProductByInvalidId() {
         int productId = 9999; // Assuming this ID does not exist
         Response response = ProductApi.getProductById(productId);

@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class ReplaceItemValidationTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_CART_033: Verify error when replacing item with invalid productId")
     public void testReplaceCartItemWithInvalidProductId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -28,7 +28,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         assertErrorResponse(replaceResponse, 400, "Invalid or missing productId");
     }
 
-    @Test
+    @Test(description = "TC_CART_034: Verify error when replacing item with invalid cartId")
     public void testReplaceCartItemWithInvalidCartId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -42,7 +42,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         assertErrorResponse(replaceResponse, 404, "No cart with id");
     }
 
-    @Test
+    @Test(description = "TC_CART_035: Verify error when replacing item with invalid itemId")
     public void testReplaceCartItemWithInvalidItemId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -56,7 +56,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         assertErrorResponse(replaceResponse, 404, "No item with id");
     }
 
-    @Test
+    @Test(description = "TC_CART_036: Verify error when replacing item with out-of-stock product")
     public void testReplaceCartItemWithNonAvailableProduct() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -70,7 +70,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
     }
 
-    @Test
+    @Test(description = "TC_CART_037: Verify error when replacement quantity exceeds stock")
     public void testReplaceCartItemWithQuantityExceedingStock() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -87,7 +87,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
     }
 
-    @Test
+    @Test(description = "TC_CART_038: Verify error when replacing item with negative quantity")
     public void testReplaceCartItemWithNegativeQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -100,7 +100,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
     }
 
-    @Test
+    @Test(description = "TC_CART_039: Verify error when replacing item with quantity 0")
     public void testReplaceCartItemWithZeroQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -113,7 +113,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
     }
 
-    @Test
+    @Test(description = "TC_CART_040: Verify error when replacing item with mismatched cartId")
     public void testReplaceCartItemWithMismatchedCartAndItemId() {
         // 1. Arrange
         String cartAId = CartSteps.createCartAndGetId();

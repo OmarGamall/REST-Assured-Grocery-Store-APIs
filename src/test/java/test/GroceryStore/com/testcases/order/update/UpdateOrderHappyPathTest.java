@@ -16,7 +16,7 @@ import static org.testng.Assert.*;
 
 public class UpdateOrderHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_023: Verify updating order customerName and comment")
     public void testUpdateOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

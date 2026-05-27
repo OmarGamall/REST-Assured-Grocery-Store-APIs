@@ -15,7 +15,7 @@ import static org.testng.Assert.assertEquals;
 
 public class DeleteOrderHappyPathTest extends BaseTest {
 
-    @Test
+    @Test(description = "TC_ORDER_010: Verify successfully deleting an order")
     public void testDeleteOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
