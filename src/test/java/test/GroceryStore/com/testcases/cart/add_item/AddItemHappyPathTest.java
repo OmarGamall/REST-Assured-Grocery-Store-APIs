@@ -1,6 +1,8 @@
 package test.GroceryStore.com.testcases.cart.add_item;
 
+import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import test.GroceryStore.com.apis.CartApi;
 import test.GroceryStore.com.models.cart.CartItem;
 import test.GroceryStore.com.models.cart.CartItemResponse;
 import test.GroceryStore.com.models.product.Product;
@@ -21,9 +23,19 @@ public class AddItemHappyPathTest extends BaseTest {
         int quantity = ProductService.getRandomQuantity(product);
 
         // 2. Act
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), quantity);
+        CartItem cartItem = CartItem.builder()
+                .cartId(cartId)
+                .productId(product.getId())
+                .quantity(quantity)
+                .build();
+        Response response = CartApi.addItemToCart(cartItem);
 
         // 3. Assert
+        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
+        CartItemResponse addResponse = response.as(CartItemResponse.class);
+        assertTrue(addResponse.getCreated(), "Expected 'created' to be true in response");
+        assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
+
         CartItem[] cartItems = CartSteps.getCartItems(cartId);
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
@@ -39,9 +51,19 @@ public class AddItemHappyPathTest extends BaseTest {
         int quantity = product.getCurrentStock(); // Use the current stock as the quantity
 
         // 2. Act
-        CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), quantity);
+        CartItem cartItem = CartItem.builder()
+                .cartId(cartId)
+                .productId(product.getId())
+                .quantity(quantity)
+                .build();
+        Response response = CartApi.addItemToCart(cartItem);
 
         // 3. Assert
+        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
+        CartItemResponse addResponse = response.as(CartItemResponse.class);
+        assertTrue(addResponse.getCreated(), "Expected 'created' to be true in response");
+        assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
+
         CartItem[] cartItems = CartSteps.getCartItems(cartId);
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
@@ -54,12 +76,10 @@ public class AddItemHappyPathTest extends BaseTest {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
         int numberOfItemsToAdd = 10;
-        // Use arrays for better scalability and maintainability
         Product[] products = new Product[numberOfItemsToAdd];
         Product productToAdd = null;
         int[] quantities = new int[numberOfItemsToAdd];
         for (int i = 0; i < numberOfItemsToAdd; i++) {
-            // Ensure we don't add the same product multiple times to the cart
             do {
                 productToAdd = ProductService.getRandomAvailableProduct();
             } while (isProductAlreadySelected(products, productToAdd));
@@ -69,7 +89,13 @@ public class AddItemHappyPathTest extends BaseTest {
 
         // 2. Act
         for (int i = 0; i < numberOfItemsToAdd; i++) {
-            CartSteps.addItemToCartAndGetResponse(cartId, products[i].getId(), quantities[i]);
+            CartItem cartItem = CartItem.builder()
+                    .cartId(cartId)
+                    .productId(products[i].getId())
+                    .quantity(quantities[i])
+                    .build();
+            Response response = CartApi.addItemToCart(cartItem);
+            assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition at index " + (i + 1));
         }
 
         // 3. Assert

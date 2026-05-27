@@ -6,7 +6,6 @@ import test.GroceryStore.com.models.cart.*;
 import test.GroceryStore.com.models.product.Product;
 import test.GroceryStore.com.services.ProductService;
 
-import static org.testng.Assert.*;
 import static test.GroceryStore.com.services.ProductService.isProductAlreadySelected;
 
 public class CartSteps {
@@ -16,9 +15,13 @@ public class CartSteps {
      */
     public static String createCartAndGetId() {
         Response response = CartApi.createCart();
-        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful cart creation");
+        if (response.getStatusCode() != 201) {
+            throw new RuntimeException("Failed to create cart during test setup: " + response.getStatusLine());
+        }
         CartResponse cartResponse = response.as(CartResponse.class);
-        assertNotNull(cartResponse.getCartId(), "Cart ID should not be null");
+        if (cartResponse.getCartId() == null) {
+            throw new RuntimeException("Cart ID is null in the creation response");
+        }
         return cartResponse.getCartId();
     }
 
@@ -31,22 +34,20 @@ public class CartSteps {
                 .productId(productId)
                 .quantity(quantity)
                 .build();
-        Response response = CartApi.addItemToCart(cartItem);
-        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
-        
-        CartItemResponse responseBody = response.as(CartItemResponse.class);
-        assertTrue(responseBody.getCreated(), "Expected 'created' to be true in response");
-        assertNotNull(responseBody.getItemId(), "Expected 'itemId' to be returned");
-        return responseBody;
+        return addItemToCartAndGetResponse(cartItem);
     }
+
     // Overloaded method to allow passing a CartItem object directly
     public static CartItemResponse addItemToCartAndGetResponse(CartItem cartItem) {
         Response response = CartApi.addItemToCart(cartItem);
-        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
+        if (response.getStatusCode() != 201) {
+            throw new RuntimeException("Failed to add item to cart: " + response.getStatusLine());
+        }
 
         CartItemResponse responseBody = response.as(CartItemResponse.class);
-        assertTrue(responseBody.getCreated(), "Expected 'created' to be true in response");
-        assertNotNull(responseBody.getItemId(), "Expected 'itemId' to be returned");
+        if (responseBody.getCreated() == null || !responseBody.getCreated() || responseBody.getItemId() == null) {
+            throw new RuntimeException("Unexpected response payload when adding item to cart");
+        }
         return responseBody;
     }
 
@@ -67,7 +68,9 @@ public class CartSteps {
      */
     public static CartItem[] getCartItems(String cartId) {
         Response response = CartApi.getCartItems(cartId);
-        assertEquals(response.getStatusCode(), 200, "Expected status code 200 for retrieving cart items");
+        if (response.getStatusCode() != 200) {
+            throw new RuntimeException("Failed to retrieve cart items: " + response.getStatusLine());
+        }
         return response.as(CartItem[].class);
     }
 
@@ -75,12 +78,10 @@ public class CartSteps {
      * Adds multiple items to the cart and returns the updated list of cart items.
      */
     public static CartItem[] AddMultipleRandomItemsToCart(String cartId , int numberOfItemsToAdd) {
-        // Use arrays for better scalability and maintainability
         Product[] products = new Product[numberOfItemsToAdd];
         Product productToAdd = null;
         int[] quantities = new int[numberOfItemsToAdd];
         for (int i = 0; i < numberOfItemsToAdd; i++) {
-            // Ensure we don't add the same product multiple times to the cart
             do {
                 productToAdd = ProductService.getRandomAvailableProduct();
             } while (isProductAlreadySelected(products, productToAdd));
@@ -92,27 +93,27 @@ public class CartSteps {
             CartSteps.addItemToCartAndGetResponse(cartId, products[i].getId(), quantities[i]);
         }
 
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        return cartItems;
+        return CartSteps.getCartItems(cartId);
     }
 
     /**
-     * Deletes an item from the cart and returns the response metadata.
+     * Deletes an item from the cart and verifies the status code.
      */
     public static Response deleteCartItem(String cartId, String itemId) {
-        return CartApi.deleteCartItem(cartId, itemId);
+        Response response = CartApi.deleteCartItem(cartId, itemId);
+        if (response.getStatusCode() != 204) {
+            throw new RuntimeException("Failed to delete cart item: " + response.getStatusLine());
+        }
+        return response;
     }
 
     /**
-     * Deletes all items from the cart and returns the response metadata.
+     * Deletes all items from the cart.
      */
-    public static Response deleteAllCartItems(String cartId) {
+    public static void deleteAllCartItems(String cartId) {
         CartItem[] items = getCartItems(cartId);
         for (CartItem item : items) {
             deleteCartItem(cartId, item.getItemId());
         }
-        return null;
     }
-
-
 }
