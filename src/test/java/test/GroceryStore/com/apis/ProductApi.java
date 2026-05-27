@@ -14,7 +14,6 @@ public class ProductApi extends BaseApi {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> mappedParams = mapper.convertValue(queryParams, Map.class);
             return given()
-                    .spec(requestSpec)
                     .queryParams(mappedParams)
             .when()
                     .get(Routes.PRODUCTS_ENDPOINT)
@@ -25,7 +24,6 @@ public class ProductApi extends BaseApi {
 
     public static Response getAllProducts(String category, Boolean available, Integer results) {
         return given()
-                .spec(requestSpec)
                 // If any of these are null, REST Assured completely drops them from the query string!
                 .queryParam("category", category)
                 .queryParam("available", available)
@@ -39,7 +37,6 @@ public class ProductApi extends BaseApi {
 
         public static Response getProductById(Integer productId) {
             return given()
-                    .spec(requestSpec)
                     .pathParam("productId", productId)
             .when()
                     .get(Routes.PRODUCT_BY_ID_ENDPOINT)

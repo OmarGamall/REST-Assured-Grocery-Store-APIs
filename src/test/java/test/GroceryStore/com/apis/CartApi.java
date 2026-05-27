@@ -10,7 +10,6 @@ public class CartApi extends BaseApi {
 
     public static Response createCart() {
         return given()
-                .spec(requestSpec)
                 .when()
                 .post(Routes.CARTS_ENDPOINT)
                 .then()
@@ -20,7 +19,6 @@ public class CartApi extends BaseApi {
 
     public static Response getCartById(String cartId) {
         return given()
-                .spec(requestSpec)
                 .pathParam("cartId", cartId)
                 .when()
                 .get(Routes.CART_BY_ID_ENDPOINT)
@@ -31,7 +29,6 @@ public class CartApi extends BaseApi {
 
     public static Response addItemToCart(CartItem cartItem) {
         return given()
-                .spec(requestSpec)
                 .pathParams("cartId", cartItem.getCartId())
                 .body(cartItem)
                 .when()
@@ -43,7 +40,6 @@ public class CartApi extends BaseApi {
 
     public static Response getCartItems(String cartId) {
         return given()
-                .spec(requestSpec)
                 .pathParam("cartId", cartId)
                 .when()
                 .get(Routes.CART_ITEMS_ENDPOINT)
@@ -57,7 +53,6 @@ public class CartApi extends BaseApi {
         body.setQuantity(quantity);
 
         return given()
-                .spec(requestSpec)
                 .pathParam("cartId", cartId)
                 .pathParam("itemId", itemId)
                 .body(body)
@@ -70,7 +65,6 @@ public class CartApi extends BaseApi {
 
     public static Response replaceCartItem(String cartId, String itemId, CartItem cartItem) {
         return given()
-                .spec(requestSpec)
                 .pathParam("cartId", cartId)
                 .pathParam("itemId", itemId)
                 .body(cartItem)
@@ -96,7 +90,6 @@ public class CartApi extends BaseApi {
 
     public static Response deleteCartItem(String cartId, String itemId) {
         return given()
-                .spec(requestSpec)
                 .pathParam("cartId", cartId)
                 .pathParam("itemId", itemId)
                 .when()

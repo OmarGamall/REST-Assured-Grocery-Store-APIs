@@ -7,7 +7,6 @@ public class UserApi extends BaseApi {
 
     public static Response registerClient(Object clientData) {
         return given()
-                .spec(requestSpec)
                 .body(clientData)
         .when()
                 .post(Routes.REGISTER_CLIENT_ENDPOINT)

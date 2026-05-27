@@ -1,5 +1,6 @@
 package test.GroceryStore.com.apis;
 
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -17,5 +18,6 @@ public class BaseApi {
                 .setContentType(ContentType.JSON)
                 .log(LogDetail.ALL)
                 .build();
+        RestAssured.requestSpecification = requestSpec;
     }
 }

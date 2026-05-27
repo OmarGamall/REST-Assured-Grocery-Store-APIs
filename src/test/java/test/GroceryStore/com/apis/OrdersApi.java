@@ -9,7 +9,6 @@ public class OrdersApi extends BaseApi {
 
     public static Response createOrder(String token, OrderRequest body) {
         return given()
-                .spec(requestSpec)
                 .header("Authorization", "Bearer " + token)
                 .body(body)
                 .when()
@@ -21,7 +20,6 @@ public class OrdersApi extends BaseApi {
 
     public static Response getAllOrders(String token) {
         return given()
-                .spec(requestSpec)
                 .header("Authorization", "Bearer " + token)
                 .when()
                 .get(Routes.ORDERS_ENDPOINT)
@@ -32,7 +30,6 @@ public class OrdersApi extends BaseApi {
 
     public static Response getOrderById(String token, String orderId) {
         return given()
-                .spec(requestSpec)
                 .header("Authorization", "Bearer " + token)
                 .pathParam("orderId", orderId)
                 .when()
@@ -44,7 +41,6 @@ public class OrdersApi extends BaseApi {
 
     public static Response getOrderById(String token, String orderId, Boolean invoice) {
         return given()
-                .spec(requestSpec)
                 .header("Authorization", "Bearer " + token)
                 .pathParam("orderId", orderId)
                 .queryParam("invoice", invoice)
@@ -57,7 +53,6 @@ public class OrdersApi extends BaseApi {
 
     public static Response updateOrder(String token, String orderId, OrderRequest body) {
         return given()
-                .spec(requestSpec)
                 .header("Authorization", "Bearer " + token)
                 .pathParam("orderId", orderId)
                 .body(body)
@@ -70,7 +65,6 @@ public class OrdersApi extends BaseApi {
 
     public static Response deleteOrder(String token, String orderId) {
         return given()
-                .spec(requestSpec)
                 .header("Authorization", "Bearer " + token)
                 .pathParam("orderId", orderId)
                 .when()
