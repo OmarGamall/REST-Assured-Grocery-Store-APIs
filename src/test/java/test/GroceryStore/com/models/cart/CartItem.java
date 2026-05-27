@@ -22,11 +22,4 @@ public class CartItem {
     private Integer quantity;
     @JsonProperty("id")
     private String itemId;
-
-    // Custom 3-argument constructor for compatibility
-    public CartItem(String cartId, Integer productId, Integer quantity) {
-        this.cartId = cartId;
-        this.productId = productId;
-        this.quantity = quantity;
-    }
 }
