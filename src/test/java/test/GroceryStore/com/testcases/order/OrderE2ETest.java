@@ -24,7 +24,11 @@ public class OrderE2ETest extends BaseTest {
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), quantity);
 
         // 2. Act - Create Order
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Gamal", "Please pack carefully");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Omar Gamal")
+                .comment("Please pack carefully")
+                .build();
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
 
         // 3. Assert - Create Order

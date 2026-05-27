@@ -41,7 +41,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(replacementQuantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getId(), itemId, "Item ID mismatch after replacement");
+        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch after replacement");
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(replacementQuantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getId(), itemId, "Item ID mismatch after replacement");
+        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
     @Test
@@ -91,7 +91,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getId(), itemId, "Item ID mismatch after replacement");
+        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
     @Test
@@ -117,6 +117,6 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
         assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getId(), itemId, "Item ID mismatch after replacement");
+        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 }

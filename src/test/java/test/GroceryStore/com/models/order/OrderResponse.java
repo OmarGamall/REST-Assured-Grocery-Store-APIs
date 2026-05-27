@@ -1,29 +1,17 @@
 package test.GroceryStore.com.models.order;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class OrderResponse {
     private Boolean created;
     private String orderId;
-
-    public OrderResponse() {}
-
-    public OrderResponse(Boolean created, String orderId) {
-        this.created = created;
-        this.orderId = orderId;
-    }
-
-    public Boolean getCreated() {
-        return created;
-    }
-
-    public void setCreated(Boolean created) {
-        this.created = created;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
 }

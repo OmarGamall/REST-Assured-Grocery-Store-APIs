@@ -22,7 +22,11 @@ public class UpdateOrderHappyPathTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Original Name", "Original Comment");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Original Name")
+                .comment("Original Comment")
+                .build();
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
         String orderId = createResponse.as(OrderResponse.class).getOrderId();
@@ -30,9 +34,10 @@ public class UpdateOrderHappyPathTest extends BaseTest {
         // Prepare update request
         String updatedName = "Updated Name";
         String updatedComment = "Updated Comment";
-        OrderRequest updateRequest = new OrderRequest();
-        updateRequest.setCustomerName(updatedName);
-        updateRequest.setComment(updatedComment);
+        OrderRequest updateRequest = OrderRequest.builder()
+                .customerName(updatedName)
+                .comment(updatedComment)
+                .build();
 
         // Act
         Response updateResponse = OrdersApi.updateOrder(getToken(), orderId, updateRequest);

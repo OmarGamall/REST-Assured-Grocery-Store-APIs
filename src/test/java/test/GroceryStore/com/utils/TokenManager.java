@@ -34,7 +34,10 @@ public class TokenManager {
                 }
 
                 System.out.println(String.format("[TokenManager] Registering client with details: [Name: %s, Email: %s]", clientName, clientEmail));
-                Client clientData = new Client(clientName, clientEmail);
+                Client clientData = Client.builder()
+                        .clientName(clientName)
+                        .clientEmail(clientEmail)
+                        .build();
                 Client registered = ClientSteps.registerClientAndGetClientDetails(clientData);
                 token = registered.getAccessToken();
             } else {

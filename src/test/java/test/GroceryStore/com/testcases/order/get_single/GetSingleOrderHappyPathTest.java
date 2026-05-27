@@ -23,7 +23,11 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         CartItem cartItem = CartSteps.addRandomItemToCart(cartId);
         String customerName = FAKER.name().fullName();
         String comment = FAKER.lorem().sentence();
-        OrderRequest orderRequest = new OrderRequest(cartId, customerName, comment);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName(customerName)
+                .comment(comment)
+                .build();
 
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
@@ -53,7 +57,11 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         CartItem cartItem = CartSteps.addRandomItemToCart(cartId);
         String customerName = FAKER.name().fullName();
         String comment = FAKER.lorem().sentence();
-        OrderRequest orderRequest = new OrderRequest(cartId, customerName, comment);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName(customerName)
+                .comment(comment)
+                .build();
 
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);

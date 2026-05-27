@@ -21,7 +21,10 @@ public class DeleteOrderHappyPathTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Delete");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Omar Delete")
+                .build();
         Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
         String orderId = createResponse.as(OrderResponse.class).getOrderId();

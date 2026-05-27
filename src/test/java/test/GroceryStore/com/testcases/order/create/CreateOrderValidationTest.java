@@ -20,7 +20,10 @@ public class CreateOrderValidationTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartItem cartItem = CartSteps.addRandomItemToCart(cartId);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Validation");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Omar Validation")
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder("invalid_token_12345", orderRequest);
@@ -33,7 +36,10 @@ public class CreateOrderValidationTest extends BaseTest {
     public void testCreateOrderWithEmptyCart() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Validation");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Omar Validation")
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
@@ -45,7 +51,10 @@ public class CreateOrderValidationTest extends BaseTest {
     @Test
     public void testCreateOrderWithInvalidCartId() {
         // Arrange
-        OrderRequest orderRequest = new OrderRequest("non_existent_cart_id_12345", "Omar Validation");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId("non_existent_cart_id_12345")
+                .customerName("Omar Validation")
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
@@ -61,7 +70,9 @@ public class CreateOrderValidationTest extends BaseTest {
         Product product = ProductService.getRandomAvailableProduct();
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, null);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
@@ -77,7 +88,10 @@ public class CreateOrderValidationTest extends BaseTest {
         Product product = ProductService.getRandomAvailableProduct();
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Validation");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Omar Validation")
+                .build();
 
         // Act - First order creation
         Response firstResponse = OrdersApi.createOrder(getToken(), orderRequest);
@@ -97,7 +111,10 @@ public class CreateOrderValidationTest extends BaseTest {
         Product product = ProductService.getRandomAvailableProduct();
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, ""); // Empty customer name
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("")
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
@@ -114,7 +131,11 @@ public class CreateOrderValidationTest extends BaseTest {
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
 
         String longComment = FAKER.lorem().characters(10000); // Assuming the comment length limit is 1000 characters
-        OrderRequest orderRequest = new OrderRequest(cartId, "Omar Validation", longComment);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Omar Validation")
+                .comment(longComment)
+                .build();
 
         // Act
         Response response = OrdersApi.createOrder(getToken(), orderRequest);

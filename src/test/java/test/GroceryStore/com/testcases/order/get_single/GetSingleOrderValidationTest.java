@@ -41,7 +41,10 @@ public class GetSingleOrderValidationTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        OrderRequest orderRequest = new OrderRequest(cartId, "Other Customer");
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName("Other Customer")
+                .build();
         Response createResponse = OrdersApi.createOrder(FirstClientToken, orderRequest);
         assertEquals(createResponse.getStatusCode(), 201);
         // Extract the order ID from the creation response

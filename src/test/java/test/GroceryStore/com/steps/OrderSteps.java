@@ -19,7 +19,10 @@ public class OrderSteps {
     }
 
     public static Order createOrderAndGetOrderDetails(String token, String cartId, String customerName) {
-        OrderRequest orderRequest = new OrderRequest(cartId, customerName);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName(customerName)
+                .build();
         return createOrderAndGetOrderDetails(token, orderRequest);
     }
 
@@ -29,7 +32,10 @@ public class OrderSteps {
         Faker faker = new Faker();
         String customerName = faker.name().fullName();
         String token = TokenManager.getToken();
-        OrderRequest orderRequest = new OrderRequest(cartId, customerName);
+        OrderRequest orderRequest = OrderRequest.builder()
+                .cartId(cartId)
+                .customerName(customerName)
+                .build();
         return createOrderAndGetOrderDetails(token, orderRequest);
     }
 
