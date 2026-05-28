@@ -107,11 +107,27 @@ The automation suite covers the following API modules:
 - Apache Maven installed and configured.
 
 ### Execute the Automation Suite
-You can execute all tests using the Maven command line in the project root:
+You can execute all tests using the Maven command line in the project root. By default, this runs against the **Production** environment:
 
 ```bash
 mvn clean test
 ```
+
+### Environment Selection
+The framework supports dynamic environment switching. You can target different environments by passing the `env` parameter via the Maven CLI:
+
+* **Production (Default)**:
+  ```bash
+  mvn clean test -Denv=production
+  ```
+* **Testing**:
+  ```bash
+  mvn clean test -Denv=testing
+  ```
+* **Custom / Ad-Hoc URL**:
+  ```bash
+  mvn clean test -Denv=https://custom-grocery-store-api.click
+  ```
 
 ### Parallel Execution Tuning
 By default, the framework is configured to run tests concurrently at the **method level** to optimize execution speed. This is managed via the `maven-surefire-plugin` configuration in [pom.xml](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/pom.xml):
@@ -124,7 +140,13 @@ To dynamically override the thread count at runtime (e.g., in resource-constrain
 mvn clean test -DthreadCount=5
 ```
 
+You can combine both parameters to run tests concurrently on a specific environment:
+```bash
+mvn clean test -Denv=testing -DthreadCount=12
+```
+
 ### Configuration
 Update the `src/test/resources/config.properties` file:
+- **`env`**: The target execution environment (`production` or `testing`). Defaults to `production`.
 - **`api.token`**: If left blank, the suite dynamically registers a new API client. Provide a token here if you wish to run all tests under a pre-existing token.
 - **`client.name` / `client.email`**: Used as client details for dynamically registered tokens. Leave blank to generate using JavaFaker.
