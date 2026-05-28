@@ -27,6 +27,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Object-Oriented Mapping**: Uses Jackson Databind for smooth serialization and deserialization of JSON request/response payloads to strongly typed DTOs.
 - **Contract Testing & Schema Validation**: Integrates the Rest-Assured JSON Schema Validator to dynamically validate API response payloads against pre-defined JSON schemas (`draft-07`), ensuring structural integrity and preventing regression issues from API contract changes.
 - **Boilerplate Reduction & Fluent Builders**: Integrates Project Lombok to eliminate verbose DTO boilerplate (getters, setters, toString) and implements the **Builder Design Pattern** (`@Builder`) for highly readable, flexible, and type-safe object instantiations, replacing rigid overloaded constructors.
+- **Parallel Test Execution & Thread Safety**: Engineered for high-throughput concurrency by executing test methods in parallel threads via the `maven-surefire-plugin`. The test suite is designed to be fully independent, utilizing isolated dynamic test data generation (via `JavaFaker`) and a thread-safe `synchronized` token manager to prevent race conditions or cross-test state leakage.
 - **Detailed Test Reports**: Features clear step-by-step test execution logic in Markdown and CSV formats for import into Excel or Google Sheets.
 
 ---
@@ -110,6 +111,17 @@ You can execute all tests using the Maven command line in the project root:
 
 ```bash
 mvn clean test
+```
+
+### Parallel Execution Tuning
+By default, the framework is configured to run tests concurrently at the **method level** to optimize execution speed. This is managed via the `maven-surefire-plugin` configuration in [pom.xml](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/pom.xml):
+
+* **Parallel Mode**: `methods` (executes individual `@Test` methods in parallel)
+* **Default Thread Pool**: `10` concurrent threads
+
+To dynamically override the thread count at runtime (e.g., in resource-constrained CI/CD pipelines or high-performance runners), pass the `threadCount` property via the Maven CLI:
+```bash
+mvn clean test -DthreadCount=5
 ```
 
 ### Configuration

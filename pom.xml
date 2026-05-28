@@ -13,6 +13,22 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <build>
+        <plugins>
+            <!-- surefire plugin for running tests in parallel -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.6</version>
+                <configuration>
+                    <parallel>methods</parallel>
+                    <threadCount>10</threadCount>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <!-- Lombok to eliminate boilerplate code -->
         <dependency>
@@ -21,6 +37,7 @@
             <version>1.18.32</version>
             <scope>provided</scope>
         </dependency>
+
         <!-- Rest Assured for API testing -->
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -28,6 +45,7 @@
             <version>5.5.6</version>
             <scope>test</scope>
         </dependency>
+
         <!-- Rest Assured JSON Schema Validator -->
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -35,6 +53,7 @@
             <version>5.5.6</version>
             <scope>test</scope>
         </dependency>
+
         <!-- TestNG for testing framework -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -50,7 +69,7 @@
             <version>2.17.0</version>
         </dependency>
 
-        <!-- Source: https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
+        <!-- Java Faker for generating fake data -->
         <dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
