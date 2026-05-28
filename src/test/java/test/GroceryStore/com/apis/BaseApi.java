@@ -1,5 +1,6 @@
 package test.GroceryStore.com.apis;
 
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -16,6 +17,7 @@ public class BaseApi {
         requestSpec = new RequestSpecBuilder()
                 .setBaseUri(Routes.BASE_URI)
                 .setContentType(ContentType.JSON)
+                .addFilter(new AllureRestAssured()) // Automatically log requests/responses to Allure reports
                 .log(LogDetail.ALL)
                 .build();
         RestAssured.requestSpecification = requestSpec;

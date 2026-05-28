@@ -28,6 +28,8 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Contract Testing & Schema Validation**: Integrates the Rest-Assured JSON Schema Validator to dynamically validate API response payloads against pre-defined JSON schemas (`draft-07`), ensuring structural integrity and preventing regression issues from API contract changes.
 - **Boilerplate Reduction & Fluent Builders**: Integrates Project Lombok to eliminate verbose DTO boilerplate (getters, setters, toString) and implements the **Builder Design Pattern** (`@Builder`) for highly readable, flexible, and type-safe object instantiations, replacing rigid overloaded constructors.
 - **Parallel Test Execution & Thread Safety**: Engineered for high-throughput concurrency by executing test methods in parallel threads via the `maven-surefire-plugin`. The test suite is designed to be fully independent, utilizing isolated dynamic test data generation (via `JavaFaker`) and a thread-safe `synchronized` token manager to prevent race conditions or cross-test state leakage.
+- **Interactive HTML Test Reports (Allure)**: Integrated Allure TestNG for producing highly visual, interactive HTML test execution reports. Captured report features include dynamic failure categorizations, historical trend lines, execution timelines, and custom test steps.
+- **Automated API Request & Response Logger (Allure Rest-Assured)**: Utilizes the `AllureRestAssured` filter to automatically capture HTTP request/response payloads, headers, parameters, and status codes, attaching them directly to test steps inside Allure reports for simplified debugging and diagnosis.
 - **Detailed Test Reports**: Features clear step-by-step test execution logic in Markdown and CSV formats for import into Excel or Google Sheets.
 
 ---
@@ -56,6 +58,7 @@ The automation suite covers the following API modules:
 - **JSON Processing**: Jackson Databind (v2.17.0)
 - **Data Generation**: JavaFaker (v1.0.2)
 - **Boilerplate Reduction**: Project Lombok (v1.18.32)
+- **Reporting**: Allure (v2.24.0) via `allure-testng` and `allure-rest-assured`
 - **Build Tool**: Maven
 
 ---
@@ -144,6 +147,25 @@ You can combine both parameters to run tests concurrently on a specific environm
 ```bash
 mvn clean test -Denv=testing -DthreadCount=12
 ```
+
+### Generating Allure Reports
+Allure generates raw test execution results under the `target/allure-results` directory. You can generate and view the interactive HTML report using the Allure Command Line Tool.
+
+1. **Prerequisite**: Ensure Allure CLI is installed on your machine (e.g., via `scoop install allure` on Windows or `brew install allure` on macOS/Linux).
+2. **Execute Tests**: Run the Maven test command to generate the raw test execution results:
+   ```bash
+   mvn clean test
+   ```
+3. **Generate & Open Report**:
+   - To build and view the report dynamically in a local web browser server immediately:
+     ```bash
+     allure serve target/allure-results
+     ```
+   - To build a static, self-contained HTML report in the `allure-report` folder:
+     ```bash
+     allure generate target/allure-results --clean -o allure-report
+     allure open allure-report
+     ```
 
 ### Configuration
 Update the `src/test/resources/config.properties` file:
