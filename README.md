@@ -15,6 +15,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Running Tests](#running-tests)
+- [Continuous Integration (CI)](#continuous-integration-ci)
 
 ---
 
@@ -172,3 +173,26 @@ Update the `src/test/resources/config.properties` file:
 - **`env`**: The target execution environment (`production` or `testing`). Defaults to `production`.
 - **`api.token`**: If left blank, the suite dynamically registers a new API client. Provide a token here if you wish to run all tests under a pre-existing token.
 - **`client.name` / `client.email`**: Used as client details for dynamically registered tokens. Leave blank to generate using JavaFaker.
+
+---
+
+## Continuous Integration (CI)
+
+This test automation suite is fully integrated with **GitHub Actions** to implement a robust CI pipeline. The pipeline validates package compiles, tests runtime stability, and ensures API schema compliance across all codebase modifications.
+
+The pipeline configuration is stored in [.github/workflows/main.yml](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/.github/workflows/main.yml).
+
+### Pipeline Stage Details
+1. **Workspace Virtualization**: Initializes a fresh container instance utilizing `ubuntu-latest`.
+2. **Environment Configuration**: Bootstraps the workspace with OpenJDK 21 (Eclipse Temurin distribution).
+3. **Execution Optimization (Caching)**: Caches the local Maven `.m2` repository to bypass redundant dependency resolutions, dramatically reducing pipeline execution times.
+4. **Execution Stage**: Executes `mvn clean test` which targets parallel test execution at the method level.
+5. **Artifact Preservation & Archival**: Regardless of build outcome (pass or fail), the runner archives execution diagnostics:
+   - **Surefire Reports**: Standard HTML/XML execution reports saved as `surefire-reports`.
+   - **Allure Raw Results**: Captured JSON/CSV execution models saved as `allure-results` for detailed local or external reporting.
+
+### Trigger Profiles
+The CI pipeline triggers automatically on:
+- All `push` operations directed to the `main` branch.
+- All `pull_request` events targeting the `main` branch.
+
