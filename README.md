@@ -73,33 +73,37 @@ The automation suite covers the following API modules:
 ├── README.md                           # Project Documentation
 ├── testing_docs/                       # Test Case Reference Documentation (Markdown & CSV)
 └── src/
+    ├── main/
+    │   └── java/
+    │       └── com/
+    │           └── grocerystore/
+    │               ├── apis/       # Rest-Assured API Endpoints and Headers builder
+    │               ├── models/     # Jackson DTOs mapping Request & Response bodies
+    │               │   ├── cart/   # Cart request/response models
+    │               │   ├── client/ # API Client registration models
+    │               │   ├── order/  # Order request/response models
+    │               │   ├── product/# Product query and item models
+    │               │   └── ErrorResponse.java
+    │               ├── services/   # Business logic helper services (e.g. Products availability)
+    │               ├── steps/      # Multi-endpoint business workflow sequences (Cart, Orders, etc.)
+    │               └── utils/      # Technical utility tools
+    │                   ├── ConfigLoader.java # Properties loader configuration manager
+    │                   ├── TokenManager.java # Dynamic token lifecycle management
+    │                   ├── RestHelper.java   # Centralized HTTP builder client
+    │                   └── Client_Token_Generation_Flow.png # Authentication flow diagram
     └── test/
         ├── resources/
         │   ├── config.properties       # Configuration details (token, client details)
         │   └── schemas/                # Predefined JSON schemas for contract testing & validation
         └── java/
-            └── test/
-                └── GroceryStore/
-                    └── com/
-                        ├── apis/       # Rest-Assured API Endpoints and Headers builder
-                        ├── models/     # Jackson DTOs mapping Request & Response bodies
-                        │   ├── cart/   # Cart request/response models
-                        │   ├── client/ # API Client registration models
-                        │   ├── order/  # Order request/response models
-                        │   ├── product/# Product query and item models
-                        │   └── ErrorResponse.java
-                        ├── services/   # Business logic helper services (e.g. Products availability)
-                        ├── steps/      # Multi-endpoint business workflow sequences (Cart, Orders, etc.)
-                        ├── testcases/  # TestNG Suites (Auth, Cart, Order, Product)
-                        │   ├── cart/   # Cart management and boundary suites
-                        │   ├── order/  # Order execution and client access validation suites
-                        │   ├── product/# Product filtration and lookup validation suites
-                        │   ├── AuthTest.java # Client registration suite
-                        │   └── BaseTest.java # Base Test Setup with TestNG hooks and JavaFaker
-                        └── utils/      # Utility tools
-                            ├── ConfigLoader.java # Properties loader configuration manager
-                            ├── TokenManager.java # Dynamic token lifecycle management
-                            └── Client_Token_Generation_Flow.png # Authentication flow diagram
+            └── com/
+                └── grocerystore/
+                    └── testcases/  # TestNG Suites (Auth, Cart, Order, Product)
+                        ├── cart/   # Cart management and boundary suites
+                        ├── order/  # Order execution and client access validation suites
+                        ├── product/# Product filtration and lookup validation suites
+                        ├── AuthTest.java # Client registration suite
+                        └── BaseTest.java # Base Test Setup with TestNG hooks and JavaFaker
 ```
 
 ---
