@@ -2,77 +2,57 @@ package test.GroceryStore.com.apis;
 
 import io.restassured.response.Response;
 import test.GroceryStore.com.models.cart.CartItem;
-
-
-import static io.restassured.RestAssured.*;
+import test.GroceryStore.com.utils.RestHelper;
 
 public class CartApi extends BaseApi {
 
     public static Response createCart() {
-        return given()
-                .when()
-                .post(Routes.CARTS_ENDPOINT)
-                .then()
-                .log().all()
-                .extract().response();
+        return RestHelper.build()
+                .endpoint(Routes.CARTS_ENDPOINT)
+                .post();
     }
 
     public static Response getCartById(String cartId) {
-        return given()
+        return RestHelper.build()
+                .endpoint(Routes.CART_BY_ID_ENDPOINT)
                 .pathParam("cartId", cartId)
-                .when()
-                .get(Routes.CART_BY_ID_ENDPOINT)
-                .then()
-                .log().all()
-                .extract().response();
+                .get();
     }
 
     public static Response addItemToCart(CartItem cartItem) {
-        return given()
-                .pathParams("cartId", cartItem.getCartId())
+        return RestHelper.build()
+                .endpoint(Routes.CART_ITEMS_ENDPOINT)
+                .pathParam("cartId", cartItem.getCartId())
                 .body(cartItem)
-                .when()
-                .post(Routes.CART_ITEMS_ENDPOINT)
-                .then()
-                .log().all()
-                .extract().response();
+                .post();
     }
 
     public static Response getCartItems(String cartId) {
-        return given()
+        return RestHelper.build()
+                .endpoint(Routes.CART_ITEMS_ENDPOINT)
                 .pathParam("cartId", cartId)
-                .when()
-                .get(Routes.CART_ITEMS_ENDPOINT)
-                .then()
-                .log().all()
-                .extract().response();
+                .get();
     }
 
     public static Response modifyCartItem(String cartId, String itemId, Integer quantity) {
         CartItem body = new CartItem();
         body.setQuantity(quantity);
 
-        return given()
+        return RestHelper.build()
+                .endpoint(Routes.CART_ITEM_BY_ID_ENDPOINT)
                 .pathParam("cartId", cartId)
                 .pathParam("itemId", itemId)
                 .body(body)
-                .when()
-                .patch(Routes.CART_ITEM_BY_ID_ENDPOINT)
-                .then()
-                .log().all()
-                .extract().response();
+                .patch();
     }
 
     public static Response replaceCartItem(String cartId, String itemId, CartItem cartItem) {
-        return given()
+        return RestHelper.build()
+                .endpoint(Routes.CART_ITEM_BY_ID_ENDPOINT)
                 .pathParam("cartId", cartId)
                 .pathParam("itemId", itemId)
                 .body(cartItem)
-                .when()
-                .put(Routes.CART_ITEM_BY_ID_ENDPOINT)
-                .then()
-                .log().all()
-                .extract().response();
+                .put();
     }
 
     public static Response replaceCartItem(String cartId, String itemId, Integer productId, Integer quantity) {
@@ -89,13 +69,11 @@ public class CartApi extends BaseApi {
     }
 
     public static Response deleteCartItem(String cartId, String itemId) {
-        return given()
+        return RestHelper.build()
+                .endpoint(Routes.CART_ITEM_BY_ID_ENDPOINT)
                 .pathParam("cartId", cartId)
                 .pathParam("itemId", itemId)
-                .when()
-                .delete(Routes.CART_ITEM_BY_ID_ENDPOINT)
-                .then()
-                .log().all()
-                .extract().response();
+                .delete();
     }
 }
+

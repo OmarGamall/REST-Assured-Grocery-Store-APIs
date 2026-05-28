@@ -1,17 +1,15 @@
 package test.GroceryStore.com.apis;
 
 import io.restassured.response.Response;
-import static io.restassured.RestAssured.given;
+import test.GroceryStore.com.utils.RestHelper;
 
 public class UserApi extends BaseApi {
 
     public static Response registerClient(Object clientData) {
-        return given()
+        return RestHelper.build()
+                .endpoint(Routes.REGISTER_CLIENT_ENDPOINT)
                 .body(clientData)
-        .when()
-                .post(Routes.REGISTER_CLIENT_ENDPOINT)
-        .then()
-                .log().all()
-                .extract().response();
+                .post();
     }
 }
+
