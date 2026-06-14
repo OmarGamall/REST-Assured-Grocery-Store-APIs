@@ -25,10 +25,12 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         Product replacementProduct = null;
         do {
             replacementProduct = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(replacementProduct.getId(), initialProduct.getId()));
+        } while (Objects.equals(replacementProduct.getId(), initialProduct.getId())
+               && (replacementProduct.getCurrentStock() != null && replacementProduct.getCurrentStock() < 2));
+
 
         int initialQuantity = 1;
-        int replacementQuantity = 3;
+        int replacementQuantity = 2;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, initialProduct.getId(), initialQuantity);
         String itemId = addResponse.getItemId();
@@ -49,9 +51,14 @@ public class ReplaceItemHappyPathTest extends BaseTest {
     public void testReplaceCartItemWithSameProductIdButDifferentQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = ProductService.getRandomAvailableProduct();
+        // Ensure we select a product with at least 2 in stock so we can modify the quantity to 2
+        Product product = null;
+        do {
+            product = ProductService.getRandomAvailableProduct();
+        } while (product.getCurrentStock() != null && product.getCurrentStock() < 2);
+
         int initialQuantity = 1;
-        int replacementQuantity = 3;
+        int replacementQuantity = 2;
 
         CartItemResponse addResponse = CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), initialQuantity);
         String itemId = addResponse.getItemId();
