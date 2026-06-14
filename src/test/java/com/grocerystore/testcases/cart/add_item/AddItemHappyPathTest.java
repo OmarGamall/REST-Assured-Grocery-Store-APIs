@@ -24,12 +24,7 @@ public class AddItemHappyPathTest extends BaseTest {
         int quantity = ProductService.getRandomQuantity(product);
 
         // 2. Act
-        CartItem cartItem = CartItem.builder()
-                .cartId(cartId)
-                .productId(product.getId())
-                .quantity(quantity)
-                .build();
-        Response response = CartApi.addItemToCart(cartItem);
+        Response response = CartApi.addItemToCart(cartId, product.getId(), quantity);
 
         // 3. Assert
         assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
@@ -52,12 +47,7 @@ public class AddItemHappyPathTest extends BaseTest {
         int quantity = product.getCurrentStock(); // Use the current stock as the quantity
 
         // 2. Act
-        CartItem cartItem = CartItem.builder()
-                .cartId(cartId)
-                .productId(product.getId())
-                .quantity(quantity)
-                .build();
-        Response response = CartApi.addItemToCart(cartItem);
+        Response response = CartApi.addItemToCart(cartId, product.getId(), quantity);
 
         // 3. Assert
         assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
@@ -90,12 +80,7 @@ public class AddItemHappyPathTest extends BaseTest {
 
         // 2. Act
         for (int i = 0; i < numberOfItemsToAdd; i++) {
-            CartItem cartItem = CartItem.builder()
-                    .cartId(cartId)
-                    .productId(products[i].getId())
-                    .quantity(quantities[i])
-                    .build();
-            Response response = CartApi.addItemToCart(cartItem);
+            Response response = CartApi.addItemToCart(cartId, products[i].getId(), quantities[i]);
             assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition at index " + (i + 1));
         }
 

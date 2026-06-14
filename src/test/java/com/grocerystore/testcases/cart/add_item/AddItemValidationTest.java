@@ -21,11 +21,7 @@ public class AddItemValidationTest extends BaseTest {
 
         // 2. Act
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), quantity);
-        Response duplicateAddResponse = CartApi.addItemToCart(CartItem.builder()
-                .cartId(cartId)
-                .productId(product.getId())
-                .quantity(quantity)
-                .build());
+        Response duplicateAddResponse = CartApi.addItemToCart(cartId, product.getId(), quantity);
 
         // 3. Assert
         assertErrorResponse(duplicateAddResponse, 400, "This product has already been added to cart");
@@ -39,11 +35,7 @@ public class AddItemValidationTest extends BaseTest {
         int quantity = 1;
 
         // 2. Act
-        Response response = CartApi.addItemToCart(CartItem.builder()
-                .cartId(cartId)
-                .productId(nonAvailableProduct.getId())
-                .quantity(quantity)
-                .build());
+        Response response = CartApi.addItemToCart(cartId, nonAvailableProduct.getId(), quantity);
 
         // 3. Assert
         assertErrorResponse(response, 400, "This product is not in stock and cannot be ordered");
@@ -57,11 +49,7 @@ public class AddItemValidationTest extends BaseTest {
         int quantityExceedingStock = product.getCurrentStock() + 1;
 
         // 2. Act
-        Response response = CartApi.addItemToCart(CartItem.builder()
-                .cartId(cartId)
-                .productId(product.getId())
-                .quantity(quantityExceedingStock)
-                .build());
+        Response response = CartApi.addItemToCart(cartId, product.getId(), quantityExceedingStock);
 
         // 3. Assert
         assertErrorResponse(response, 400, "The quantity requested exceeds the current stock");
@@ -75,11 +63,7 @@ public class AddItemValidationTest extends BaseTest {
         int zeroQuantity = 0;
 
         // 2. Act
-        Response response = CartApi.addItemToCart(CartItem.builder()
-                .cartId(cartId)
-                .productId(product.getId())
-                .quantity(zeroQuantity)
-                .build());
+        Response response = CartApi.addItemToCart(cartId, product.getId(), zeroQuantity);
 
         // 3. Assert
         assertErrorResponse(response, 400, "Quantity must be at least 1");
@@ -93,11 +77,7 @@ public class AddItemValidationTest extends BaseTest {
         int negativeQuantity = -5;
 
         // 2. Act
-        Response response = CartApi.addItemToCart(CartItem.builder()
-                .cartId(cartId)
-                .productId(product.getId())
-                .quantity(negativeQuantity)
-                .build());
+        Response response = CartApi.addItemToCart(cartId, product.getId(), negativeQuantity);
 
         // 3. Assert
         assertErrorResponse(response, 400, "Quantity must be at least 1");
@@ -111,11 +91,7 @@ public class AddItemValidationTest extends BaseTest {
         int quantity = 1;
 
         // 2. Act
-        Response response = CartApi.addItemToCart(CartItem.builder()
-                .cartId(cartId)
-                .productId(invalidProductId)
-                .quantity(quantity)
-                .build());
+        Response response = CartApi.addItemToCart(cartId, invalidProductId, quantity);
 
         // 3. Assert
         assertErrorResponse(response, 400, "Invalid or missing productId");
@@ -129,11 +105,7 @@ public class AddItemValidationTest extends BaseTest {
         int quantity = 1;
 
         // 2. Act
-        Response response = CartApi.addItemToCart(CartItem.builder()
-                .cartId(invalidCartId)
-                .productId(product.getId())
-                .quantity(quantity)
-                .build());
+        Response response = CartApi.addItemToCart(invalidCartId, product.getId(), quantity);
 
         // 3. Assert
         assertErrorResponse(response, 404, "No cart with id");

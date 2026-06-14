@@ -27,6 +27,15 @@ public class CartApi extends BaseApi {
                 .post();
     }
 
+    public static Response addItemToCart(String cartId, Integer productId, Integer quantity) {
+        CartItem cartItem = CartItem.builder()
+                .cartId(cartId)
+                .productId(productId)
+                .quantity(quantity)
+                .build();
+        return addItemToCart(cartItem);
+    }
+
     public static Response getCartItems(String cartId) {
         return RestHelper.build()
                 .endpoint(Routes.CART_ITEMS_ENDPOINT)
