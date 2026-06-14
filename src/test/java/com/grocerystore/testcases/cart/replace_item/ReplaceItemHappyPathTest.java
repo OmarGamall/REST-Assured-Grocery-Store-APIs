@@ -22,11 +22,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
         Product initialProduct = ProductService.getRandomAvailableProduct();
-        Product replacementProduct = null;
-        do {
-            replacementProduct = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(replacementProduct.getId(), initialProduct.getId())
-               && (replacementProduct.getCurrentStock() != null && replacementProduct.getCurrentStock() < 2));
+        Product replacementProduct = ProductService.getRandomAvailableProductDifferentFromWithStock(initialProduct.getId(), 2);
 
 
         int initialQuantity = 1;
@@ -52,10 +48,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
         // Ensure we select a product with at least 2 in stock so we can modify the quantity to 2
-        Product product = null;
-        do {
-            product = ProductService.getRandomAvailableProduct();
-        } while (product.getCurrentStock() != null && product.getCurrentStock() < 2);
+        Product product = ProductService.getRandomAvailableProductWithStock(2);
 
         int initialQuantity = 1;
         int replacementQuantity = 2;
@@ -80,10 +73,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
         Product initialProduct = ProductService.getRandomAvailableProduct();
-        Product replacementProduct = null;
-        do {
-            replacementProduct = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(replacementProduct.getId(), initialProduct.getId()));
+        Product replacementProduct = ProductService.getRandomAvailableProductDifferentFrom(initialProduct.getId());
 
         int quantity = 2;
 
@@ -107,10 +97,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
         Product initialProduct = ProductService.getRandomAvailableProduct();
-        Product replacementProduct = null;
-        do {
-            replacementProduct = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(replacementProduct.getId(), initialProduct.getId()));
+        Product replacementProduct = ProductService.getRandomAvailableProductDifferentFrom(initialProduct.getId());
 
         int quantity = 2;
 

@@ -17,11 +17,8 @@ public class ModifyItemValidationTest extends BaseTest {
     public void testModifyCartItemQuantityExceedingStock() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
-        Product product = null;
         // Ensure we select a product with at least 2 in stock so we can modify the quantity to 2
-        do {
-            product = ProductService.getRandomAvailableProduct();
-        } while (product.getCurrentStock() != null && product.getCurrentStock() < 2);
+        Product product = ProductService.getRandomAvailableProductWithStock(2);
 
         CartItem cartItem = CartSteps.addItemToCart(cartId, product.getId(), 1);
         int quantityExceedingStock = product.getCurrentStock() + 1;

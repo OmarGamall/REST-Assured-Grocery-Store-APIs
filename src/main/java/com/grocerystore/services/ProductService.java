@@ -98,4 +98,53 @@ public class ProductService {
         }
         return false;
     }
+
+    /**
+     * Retrieves a random available product that has a current stock level
+     * of at least the specified minStock value.
+     *
+     * @param minStock The minimum required stock level.
+     * @return A randomly chosen Product with stock >= minStock.
+     */
+    public static Product getRandomAvailableProductWithStock(int minStock) {
+        Product product;
+        do {
+            product = getRandomAvailableProduct();
+        } while (product.getCurrentStock() != null && product.getCurrentStock() < minStock);
+        return product;
+    }
+
+    /**
+     * Retrieves a random available product that is different from the specified product ID.
+     * Useful to ensure test items are unique during updates or replacements.
+     *
+     * @param excludeId The product ID to exclude from selection.
+     * @return A randomly chosen Product with an ID different from excludeId.
+     */
+    public static Product getRandomAvailableProductDifferentFrom(Integer excludeId) {
+        Product product;
+        do {
+            product = getRandomAvailableProduct();
+        } while (Objects.equals(product.getId(), excludeId));
+        return product;
+    }
+
+    /**
+     * Retrieves a random available product that is different from the specified product ID
+     * and has a stock level of at least the specified minStock value.
+     * Ensures both uniqueness and sufficient stock level in a single query loop.
+     *
+     * @param excludeId The product ID to exclude from selection.
+     * @param minStock  The minimum required stock level.
+     * @return A randomly chosen Product with ID != excludeId and stock >= minStock.
+     */
+    public static Product getRandomAvailableProductDifferentFromWithStock(Integer excludeId, int minStock) {
+        Product product;
+        do {
+            product = getRandomAvailableProduct();
+        } while (Objects.equals(product.getId(), excludeId)
+                || (product.getCurrentStock() != null && product.getCurrentStock() < minStock));
+        return product;
+    }
 }
+

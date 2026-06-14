@@ -39,10 +39,7 @@ public class DeleteItemHappyPathTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartItem cartItem1 = CartSteps.addRandomItemToCart(cartId, 1);
 
-        Product product2 = null;
-        do {
-            product2 = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(product2.getId(), cartItem1.getProductId()));
+        Product product2 = ProductService.getRandomAvailableProductDifferentFrom(cartItem1.getProductId());
 
         CartItem cartItem2 = CartSteps.addItemToCart(cartId, product2.getId(), 1);
 

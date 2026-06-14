@@ -120,10 +120,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         String cartAId = CartSteps.createCartAndGetId();
         String cartBId = CartSteps.createCartAndGetId();
         CartItem cartItemA = CartSteps.addRandomItemToCart(cartAId, 1);
-        Product productB = null;
-        do {
-            productB = ProductService.getRandomAvailableProduct();
-        } while (Objects.equals(productB.getId(), cartItemA.getProductId()));
+        Product productB = ProductService.getRandomAvailableProductDifferentFrom(cartItemA.getProductId());
 
         // 2. Act
         Response response = CartApi.replaceCartItem(cartBId, cartItemA.getItemId(), productB.getId(), 1);
