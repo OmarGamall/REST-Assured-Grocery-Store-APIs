@@ -12,9 +12,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.assertEquals;
 
+@Test(groups = {"orders", "validation"})
 public class CreateOrderValidationTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_003: Verify error when creating order with invalid token")
+    @Test(groups = {"regression"}, description = "TC_ORDER_003: Verify error when creating order with invalid token")
     public void testCreateOrderWithInvalidToken() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -32,7 +33,7 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, "Invalid bearer token");
     }
 
-    @Test(description = "TC_ORDER_004: Verify error when placing order with empty cart")
+    @Test(groups = {"regression"}, description = "TC_ORDER_004: Verify error when placing order with empty cart")
     public void testCreateOrderWithEmptyCart() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -48,7 +49,7 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "cart is empty");
     }
 
-    @Test(description = "TC_ORDER_005: Verify error when placing order with invalid cartId")
+    @Test(groups = {"regression"}, description = "TC_ORDER_005: Verify error when placing order with invalid cartId")
     public void testCreateOrderWithInvalidCartId() {
         // Arrange
         OrderRequest orderRequest = OrderRequest.builder()
@@ -63,7 +64,7 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "cartId");
     }
 
-    @Test(description = "TC_ORDER_006: Verify error when customerName is missing or null")
+    @Test(groups = {"regression"}, description = "TC_ORDER_006: Verify error when customerName is missing or null")
     public void testCreateOrderWithoutCustomerName() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -81,7 +82,7 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "customer name");
     }
 
-    @Test(description = "TC_ORDER_007: Verify error when placing duplicate order using same cartId")
+    @Test(groups = {"regression"}, description = "TC_ORDER_007: Verify error when placing duplicate order using same cartId")
     public void testCreateDuplicateOrder() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -104,7 +105,7 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(secondResponse, 400, "Invalid or missing cartId");
     }
 
-    @Test(description = "TC_ORDER_008: Verify error when customerName is empty")
+    @Test(groups = {"regression"}, description = "TC_ORDER_008: Verify error when customerName is empty")
     public void testCreateOrderWithInvalidCustomerName() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -123,7 +124,7 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "customer name");
     }
 
-    @Test(description = "TC_ORDER_009: Verify error when comment is excessively long")
+    @Test(groups = {"regression"}, description = "TC_ORDER_009: Verify error when comment is excessively long")
     public void testCreateOrderWithExcessiveCommentLength() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

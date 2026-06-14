@@ -11,9 +11,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"orders", "happy-path"})
 public class OrderE2ETest extends BaseTest {
 
-    @Test(description = "TC_ORDER_027: Verify end-to-end flow of creating, retrieving, and deleting an order")
+    @Test(groups = {"e2e", "regression"}, description = "TC_ORDER_027: Verify end-to-end flow of creating, retrieving, and deleting an order")
     public void testCreateRetrieveAndDeleteOrder() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

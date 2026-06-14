@@ -9,9 +9,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"products", "happy-path"})
 public class GetProductByIdHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_PROD_010: Verify retrieving product details by valid ID")
+    @Test(groups = {"smoke"}, description = "TC_PROD_010: Verify retrieving product details by valid ID")
     public void testGetSingleProductById() {
         Product product = ProductService.getRandomAvailableProduct();
         Response response = ProductApi.getProductById(product.getId());

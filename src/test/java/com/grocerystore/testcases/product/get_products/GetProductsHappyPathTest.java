@@ -12,9 +12,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"products", "happy-path"})
 public class GetProductsHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_PROD_001: Verify retrieving only in-stock products")
+    @Test(groups = {"smoke"}, description = "TC_PROD_001: Verify retrieving only in-stock products")
     public void testGetAllAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(true);
@@ -39,7 +40,7 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(description = "TC_PROD_002: Verify retrieving only out-of-stock products")
+    @Test(groups = {"regression"}, description = "TC_PROD_002: Verify retrieving only out-of-stock products")
     public void testGetAllNonAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(false);
@@ -61,7 +62,7 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(dataProvider = "categoriesProvider", description = "TC_PROD_003: Verify filtering products by category")
+    @Test(dataProvider = "categoriesProvider", groups = {"regression"}, description = "TC_PROD_003: Verify filtering products by category")
     public void testGetProductsByCategory(ProductCategory category) {
         Product[] products = ProductService.getAllProductsForGivenCategory(category);
         
@@ -74,7 +75,7 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(description = "TC_PROD_004: Verify limiting products list size")
+    @Test(groups = {"regression"}, description = "TC_PROD_004: Verify limiting products list size")
     public void testGetProductsWithLimit() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(5);
@@ -91,7 +92,7 @@ public class GetProductsHappyPathTest extends BaseTest {
         assertTrue(products.length <= 5, "Expected at most 5 products in the response");
     }
 
-    @Test(description = "TC_PROD_005: Verify filtering products by category, availability, and limit")
+    @Test(groups = {"regression"}, description = "TC_PROD_005: Verify filtering products by category, availability, and limit")
     public void testGetAvailableProductsByCategoryWithLimit() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
@@ -116,7 +117,7 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(description = "TC_PROD_006: Verify retrieving empty list when results parameter is 0")
+    @Test(groups = {"regression"}, description = "TC_PROD_006: Verify retrieving empty list when results parameter is 0")
     public void testGetProductsWithZeroResults() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(0); // Zero results value

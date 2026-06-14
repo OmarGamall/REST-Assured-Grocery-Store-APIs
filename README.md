@@ -32,7 +32,8 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Parallel Test Execution & Thread Safety**: Engineered for high-throughput concurrency by executing test methods in parallel threads via the `maven-surefire-plugin`. The test suite is designed to be fully independent, utilizing isolated dynamic test data generation (via `JavaFaker`) and a thread-safe `synchronized` token manager to prevent race conditions or cross-test state leakage.
 - **Interactive HTML Test Reports (Allure)**: Integrated Allure TestNG for producing highly visual, interactive HTML test execution reports. Captured report features include dynamic failure categorizations, historical trend lines, execution timelines, and custom test steps.
 - **Automated API Request & Response Logger (Allure Rest-Assured)**: Utilizes the `AllureRestAssured` filter to automatically capture HTTP request/response payloads, headers, parameters, and status codes, attaching them directly to test steps inside Allure reports for simplified debugging and diagnosis.
-- **Detailed Test Reports**: Features clear step-by-step test execution logic in Markdown and CSV formats for import into Excel or Google Sheets.
+- **Detailed Test Case Reports**: Features clear step-by-step test execution logic in Markdown and CSV formats for import into Excel or Google Sheets.
+- **Targeted Test Grouping & Suite Customization**: Leverages TestNG groups to support multi-layered execution schemes. Categorizes tests by Execution Phase (`smoke`, `regression`, `e2e`), Functional Module (`auth`, `products`, `cart`, `orders`), and behavioral profiles (`happy-path`, `validation`). Enables executing specific test groups dynamically via Maven command-line arguments (`-Dgroups`) or executing targeted execution suite XML configurations.
 
 ---
 
@@ -100,10 +101,10 @@ The automation suite covers the following API modules:
             └── com/
                 └── grocerystore/
                     └── testcases/  # TestNG Suites (Auth, Cart, Order, Product)
+                        ├── auth/   # Client registration and validation suites
                         ├── cart/   # Cart management and boundary suites
                         ├── order/  # Order execution and client access validation suites
                         ├── product/# Product filtration and lookup validation suites
-                        ├── AuthTest.java # Client registration suite
                         └── BaseTest.java # Base Test Setup with TestNG hooks and JavaFaker
 ```
 
@@ -153,6 +154,55 @@ You can combine both parameters to run tests concurrently on a specific environm
 ```bash
 mvn clean test -Denv=testing -DthreadCount=12
 ```
+
+### Group-Based Execution (TestNG Groups)
+The framework supports running targeted subsets of tests using **TestNG Groups**. Tests are categorized across three layers:
+1. **Execution-Phase Groups** (defined at the test method level):
+   * `smoke`: Fast, critical-path sanity tests.
+   * `regression`: Standard feature testing and boundary checks.
+   * `e2e`: Complex, multi-endpoint business flows.
+2. **Functional/Module Groups** (defined at the class level):
+   * `auth`: Client registration and authentication checks.
+   * `products`: Product catalogs, filtration, and detail retrieval.
+   * `cart`: Cart creation, modifications, replacements, and item deletion.
+   * `orders`: Placing orders, order lookups, customer updates, and cross-client auth boundaries.
+3. **Assertive/Behavioral Groups** (defined at the class level):
+   * `happy-path`: Verifies standard, valid API interactions.
+   * `validation`: Verifies negative testing paths, HTTP 4xx errors, and error responses.
+
+#### Execute Groups via Maven CLI
+You can run specific groups or exclude them directly from your terminal:
+* **Run only smoke tests**:
+  ```bash
+  mvn clean test -Dgroups="smoke"
+  ```
+* **Run only cart-related tests**:
+  ```bash
+  mvn clean test -Dgroups="cart"
+  ```
+* **Run happy-path tests, excluding validation error tests**:
+  ```bash
+  mvn clean test -Dgroups="happy-path" -DexcludedGroups="validation"
+  ```
+* **Combine group filters (e.g., cart smoke tests)**:
+  ```bash
+  mvn clean test -Dgroups="cart&amp;smoke"
+  ```
+
+#### Execute via TestNG XML Suite Files
+You can also run pre-configured TestNG XML suites defined in the root folder:
+* **Smoke Suite**:
+  ```bash
+  mvn clean test -DsuiteXmlFile=testng-smoke.xml
+  ```
+* **Happy Path Suite (excluding validations)**:
+  ```bash
+  mvn clean test -DsuiteXmlFile=testng-happy-path.xml
+  ```
+* **Regression Suite (running all tests)**:
+  ```bash
+  mvn clean test -DsuiteXmlFile=testng-regression.xml
+  ```
 
 ### Generating Allure Reports
 Allure generates raw test execution results under the `target/allure-results` directory. You can generate and view the interactive HTML report using the Allure Command Line Tool.

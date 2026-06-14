@@ -14,9 +14,10 @@ import java.util.Objects;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"cart", "happy-path"})
 public class ReplaceItemHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_CART_029: Verify replacing both product and quantity")
+    @Test(groups = {"regression"}, description = "TC_CART_029: Verify replacing both product and quantity")
     public void testReplaceCartItemProductAndQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -44,7 +45,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
-    @Test(description = "TC_CART_030: Verify replacing quantity with same productId")
+    @Test(groups = {"regression"}, description = "TC_CART_030: Verify replacing quantity with same productId")
     public void testReplaceCartItemWithSameProductIdButDifferentQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -67,7 +68,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
-    @Test(description = "TC_CART_031: Verify replacing product and keeping same quantity")
+    @Test(groups = {"regression"}, description = "TC_CART_031: Verify replacing product and keeping same quantity")
     public void testReplaceCartItemProductAndKeepSameQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -94,7 +95,7 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
-    @Test(description = "TC_CART_032: Verify replacing product with missing quantity parameter")
+    @Test(groups = {"regression"}, description = "TC_CART_032: Verify replacing product with missing quantity parameter")
     public void testReplaceCartItemProductAndMissingQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

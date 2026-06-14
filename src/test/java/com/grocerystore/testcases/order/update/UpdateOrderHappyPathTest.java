@@ -14,9 +14,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"orders", "happy-path"})
 public class UpdateOrderHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_023: Verify updating order customerName and comment")
+    @Test(groups = {"regression"}, description = "TC_ORDER_023: Verify updating order customerName and comment")
     public void testUpdateOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

@@ -13,9 +13,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.assertEquals;
 
+@Test(groups = {"orders", "happy-path"})
 public class DeleteOrderHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_010: Verify successfully deleting an order")
+    @Test(groups = {"regression"}, description = "TC_ORDER_010: Verify successfully deleting an order")
     public void testDeleteOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

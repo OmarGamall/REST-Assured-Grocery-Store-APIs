@@ -14,9 +14,10 @@ import java.util.Objects;
 
 import static org.testng.Assert.assertEquals;
 
+@Test(groups = {"cart", "validation"})
 public class DeleteItemValidationTest extends BaseTest {
 
-    @Test(description = "TC_CART_015: Verify error when deleting same cart item twice")
+    @Test(groups = {"regression"}, description = "TC_CART_015: Verify error when deleting same cart item twice")
     public void testDeleteSameCartItemTwice() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -32,7 +33,7 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(secondDeleteResponse, 404, "No item with id");
     }
 
-    @Test(description = "TC_CART_016: Verify error when deleting with invalid cartId")
+    @Test(groups = {"regression"}, description = "TC_CART_016: Verify error when deleting with invalid cartId")
     public void testDeleteCartItemWithInvalidCartId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -47,7 +48,7 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(deleteResponse, 404, "No cart with id");
     }
 
-    @Test(description = "TC_CART_017: Verify error when deleting with invalid itemId")
+    @Test(groups = {"regression"}, description = "TC_CART_017: Verify error when deleting with invalid itemId")
     public void testDeleteCartItemWithInvalidItemId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -61,7 +62,7 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(deleteResponse, 404, "No item with id");
     }
 
-    @Test(description = "TC_CART_018: Verify error when deleting item from empty cart")
+    @Test(groups = {"regression"}, description = "TC_CART_018: Verify error when deleting item from empty cart")
     public void testDeleteCartItemFromEmptyCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -74,7 +75,7 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(deleteResponse, 404, "No item with id");
     }
 
-    @Test(description = "TC_CART_019: Verify error when deleting item using mismatched cartId")
+    @Test(groups = {"regression"}, description = "TC_CART_019: Verify error when deleting item using mismatched cartId")
     public void testDeleteCartItemWithMismatchedCartAndItemId() {
         // 1. Arrange
         String cartAId = CartSteps.createCartAndGetId();

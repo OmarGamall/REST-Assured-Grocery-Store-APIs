@@ -10,9 +10,10 @@ import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
 import com.grocerystore.testcases.BaseTest;
 
+@Test(groups = {"cart", "validation"})
 public class ModifyItemValidationTest extends BaseTest {
 
-    @Test(description = "TC_CART_022: Verify error when modified quantity exceeds stock")
+    @Test(groups = {"regression"}, description = "TC_CART_022: Verify error when modified quantity exceeds stock")
     public void testModifyCartItemQuantityExceedingStock() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -32,7 +33,7 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "The quantity requested is not available in stock");
     }
 
-    @Test(description = "TC_CART_023: Verify error when modifying quantity to 0")
+    @Test(groups = {"regression"}, description = "TC_CART_023: Verify error when modifying quantity to 0")
     public void testModifyCartItemQuantityToZero() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -45,7 +46,7 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "Invalid or missing quantity");
     }
 
-    @Test(description = "TC_CART_024: Verify error when modifying quantity to negative")
+    @Test(groups = {"regression"}, description = "TC_CART_024: Verify error when modifying quantity to negative")
     public void testModifyCartItemQuantityToNegative() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -58,7 +59,7 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "Invalid or missing quantity");
     }
 
-    @Test(description = "TC_CART_025: Verify error when modifying with invalid itemId")
+    @Test(groups = {"regression"}, description = "TC_CART_025: Verify error when modifying with invalid itemId")
     public void testModifyCartItemWithInvalidItemId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -72,7 +73,7 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 404, "No item with id");
     }
 
-    @Test(description = "TC_CART_026: Verify error when modifying with invalid cartId")
+    @Test(groups = {"regression"}, description = "TC_CART_026: Verify error when modifying with invalid cartId")
     public void testModifyCartItemWithInvalidCartId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -86,7 +87,7 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 404, "No cart with id");
     }
 
-    @Test(description = "TC_CART_027: Verify error when modified quantity is missing or null")
+    @Test(groups = {"regression"}, description = "TC_CART_027: Verify error when modified quantity is missing or null")
     public void testModifyCartItemWithMissingQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -99,7 +100,7 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 404, "Invalid or missing quantity");
     }
 
-    @Test(description = "TC_CART_028: Verify error when modifying item with mismatched cartId")
+    @Test(groups = {"regression"}, description = "TC_CART_028: Verify error when modifying item with mismatched cartId")
     public void testModifyCartItemWithMismatchedCartAndItemId() {
         // 1. Arrange
         String cartAId = CartSteps.createCartAndGetId();

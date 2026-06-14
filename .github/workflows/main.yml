@@ -22,7 +22,7 @@ jobs:
           cache: maven
 
       - name: Build and run tests
-        run: mvn clean test
+        run: mvn clean test # Run all tests. (To run only smoke tests in CI: mvn clean test -Dgroups="smoke")
 
       - name: Upload Test Reports (Surefire)
         if: always()

@@ -14,9 +14,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"orders", "happy-path"})
 public class GetSingleOrderHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_018: Verify retrieving single order by ID")
+    @Test(groups = {"regression"}, description = "TC_ORDER_018: Verify retrieving single order by ID")
     public void testGetSingleOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -54,7 +55,7 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
     }
 
-    @Test(description = "TC_ORDER_019: Verify retrieving single order with invoice details")
+    @Test(groups = {"regression"}, description = "TC_ORDER_019: Verify retrieving single order with invoice details")
     public void testGetSingleOrderInvoiceSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

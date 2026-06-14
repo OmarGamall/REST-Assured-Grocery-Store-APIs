@@ -14,9 +14,10 @@ import com.grocerystore.steps.OrderSteps;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"orders", "happy-path"})
 public class CreateOrderHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_001: Verify creating an order with one cart item")
+    @Test(groups = {"smoke"}, description = "TC_ORDER_001: Verify creating an order with one cart item")
     public void testCreateOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -59,7 +60,7 @@ public class CreateOrderHappyPathTest extends BaseTest {
         assertEquals(createdOrder.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
     }
 
-    @Test(description = "TC_ORDER_002: Verify creating an order with multiple unique cart items")
+    @Test(groups = {"regression"}, description = "TC_ORDER_002: Verify creating an order with multiple unique cart items")
     public void testCreateOrderWithCartHasMultipleItemsSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

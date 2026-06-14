@@ -5,9 +5,10 @@ import org.testng.annotations.Test;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.testcases.BaseTest;
 
+@Test(groups = {"orders", "validation"})
 public class GetAllOrdersValidationTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_017: Verify error when retrieving all orders with invalid token")
+    @Test(groups = {"regression"}, description = "TC_ORDER_017: Verify error when retrieving all orders with invalid token")
     public void testGetAllOrdersWithInvalidToken() {
         // Act
         Response response = OrdersApi.getAllOrders("invalid_token_12345");

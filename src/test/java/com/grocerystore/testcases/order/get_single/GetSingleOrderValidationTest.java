@@ -13,9 +13,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.assertEquals;
 
+@Test(groups = {"orders", "validation"})
 public class GetSingleOrderValidationTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_020: Verify error when retrieving single order with invalid token")
+    @Test(groups = {"regression"}, description = "TC_ORDER_020: Verify error when retrieving single order with invalid token")
     public void testGetSingleOrderWithInvalidToken() {
         // Act
         Response response = OrdersApi.getOrderById("invalid_token_12345", "some-order-id");
@@ -24,7 +25,7 @@ public class GetSingleOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, "bearer token");
     }
 
-    @Test(description = "TC_ORDER_021: Verify error when retrieving order with non-existent orderId")
+    @Test(groups = {"regression"}, description = "TC_ORDER_021: Verify error when retrieving order with non-existent orderId")
     public void testGetSingleOrderWithInvalidOrderId() {
         // Act
         Response response = OrdersApi.getOrderById(getToken(), "non_existent_order_id_12345");
@@ -33,7 +34,7 @@ public class GetSingleOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 404, "No order with id");
     }
 
-    @Test(description = "TC_ORDER_022: Verify error when retrieving order belonging to another client")
+    @Test(groups = {"regression"}, description = "TC_ORDER_022: Verify error when retrieving order belonging to another client")
     public void testGetSingleOrderBelongingToDifferentClient() {
         // Arrange - Register another client and place an order under their account
         String FirstClientToken = ClientSteps.registerClientAndGetToken();

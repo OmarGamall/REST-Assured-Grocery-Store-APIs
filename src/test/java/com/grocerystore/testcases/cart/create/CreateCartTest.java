@@ -10,9 +10,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"cart", "happy-path"})
 public class CreateCartTest extends BaseTest {
 
-    @Test(description = "TC_CART_001: Verify creating a new cart and retrieving it")
+    @Test(groups = {"smoke"}, description = "TC_CART_001: Verify creating a new cart and retrieving it")
     public void testCreateCart() {
         // 1. Act (Create the Cart)
         Response createResponse = CartApi.createCart();
@@ -40,7 +41,7 @@ public class CreateCartTest extends BaseTest {
         assertTrue(getResponse.jsonPath().getList("items").isEmpty(), "Expected new cart to have an empty items list");
     }
 
-    @Test(description = "TC_CART_002: Verify retrieving items from a new empty cart")
+    @Test(groups = {"regression"}, description = "TC_CART_002: Verify retrieving items from a new empty cart")
     public void testGetCartItemsForEmptyCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

@@ -16,9 +16,10 @@ import com.grocerystore.testcases.BaseTest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+@Test(groups = {"orders", "validation"})
 public class UpdateOrderValidationTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_024: Verify error when updating order with invalid token")
+    @Test(groups = {"regression"}, description = "TC_ORDER_024: Verify error when updating order with invalid token")
     public void testUpdateOrderWithInvalidToken() {
         // Arrange
         Order order = OrderSteps.createOrderAndGetOrderDetails();
@@ -34,7 +35,7 @@ public class UpdateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, "bearer token");
     }
 
-    @Test(description = "TC_ORDER_025: Verify error when updating order with non-existent orderId")
+    @Test(groups = {"regression"}, description = "TC_ORDER_025: Verify error when updating order with non-existent orderId")
     public void testUpdateOrderWithNonExistentId() {
         // Arrange
         OrderRequest updateRequest = OrderRequest.builder()
@@ -49,7 +50,7 @@ public class UpdateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 404, "No order with id");
     }
 
-    @Test(description = "TC_ORDER_026: Verify error when updating order belonging to another client")
+    @Test(groups = {"regression"}, description = "TC_ORDER_026: Verify error when updating order belonging to another client")
     public void testUpdateOrderBelongingToDifferentClient() {
         // Arrange - Register other client and place an order
         String firstClientToken = ClientSteps.registerClientAndGetToken();

@@ -5,9 +5,10 @@ import org.testng.annotations.Test;
 import com.grocerystore.apis.ProductApi;
 import com.grocerystore.testcases.BaseTest;
 
+@Test(groups = {"products", "validation"})
 public class GetProductByIdValidationTest extends BaseTest {
 
-    @Test(description = "TC_PROD_011: Verify error when retrieving product with non-existent ID")
+    @Test(groups = {"regression"}, description = "TC_PROD_011: Verify error when retrieving product with non-existent ID")
     public void testGetSingleProductByInvalidId() {
         int productId = 9999; // Assuming this ID does not exist
         Response response = ProductApi.getProductById(productId);

@@ -6,9 +6,10 @@ import com.grocerystore.apis.ProductApi;
 import com.grocerystore.models.product.ProductsQueryParams;
 import com.grocerystore.testcases.BaseTest;
 
+@Test(groups = {"products", "validation"})
 public class GetProductsValidationTest extends BaseTest {
 
-    @Test(description = "TC_PROD_007: Verify error when category is invalid")
+    @Test(groups = {"regression"}, description = "TC_PROD_007: Verify error when category is invalid")
     public void testGetProductsWithInvalidCategory() {
         Response response = ProductApi.getAllProducts("invalid-category", null, null);
         
@@ -16,7 +17,7 @@ public class GetProductsValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "Invalid value for query parameter 'category'");
     }
 
-    @Test(description = "TC_PROD_008: Verify error when results parameter is below 0")
+    @Test(groups = {"regression"}, description = "TC_PROD_008: Verify error when results parameter is below 0")
     public void testGetProductsWithResultsBelowBounds() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(-1); // Invalid results value
@@ -26,7 +27,7 @@ public class GetProductsValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "Invalid value for query parameter 'results'");
     }
 
-    @Test(description = "TC_PROD_009: Verify error when results parameter exceeds 20")
+    @Test(groups = {"regression"}, description = "TC_PROD_009: Verify error when results parameter exceeds 20")
     public void testGetProductsWithResultsExceedingBounds() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(1000); // Exceeding total products

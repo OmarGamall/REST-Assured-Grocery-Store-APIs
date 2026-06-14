@@ -14,9 +14,10 @@ import java.util.Objects;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"cart", "happy-path"})
 public class DeleteItemHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_CART_013: Verify deleting an item from cart")
+    @Test(groups = {"regression"}, description = "TC_CART_013: Verify deleting an item from cart")
     public void testDeleteCartItem() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -32,7 +33,7 @@ public class DeleteItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 0, "Expected no items in the cart after deletion");
     }
 
-    @Test(description = "TC_CART_014: Verify sequential deletions of multiple items")
+    @Test(groups = {"regression"}, description = "TC_CART_014: Verify sequential deletions of multiple items")
     public void testDeleteMoreThanOneItemFromCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

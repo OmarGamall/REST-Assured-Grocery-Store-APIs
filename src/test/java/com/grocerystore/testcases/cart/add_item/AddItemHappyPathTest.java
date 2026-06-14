@@ -13,9 +13,10 @@ import com.grocerystore.testcases.BaseTest;
 import static org.testng.Assert.*;
 import static com.grocerystore.services.ProductService.isProductAlreadySelected;
 
+@Test(groups = {"cart", "happy-path"})
 public class AddItemHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_CART_003: Verify adding an item to cart successfully")
+    @Test(groups = {"smoke"}, description = "TC_CART_003: Verify adding an item to cart successfully")
     public void testAddItemToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -43,7 +44,7 @@ public class AddItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
     }
 
-    @Test(description = "TC_CART_004: Verify adding item with quantity equal to stock")
+    @Test(groups = {"regression"}, description = "TC_CART_004: Verify adding item with quantity equal to stock")
     public void testAddItemToCartWithQuantitySameAsStock() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -71,7 +72,7 @@ public class AddItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
     }
 
-    @Test(description = "TC_CART_005: Verify adding multiple unique products to cart")
+    @Test(groups = {"regression"}, description = "TC_CART_005: Verify adding multiple unique products to cart")
     public void testAddMultipleItemsToCartNoDuplicates() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

@@ -9,9 +9,10 @@ import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
 import com.grocerystore.testcases.BaseTest;
 
+@Test(groups = {"cart", "validation"})
 public class AddItemValidationTest extends BaseTest {
 
-    @Test(description = "TC_CART_006: Verify error when adding duplicate product to cart")
+    @Test(groups = {"regression"}, description = "TC_CART_006: Verify error when adding duplicate product to cart")
     public void testAddDuplicateItemToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -30,7 +31,7 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(duplicateAddResponse, 400, "This product has already been added to cart");
     }
 
-    @Test(description = "TC_CART_007: Verify error when adding out-of-stock product")
+    @Test(groups = {"regression"}, description = "TC_CART_007: Verify error when adding out-of-stock product")
     public void testAddNonAvailableProductToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -48,7 +49,7 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "This product is not in stock and cannot be ordered");
     }
 
-    @Test(description = "TC_CART_008: Verify error when quantity exceeds product stock")
+    @Test(groups = {"regression"}, description = "TC_CART_008: Verify error when quantity exceeds product stock")
     public void testAddQuantityExceedingStockToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -66,7 +67,7 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "The quantity requested exceeds the current stock");
     }
 
-    @Test(description = "TC_CART_009: Verify error when adding item with quantity 0")
+    @Test(groups = {"regression"}, description = "TC_CART_009: Verify error when adding item with quantity 0")
     public void testAddItemWithZeroQuantityToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -84,7 +85,7 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "Quantity must be at least 1");
     }
 
-    @Test(description = "TC_CART_010: Verify error when adding item with negative quantity")
+    @Test(groups = {"regression"}, description = "TC_CART_010: Verify error when adding item with negative quantity")
     public void testAddItemWithNegativeQuantityToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -102,7 +103,7 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "Quantity must be at least 1");
     }
 
-    @Test(description = "TC_CART_011: Verify error when adding invalid productId")
+    @Test(groups = {"regression"}, description = "TC_CART_011: Verify error when adding invalid productId")
     public void testAddItemWithInvalidProductIdToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -120,7 +121,7 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, "Invalid or missing productId");
     }
 
-    @Test(description = "TC_CART_012: Verify error when adding item with invalid cartId")
+    @Test(groups = {"regression"}, description = "TC_CART_012: Verify error when adding item with invalid cartId")
     public void testAddItemWithInvalidCartId() {
         // 1. Arrange
         String invalidCartId = "invalid-cart-id";

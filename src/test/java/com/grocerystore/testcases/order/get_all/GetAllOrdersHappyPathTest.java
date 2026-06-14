@@ -14,9 +14,10 @@ import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
 
+@Test(groups = {"orders", "happy-path"})
 public class GetAllOrdersHappyPathTest extends BaseTest {
 
-    @Test(description = "TC_ORDER_016: Verify retrieving all orders for authenticated client")
+    @Test(groups = {"regression"}, description = "TC_ORDER_016: Verify retrieving all orders for authenticated client")
     public void testGetAllOrdersForCustomerSuccessfully() {
         // Arrange - Ensure there is at least one order
         String cartId = CartSteps.createCartAndGetId();
