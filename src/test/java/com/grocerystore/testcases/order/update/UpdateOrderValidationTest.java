@@ -59,13 +59,8 @@ public class UpdateOrderValidationTest extends BaseTest {
         Product product = ProductService.getRandomAvailableProduct();
         CartSteps.addItemToCartAndGetResponse(cartId, product.getId(), 1);
 
-        OrderRequest orderRequest = OrderRequest.builder()
-                .cartId(cartId)
-                .customerName("Original Name")
-                .build();
-        Response createResponse = OrdersApi.createOrder(firstClientToken, orderRequest);
-        assertEquals(createResponse.getStatusCode(), 201);
-        String orderId = createResponse.as(OrderResponse.class).getOrderId();
+        Order order = OrderSteps.createOrderAndGetOrderDetails(firstClientToken, cartId, "Original Name");
+        String orderId = order.getId();
 
         // Prepare update body
         OrderRequest updateRequest = OrderRequest.builder()

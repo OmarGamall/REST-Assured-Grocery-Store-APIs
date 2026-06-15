@@ -51,4 +51,7 @@ public class OrderSteps {
         return createOrderAndGetOrderDetails(token, orderRequest);
     }
 
+    public static String createRandomOrderAndGetId() {
+        return createOrderAndGetOrderDetails().getId();
+    }
 }

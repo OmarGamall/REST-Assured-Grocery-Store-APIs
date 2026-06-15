@@ -9,6 +9,7 @@ import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
 import com.grocerystore.steps.ClientSteps;
+import com.grocerystore.steps.OrderSteps;
 import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.assertEquals;
@@ -36,16 +37,7 @@ public class DeleteOrderValidationTest extends BaseTest {
     @Test(groups = {"regression"}, description = "TC_ORDER_013: Verify error when deleting same order a second time")
     public void testDeleteSameOrderMultipleTimes() {
         // Arrange - Create an order to delete
-        String cartId = CartSteps.createCartAndGetId();
-        CartSteps.addRandomItemToCart(cartId);
-
-        OrderRequest orderRequest = OrderRequest.builder()
-                .cartId(cartId)
-                .customerName("Omar Delete Twice")
-                .build();
-        Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
-        assertEquals(createResponse.getStatusCode(), 201);
-        String orderId = createResponse.as(OrderResponse.class).getOrderId();
+        String orderId = OrderSteps.createRandomOrderAndGetId();
 
         // Act - First deletion attempt
         Response firstDeleteResponse = OrdersApi.deleteOrder(getToken(), orderId);
@@ -75,14 +67,8 @@ public class DeleteOrderValidationTest extends BaseTest {
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        OrderRequest orderRequest = OrderRequest.builder()
-                .cartId(cartId)
-                .customerName("Original Name")
-                .build();
-        Response createResponse = OrdersApi.createOrder(FirstClientToken, orderRequest);
-        assertEquals(createResponse.getStatusCode(), 201);
-        // Extract Order Id
-        String orderId = createResponse.as(OrderResponse.class).getOrderId();
+        com.grocerystore.models.order.Order order = OrderSteps.createOrderAndGetOrderDetails(FirstClientToken, cartId, "Original Name");
+        String orderId = order.getId();
 
         // Act - Attempt to delete First client's order using other client's token
         String SecondClientToken = ClientSteps.registerClientAndGetToken();

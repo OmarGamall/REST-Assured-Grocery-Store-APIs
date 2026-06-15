@@ -10,6 +10,7 @@ import com.grocerystore.models.order.OrderResponse;
 import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
+import com.grocerystore.steps.OrderSteps;
 import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.*;
@@ -28,9 +29,8 @@ public class UpdateOrderHappyPathTest extends BaseTest {
                 .customerName("Original Name")
                 .comment("Original Comment")
                 .build();
-        Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
-        assertEquals(createResponse.getStatusCode(), 201);
-        String orderId = createResponse.as(OrderResponse.class).getOrderId();
+        Order order = OrderSteps.createOrderAndGetOrderDetails(getToken(), orderRequest);
+        String orderId = order.getId();
 
         // Prepare update request
         String updatedName = "Updated Name";

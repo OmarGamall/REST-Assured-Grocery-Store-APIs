@@ -9,6 +9,7 @@ import com.grocerystore.models.order.OrderResponse;
 import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
+import com.grocerystore.steps.OrderSteps;
 import com.grocerystore.testcases.BaseTest;
 
 import static org.testng.Assert.assertEquals;
@@ -19,16 +20,7 @@ public class DeleteOrderHappyPathTest extends BaseTest {
     @Test(groups = {"regression"}, description = "TC_ORDER_010: Verify successfully deleting an order")
     public void testDeleteOrderSuccessfully() {
         // Arrange
-        String cartId = CartSteps.createCartAndGetId();
-        CartSteps.addRandomItemToCart(cartId);
-
-        OrderRequest orderRequest = OrderRequest.builder()
-                .cartId(cartId)
-                .customerName("Omar Delete")
-                .build();
-        Response createResponse = OrdersApi.createOrder(getToken(), orderRequest);
-        assertEquals(createResponse.getStatusCode(), 201);
-        String orderId = createResponse.as(OrderResponse.class).getOrderId();
+        String orderId = OrderSteps.createRandomOrderAndGetId();
 
         // Act
         Response deleteResponse = OrdersApi.deleteOrder(getToken(), orderId);
