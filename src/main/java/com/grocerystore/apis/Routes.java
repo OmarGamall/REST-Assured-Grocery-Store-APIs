@@ -13,19 +13,18 @@ public class Routes {
         }
         
         env = env.trim().toLowerCase();
-        switch (env) {
-            case "testing":
-                return "https://testing.simple-grocery-store-api.click";
-            case "production":
-                return "https://simple-grocery-store-api.click";
-            default:
-                // Support direct URLs if user specifies a custom URL as the env parameter
-                if (env.startsWith("http://") || env.startsWith("https://")) {
-                    return env;
-                }
-                System.out.println("[Routes] Warning: Unknown environment '" + env + "'. Defaulting to Production.");
-                return "https://simple-grocery-store-api.click";
+        String baseUrl = ConfigLoader.getProperty(env + ".baseUrl");
+        if (baseUrl != null && !baseUrl.trim().isEmpty()) {
+            return baseUrl;
         }
+        
+        // Support direct URLs if user specifies a custom URL as the env parameter
+        if (env.startsWith("http://") || env.startsWith("https://")) {
+            return env;
+        }
+        
+        System.out.println("[Routes] Warning: Unknown environment '" + env + "'. Defaulting to Production.");
+        return "https://simple-grocery-store-api.click";
     }
 
     // Products Endpoints
