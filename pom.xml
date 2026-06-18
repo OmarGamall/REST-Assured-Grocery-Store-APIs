@@ -25,8 +25,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.6</version>
                 <configuration>
-                    <parallel>methods</parallel>
-                    <threadCount>10</threadCount>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                     <groups>${groups}</groups>
                     <excludedGroups>${excludedGroups}</excludedGroups>
                     <systemPropertyVariables>

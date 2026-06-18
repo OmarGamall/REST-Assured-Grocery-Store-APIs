@@ -38,8 +38,8 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Targeted Test Grouping & Suite Customization**: Leverages TestNG groups to support multi-layered execution schemes. Categorizes tests by Execution Phase (`smoke`, `regression`, `e2e`), Functional Module (`auth`, `products`, `cart`, `orders`), and behavioral profiles (`happy-path`, `validation`). Enables executing specific test groups dynamically via Maven command-line arguments (`-Dgroups`) or executing targeted execution suite XML configurations.
 
 ### 4. Parallel Execution & Thread Safety
-- **Independent Test Design & Parallel Execution**: Engineered for high-throughput concurrency by executing test methods in parallel threads via the `maven-surefire-plugin`. Every automated test case is written to be fully independent—utilizing isolated runtime data (such as dynamically generated cart IDs and order IDs) and a thread-isolated `ThreadLocal` token manager to prevent cross-test state leakage or resource conflicts during parallel execution.
-- **Automatic Token Management**: Dynamically resolves and caches authentication tokens on a per-thread basis using `ThreadLocal`. It follows a prioritized logic: first checks for a pre-configured `api.token` in `config.properties`. If empty, it dynamically registers a fresh client using configured credentials or Faker-generated values. The resulting token is cached at the thread level, ensuring thread-isolated authentication and eliminating duplicate registration requests during parallel test runs.
+- **Independent Test Design & Parallel Execution**: Engineered for high-throughput concurrency by executing test methods in parallel threads via TestNG XML suite files. Every automated test case is written to be fully independent—utilizing isolated, dynamic runtime data (such as fresh cart IDs, order IDs, and Faker data) so that parallel tests never experience resource conflicts or cross-test state leaks.
+- **Automatic & Isolated Token Management**: Dynamically resolves and caches authentication tokens on a per-thread basis using `ThreadLocal` to support parallel execution. It checks for a pre-configured `api.token` in `config.properties`, or lazily registers a new client using configured credentials or Faker-generated values, caching the token at the thread level to eliminate duplicate registration requests and thread contention.
 
 ### 5. Data Generation & Serialization
 - **Dynamic Test Data**: Leverages JavaFaker to dynamically produce unique names, emails, and comments for registration and order creation.
@@ -168,20 +168,14 @@ The framework supports dynamic environment switching. Target different environme
   ```
 
 ### Parallel Execution Tuning
-By default, the framework is configured to run tests concurrently at the **method level** to optimize execution speed. This is managed via the `maven-surefire-plugin` configuration in [pom.xml](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/pom.xml):
+By default, the framework is configured to run tests concurrently at the **method level** with **10 concurrent threads** to optimize execution speed. 
+
+This is managed centrally inside the master [testng.xml](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/testng.xml) suite file (and individual suite XMLs like [testng-regression.xml](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/testng-regression.xml)), ensuring that your execution behaviors remain identical whether you run tests from your IDE or the Maven CLI.
 
 * **Parallel Mode**: `methods` (executes individual `@Test` methods in parallel)
 * **Default Thread Pool**: `10` concurrent threads
 
-To dynamically override the thread count at runtime, pass the `threadCount` property via the Maven CLI:
-```bash
-mvn clean test -DthreadCount=5
-```
-
-You can combine both parameters to run tests concurrently on a specific environment:
-```bash
-mvn clean test -Denv=testing -DthreadCount=12
-```
+To change the thread count or parallel mode, simply modify the `thread-count` and `parallel` attributes in the active TestNG XML suite file.
 
 #### Thread-Isolated Token Management (ThreadLocal)
 To support high-throughput parallel execution, the [TokenManager](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/main/java/com/grocerystore/utils/TokenManager.java) caches client access tokens using a thread-isolated `ThreadLocal<String>` container rather than a globally synchronized static lock.
