@@ -5,26 +5,25 @@ import com.grocerystore.models.client.Client;
 import com.grocerystore.steps.ClientSteps;
 
 public class TokenManager {
-    private static String cachedToken;
+    private static final ThreadLocal<String> threadLocalToken = new ThreadLocal<>();
 
     /**
-     * Lazy-loads and caches the access token in memory.
-     * Checks if custom token is provided. If not, registers a client using
-     * either configured details or dynamically generated ones.
+     * Lazily resolves and caches the access token per thread.
+     * Registers a new client using Faker if no custom token or client data are configured.
      *
-     * @return The Bearer token in use for the test execution.
+     * @return Thread-isolated Bearer token.
      */
-    public static synchronized String getToken() {
-        if (cachedToken == null) {
+    public static String getToken() {
+        if (threadLocalToken.get() == null) {
             String token = ConfigLoader.getProperty("api.token");
 
             if (token == null || token.trim().isEmpty()) {
-                System.out.println("[TokenManager] No custom api.token found. Resolving client credentials for registration...");
+                System.out.println(String.format("[TokenManager - Thread: %s] No custom api.token found. Resolving client credentials for registration...", Thread.currentThread().getName()));
                 
                 String clientName = ConfigLoader.getProperty("client.name");
                 String clientEmail = ConfigLoader.getProperty("client.email");
 
-                // Prioritize config values, fallback to Faker for any empty values
+                // Fallback to Faker for missing credentials
                 Faker faker = new Faker();
                 if (clientName == null || clientName.trim().isEmpty()) {
                     clientName = faker.name().fullName();
@@ -33,7 +32,7 @@ public class TokenManager {
                     clientEmail = faker.internet().emailAddress();
                 }
 
-                System.out.println(String.format("[TokenManager] Registering client with details: [Name: %s, Email: %s]", clientName, clientEmail));
+                System.out.println(String.format("[TokenManager - Thread: %s] Registering client with details: [Name: %s, Email: %s]", Thread.currentThread().getName(), clientName, clientEmail));
                 Client clientData = Client.builder()
                         .clientName(clientName)
                         .clientEmail(clientEmail)
@@ -41,11 +40,18 @@ public class TokenManager {
                 Client registered = ClientSteps.registerClientAndGetClientDetails(clientData);
                 token = registered.getAccessToken();
             } else {
-                System.out.println("[TokenManager] Using custom api.token specified in configuration: " + token);
+                System.out.println(String.format("[TokenManager - Thread: %s] Using custom api.token specified in configuration: %s", Thread.currentThread().getName(), token));
             }
 
-            cachedToken = token;
+            threadLocalToken.set(token);
         }
-        return cachedToken;
+        return threadLocalToken.get();
+    }
+
+    /**
+     * Clears the thread-local token to prevent memory leaks.
+     */
+    public static void clearToken() {
+        threadLocalToken.remove();
     }
 }
