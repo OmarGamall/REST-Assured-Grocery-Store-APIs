@@ -86,6 +86,10 @@ The automation suite covers the following API modules:
 ```
 .
 ├── pom.xml                             # Maven Dependencies and Build Configurations
+├── testng.xml                          # Master test suite (Runs all tests in parallel)
+├── testng-smoke.xml                    # Targeted suite running only smoke tests
+├── testng-regression.xml               # Targeted suite running regression and E2E tests
+├── testng-happy-path.xml               # Targeted suite running happy-path, smoke, and E2E tests
 ├── simple-grocery-store-api.md         # API Reference / Specification Document
 ├── README.md                           # Project Documentation
 ├── testing_docs/                       # Test Case Reference Documentation (Markdown & CSV)
