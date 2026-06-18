@@ -7,8 +7,7 @@ import com.grocerystore.models.client.Client;
 
 public class ClientSteps {
 
-    // Shared static Faker instance to avoid repetitive instantiation
-    private static final Faker FAKER = new Faker();
+
 
     /**
      * Overloaded method: Registers a client with custom details and returns details including token.
@@ -37,8 +36,9 @@ public class ClientSteps {
      * Registers a random client and returns the client details.
      */
     public static Client registerClientAndGetClientDetails() {
-        String randomClientName = FAKER.name().fullName();
-        String randomEmailName = FAKER.internet().emailAddress();
+        Faker faker = new Faker();
+        String randomClientName = faker.name().fullName();
+        String randomEmailName = faker.internet().emailAddress();
         Client clientData = Client.builder()
                 .clientName(randomClientName)
                 .clientEmail(randomEmailName)

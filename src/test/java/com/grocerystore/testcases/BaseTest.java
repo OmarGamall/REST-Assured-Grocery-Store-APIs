@@ -10,7 +10,7 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 
 public class BaseTest {
 
-    protected static final Faker FAKER = new Faker();
+    protected final Faker FAKER = new Faker();
 
     protected String getToken() {
         return TokenManager.getToken();
