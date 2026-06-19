@@ -16,6 +16,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Running Tests](#running-tests)
+- [Flaky Test Retry Mechanism](#flaky-test-retry-mechanism)
 - [Continuous Integration (CI)](#continuous-integration-ci)
 
 ---
@@ -36,6 +37,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Modular API Client Layer**: Implements dedicated Api classes (`com.grocerystore.apis.*`) mirroring the target API's domain modules (Cart, Orders, Products, Users). Each class wraps low-level HTTP mechanics—such as endpoint URLs, path variables, query parameters, and HTTP verbs—into strongly typed Java methods (e.g., `OrdersApi.getOrderById()`). This prevents raw HTTP details from leaking into test files, ensuring that any server-side endpoint changes only require updates in a single, centralized location.
 - **Reusable Business Workflows (Steps Layer)**: Implements an intermediate Steps Layer (`com.grocerystore.steps.*`) that encapsulates complex, multi-endpoint API sequences (e.g., cart initialization, product selection, and checkout) into single, reusable actions. This reduces code duplication, abstracts low-level REST execution details, simplifies framework maintenance, and enhances test case readability.
 - **Targeted Test Grouping & Suite Customization**: Leverages TestNG groups to support multi-layered execution schemes. Categorizes tests by Execution Phase (`smoke`, `regression`, `e2e`), Functional Module (`auth`, `products`, `cart`, `orders`), and behavioral profiles (`happy-path`, `validation`). Enables executing specific test groups dynamically via Maven command-line arguments (`-Dgroups`) or executing targeted execution suite XML configurations.
+- **Automatic Flaky Test Retry**: Features a TestNG `IRetryAnalyzer` listener that automatically detects failed test cases and retries them up to a configurable number of times. This filters out transient network issues, API rate limits, or server hiccups, ensuring stable CI execution.
 
 ### 4. Parallel Execution & Thread Safety
 - **Independent Test Design & Parallel Execution**: Engineered for high-throughput concurrency by executing test methods in parallel threads via TestNG XML suite files. Every automated test case is written to be fully independent—utilizing isolated, dynamic runtime data (such as fresh cart IDs, order IDs, and Faker data) so that parallel tests never experience resource conflicts or cross-test state leaks.
@@ -114,11 +116,16 @@ The automation suite covers the following API modules:
     │                   └── Client_Token_Generation_Flow.png # Authentication flow diagram
     └── test/
         ├── resources/
-        │   ├── config.properties       # Configuration details (token, client details)
+        │   ├── config.properties       # Configuration details (token, client details, retry limit)
+        │   ├── META-INF/services/
+        │   │   └── org.testng.ITestNGListener # SPI registration for listeners
         │   └── schemas/                # Predefined JSON schemas for contract testing & validation
         └── java/
             └── com/
                 └── grocerystore/
+                    ├── listeners/      # TestNG Custom Listeners (Retry, AnnotationTransformer)
+                    │   ├── AnnotationTransformer.java
+                    │   └── Retry.java
                     └── testcases/  # TestNG Suites (Auth, Cart, Order, Product)
                         ├── auth/   # Client registration and validation suites
                         ├── cart/   # Cart management and boundary suites
@@ -145,6 +152,7 @@ Update the values in the [config.properties](file:///d:/Edu/Omar%20Courses-Refer
 - **`env`**: The target execution environment (`production` or `testing`). Defaults to `production`.
 - **`api.token`**: If left blank, the suite dynamically registers a fresh client per thread. Provide a pre-existing token here to run all tests under that single token.
 - **`client.name` / `client.email`**: Default client credentials for registrations. Leave blank to generate dynamically via JavaFaker.
+- **`retry.limit`**: The maximum number of automatic retries for a failed test. Defaults to `2`. Set to `0` to disable retries.
 
 ---
 
@@ -271,6 +279,23 @@ Allure generates raw test execution results under the `target/allure-results` di
      allure generate target/allure-results --clean -o allure-report
      allure open allure-report
      ```
+
+---
+
+## Flaky Test Retry Mechanism
+
+To handle transient network latency, random timeouts, or minor server glitches, the framework integrates an automatic retry mechanism.
+
+### Architectural Flow
+1. **Dynamic Registration**: The framework registers the [AnnotationTransformer](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/java/com/grocerystore/listeners/AnnotationTransformer.java) using Java's Service Provider Interface (SPI) at [org.testng.ITestNGListener](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/META-INF/services/org.testng.ITestNGListener).
+2. **Annotation Binding**: At suite startup, the transformer programmatically assigns the [Retry](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/java/com/grocerystore/listeners/Retry.java) class to every test method.
+3. **Execution**: If a test fails, the retry logic reads the configured limit from [config.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/config.properties), logs the attempt, and triggers a retry if the limit isn't exceeded.
+
+### Overriding at Runtime
+To change the retry threshold dynamically from your CLI (for example, in your GitHub Actions pipeline), you can pass a system property override:
+```bash
+mvn clean test -Dretry.limit=3
+```
 
 ---
 
