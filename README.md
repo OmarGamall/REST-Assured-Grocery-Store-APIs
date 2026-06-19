@@ -41,7 +41,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 
 ### 4. Parallel Execution & Thread Safety
 - **Independent Test Design & Parallel Execution**: Engineered for high-throughput concurrency by executing test methods in parallel threads via TestNG XML suite files. Every automated test case is written to be fully independent—utilizing isolated, dynamic runtime data (such as fresh cart IDs, order IDs, and Faker data) so that parallel tests never experience resource conflicts or cross-test state leaks.
-- **Automatic & Isolated Token Management**: Dynamically resolves and caches authentication tokens on a per-thread basis using `ThreadLocal` to support parallel execution. It checks for a pre-configured `api.token` in `config.properties`, or lazily registers a new client using configured credentials or Faker-generated values, caching the token at the thread level to eliminate duplicate registration requests and thread contention.
+- **Automatic & Shared Token Caching**: Dynamically resolves and caches a single authentication token globally using a thread-safe, volatile static reference. It checks for a pre-configured `api.token` in `config.properties`, or lazily registers a new client once per suite execution using Faker-generated values, caching the token at the class level to eliminate duplicate registration requests and avoid memory leaks.
 
 ### 5. Data Generation & Serialization
 - **Dynamic Test Data**: Leverages JavaFaker to dynamically produce unique names, emails, and comments for registration and order creation.
@@ -123,9 +123,10 @@ The automation suite covers the following API modules:
         └── java/
             └── com/
                 └── grocerystore/
-                    ├── listeners/      # TestNG Custom Listeners (Retry, AnnotationTransformer)
+                    ├── listeners/      # TestNG Custom Listeners (Retry, AnnotationTransformer, TokenCleanupListener)
                     │   ├── AnnotationTransformer.java
-                    │   └── Retry.java
+                    │   ├── Retry.java
+                    │   └── TokenCleanupListener.java
                     └── testcases/  # TestNG Suites (Auth, Cart, Order, Product)
                         ├── auth/   # Client registration and validation suites
                         ├── cart/   # Cart management and boundary suites
@@ -150,7 +151,7 @@ Before running the tests, ensure you have the following installed on your machin
 ### Configuration Setup
 Update the values in the [config.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/config.properties) file to establish target execution defaults:
 - **`env`**: The target execution environment (`production` or `testing`). Defaults to `production`.
-- **`api.token`**: If left blank, the suite dynamically registers a fresh client per thread. Provide a pre-existing token here to run all tests under that single token.
+- **`api.token`**: If left blank, the suite dynamically registers a fresh client once per suite run. Provide a pre-existing token here to run all tests under that single token.
 - **`client.name` / `client.email`**: Default client credentials for registrations. Leave blank to generate dynamically via JavaFaker.
 - **`retry.limit`**: The maximum number of automatic retries for a failed test. Defaults to `2`. Set to `0` to disable retries.
 
@@ -189,28 +190,23 @@ This is managed centrally inside the master [testng.xml](file:///d:/Edu/Omar%20C
 
 To change the thread count or parallel mode, simply modify the `thread-count` and `parallel` attributes in the active TestNG XML suite file.
 
-#### Thread-Isolated Token Management (ThreadLocal)
-To support high-throughput parallel execution, the [TokenManager](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/main/java/com/grocerystore/utils/TokenManager.java) caches client access tokens using a thread-isolated `ThreadLocal<String>` container rather than a globally synchronized static lock.
+#### Shared Token Caching & Lifecycle Management
+To support high-throughput parallel execution with minimal overhead, the [TokenManager](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/main/java/com/grocerystore/utils/TokenManager.java) caches a single, globally shared client access token. This design eliminates complex thread-locals, resolves memory leaks, and isolates test runs.
 
-##### 1. Why `ThreadLocal`?
-* **Elimination of Synchronization Locks:** The previous implementation used a `synchronized` static method, which forced threads to queue up and wait for one another to release the lock, creating a performance bottleneck.
-* **Race Condition Prevention:** It ensures that multiple concurrent threads do not overwrite each other's access tokens when initiating registration requests simultaneously.
+##### 1. How Caching and Thread Safety Work
+* **Globally Shared Cache:** A single static token is cached globally and shared across all parallel execution threads. 
+* **Lock-Free Reads (Double-Checked Locking):** We use a `volatile` static reference combined with a synchronized double-checked lock. Once the token is resolved by the first thread, all subsequent threads read the token lock-free and instantly, introducing zero synchronization overhead.
+* **Minimal API Pollutions:** The entire suite execution registers exactly **one** API client, rather than one per thread or one per test method.
 
-##### 2. Why Thread-Level Caching?
-* We cache the generated token per thread so that if a single worker thread executes multiple test methods sequentially, it reuses its thread-local token. 
-* This prevents redundant client registration requests, significantly reducing API network traffic and avoiding rate limits on the target API.
+##### 2. Lifecycle Cleanup and Run Isolation
+* **TokenCleanupListener:** We registered a TestNG execution listener (`TokenCleanupListener` implementing `IExecutionListener`) via SPI. 
+  * At the start of a run (`onExecutionStart`), it clears the token to prevent token bleed when Surefire reuses JVMs.
+  * At the end of a run (`onExecutionFinish`), it clears the token from memory to prevent memory leaks.
 
-##### 3. Why We Do Not Clear Tokens Between Test Methods
-* If we cleared the token in an `@AfterMethod` hook, it would immediately destroy the cache. This would force a new client registration for every single test method execution, creating high network overhead.
-* **Automatic Teardown:** Once all tests finish, TestNG shuts down the worker thread pool, causing the threads to be destroyed. Java then automatically garbage-collects the internal thread-local maps, ensuring zero memory leaks.
-
-##### 4. Pros & Cons of This Solution
-* **Pros:**
-  * **High Throughput:** Absolute lock-free execution for parallel test threads.
-  * **Capped Resource Usage:** Limits registrations to the size of the thread pool (at most 10 registrations for 10 threads, rather than 50+).
-  * **Automated Cleanup:** Relying on TestNG thread pool shutdown and JVM exit removes the need for complex, manual teardown code.
-* **Cons:**
-  * **Shared Client State per Thread:** Tests executed sequentially on the same thread share the same client registration. (However, since each test method creates and works on its own isolated `cartId` and `orderId`, they remain fully independent).
+##### 3. Conditional Stale Token Refresh
+* If a token expires mid-suite, the failing test is automatically retried by the TestNG `Retry` analyzer. 
+* Inside `Retry.java`, we inspect the failure exception. If it is an authentication failure (containing `401`, `Unauthorized`, or `bearer token`), it calls `TokenManager.clearToken()`. 
+* On the retried attempt, the first call to `getToken()` resolves a fresh token seamlessly, while normal assertion/validation failures bypass this cleanup and reuse the cached token.
 
 ### Group-Based Execution (TestNG Groups)
 The framework supports running targeted subsets of tests using **TestNG Groups**. Tests are categorized across three layers:

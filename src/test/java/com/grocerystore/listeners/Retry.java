@@ -1,6 +1,7 @@
 package com.grocerystore.listeners;
 
 import com.grocerystore.utils.ConfigLoader;
+import com.grocerystore.utils.TokenManager;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
@@ -27,6 +28,17 @@ public class Retry implements IRetryAnalyzer {
             if (count < MAX_LIMIT) {
                 count++;
                 System.out.println("Retrying test " + result.getName() + " for the " + count + " time(s) out of " + MAX_LIMIT);
+                
+                // Clear cached token only if the failure is likely related to authentication/unauthorized (401)
+                Throwable throwable = result.getThrowable();
+                if (throwable != null) {
+                    String msg = throwable.toString().toLowerCase();
+                    if (msg.contains("401") || msg.contains("unauthorized") || msg.contains("bearer token")) {
+                        System.out.println("[Retry] Test failed with authentication issue. Evicting stale token from cache...");
+                        TokenManager.clearToken();
+                    }
+                }
+                
                 return true;
             }
         }
