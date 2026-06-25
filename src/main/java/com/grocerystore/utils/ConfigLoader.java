@@ -9,20 +9,39 @@ public class ConfigLoader {
 
     static {
         try (InputStream is = ConfigLoader.class.getClassLoader().getResourceAsStream("config.properties")) {
-            if (is != null) {
-                properties.load(is);
+            if (is == null) {
+                throw new RuntimeException("config.properties file not found in resources folder");
             }
+            properties.load(is);
         } catch (IOException e) {
             throw new RuntimeException("Could not load config.properties file", e);
         }
     }
 
+    /**
+     * Retrieves value for the given key from System properties (takes precedence)
+     * or defaults to the properties file.
+     *
+     * @param key the property key to look up
+     * @return the property value, or null if not found
+     */
     public static String getProperty(String key) {
-        // System property takes precedence (e.g. passed via maven command line -Dkey=value)
-        String value = System.getProperty(key);
-        if (value == null) {
-            value = properties.getProperty(key);
+        String systemProperty = System.getProperty(key);
+        if (systemProperty != null) {
+            return systemProperty;
         }
-        return value;
+        return properties.getProperty(key);
+    }
+
+    /**
+     * Retrieves value for the given key. Returns defaultValue if the key is not found.
+     *
+     * @param key the property key to look up
+     * @param defaultValue fallback value
+     * @return the property value, or defaultValue if not found
+     */
+    public static String getProperty(String key, String defaultValue) {
+        String value = getProperty(key);
+        return value != null ? value : defaultValue;
     }
 }
