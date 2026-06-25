@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 import com.grocerystore.apis.ProductApi;
 import com.grocerystore.models.product.ProductsQueryParams;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 @Test(groups = {"products", "validation"})
 public class GetProductsValidationTest extends BaseTest {
@@ -14,7 +15,7 @@ public class GetProductsValidationTest extends BaseTest {
         Response response = ProductApi.getAllProducts("invalid-category", null, null);
         
         // Verify response code and error details
-        assertErrorResponse(response, 400, "Invalid value for query parameter 'category'");
+        assertErrorResponse(response, 400, INVALID_CATEGORY_QUERY_PARAM);
     }
 
     @Test(groups = {"regression"}, description = "TC_PROD_008: Verify error when results parameter is below 0")
@@ -24,7 +25,7 @@ public class GetProductsValidationTest extends BaseTest {
         Response response = ProductApi.getAllProducts(queryParams);
         
         // Verify response code and error details
-        assertErrorResponse(response, 400, "Invalid value for query parameter 'results'");
+        assertErrorResponse(response, 400, INVALID_RESULTS_QUERY_PARAM);
     }
 
     @Test(groups = {"regression"}, description = "TC_PROD_009: Verify error when results parameter exceeds 20")
@@ -34,6 +35,6 @@ public class GetProductsValidationTest extends BaseTest {
         Response response = ProductApi.getAllProducts(queryParams);
         
         // Verify response code and error details
-        assertErrorResponse(response, 400, "Invalid value for query parameter 'results'");
+        assertErrorResponse(response, 400, INVALID_RESULTS_QUERY_PARAM);
     }
 }

@@ -9,6 +9,7 @@ import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), invalidProductId, 1);
 
         // 3. Assert
-        assertErrorResponse(replaceResponse, 400, "Invalid or missing productId");
+        assertErrorResponse(replaceResponse, 400, INVALID_PRODUCT_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_034: Verify error when replacing item with invalid cartId")
@@ -40,7 +41,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response replaceResponse = CartApi.replaceCartItem(invalidCartId, cartItem.getItemId(), cartItem.getProductId(), 1);
 
         // 3. Assert
-        assertErrorResponse(replaceResponse, 404, "No cart with id");
+        assertErrorResponse(replaceResponse, 404, NO_CART_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_035: Verify error when replacing item with invalid itemId")
@@ -54,7 +55,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, invalidItemId, cartItem.getProductId(), 1);
 
         // 3. Assert
-        assertErrorResponse(replaceResponse, 404, "No item with id");
+        assertErrorResponse(replaceResponse, 404, NO_ITEM_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_036: Verify error when replacing item with out-of-stock product")
@@ -68,7 +69,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), nonAvailableProduct.getId(), 1);
 
         // 3. Assert
-        assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
+        assertErrorResponse(replaceResponse, 400, QUANTITY_NOT_AVAILABLE);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_037: Verify error when replacement quantity exceeds stock")
@@ -85,7 +86,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), initialProduct.getId(), quantityExceedingStock);
 
         // 3. Assert
-        assertErrorResponse(replaceResponse, 400, "The quantity requested is not available in stock");
+        assertErrorResponse(replaceResponse, 400, QUANTITY_NOT_AVAILABLE);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_038: Verify error when replacing item with negative quantity")
@@ -98,7 +99,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), cartItem.getProductId(), -5);
 
         // 3. Assert
-        assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
+        assertErrorResponse(replaceResponse, 400, INVALID_QUANTITY);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_039: Verify error when replacing item with quantity 0")
@@ -111,7 +112,7 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response replaceResponse = CartApi.replaceCartItem(cartId, cartItem.getItemId(), cartItem.getProductId(), 0);
 
         // 3. Assert
-        assertErrorResponse(replaceResponse, 400, "Invalid or missing quantity");
+        assertErrorResponse(replaceResponse, 400, INVALID_QUANTITY);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_040: Verify error when replacing item with mismatched cartId")
@@ -126,6 +127,6 @@ public class ReplaceItemValidationTest extends BaseTest {
         Response response = CartApi.replaceCartItem(cartBId, cartItemA.getItemId(), productB.getId(), 1);
 
         // 3. Assert
-        assertErrorResponse(response, 404, "No item with id");
+        assertErrorResponse(response, 404, NO_ITEM_WITH_ID);
     }
 }

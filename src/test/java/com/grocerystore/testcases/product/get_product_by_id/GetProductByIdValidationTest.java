@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import com.grocerystore.apis.ProductApi;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 @Test(groups = {"products", "validation"})
 public class GetProductByIdValidationTest extends BaseTest {
@@ -14,6 +15,6 @@ public class GetProductByIdValidationTest extends BaseTest {
         Response response = ProductApi.getProductById(productId);
         
         // Verify response code and error details
-        assertErrorResponse(response, 404, "No product with id " + productId);
+        assertErrorResponse(response, 404, NO_PRODUCT_WITH_ID + " " + productId);
     }
 }

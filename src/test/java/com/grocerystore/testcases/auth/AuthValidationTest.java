@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 import com.grocerystore.apis.UserApi;
 import com.grocerystore.models.client.Client;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 @Test(groups = {"auth", "validation"})
 public class AuthValidationTest extends BaseTest {
@@ -18,7 +19,7 @@ public class AuthValidationTest extends BaseTest {
         Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
         
         // Verify response code and error details
-        assertErrorResponse(response, 400, "missing client email");
+        assertErrorResponse(response, 400, MISSING_CLIENT_EMAIL);
     }
 
     @Test(groups = {"regression"}, description = "TC_AUTH_003: Verify error when clientName is missing")
@@ -29,7 +30,7 @@ public class AuthValidationTest extends BaseTest {
         Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
         
         // Verify response code and error details
-        assertErrorResponse(response, 400, "missing client name");
+        assertErrorResponse(response, 400, MISSING_CLIENT_NAME);
     }
 
     @Test(groups = {"regression"}, description = "TC_AUTH_004: Verify error when clientEmail has invalid format")
@@ -42,7 +43,7 @@ public class AuthValidationTest extends BaseTest {
         Response response = UserApi.registerClient(clientData); // Use the UserApi to register the client
         
         // Verify response code and error details
-        assertErrorResponse(response, 400, "Invalid or missing client email");
+        assertErrorResponse(response, 400, INVALID_CLIENT_EMAIL);
     }
 
     @Test(groups = {"regression"}, description = "TC_AUTH_005: Verify error when client email already exists")
@@ -63,6 +64,6 @@ public class AuthValidationTest extends BaseTest {
         Response response = UserApi.registerClient(clientData2); // Attempt to register the second client
 
         // Verify response code and error details
-        assertErrorResponse(response, 409, "API client already registered. Try a different email");
+        assertErrorResponse(response, 409, CLIENT_EMAIL_ALREADY_EXISTS);
     }
 }

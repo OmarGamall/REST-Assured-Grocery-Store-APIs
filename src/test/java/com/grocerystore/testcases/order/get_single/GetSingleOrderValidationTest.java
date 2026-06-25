@@ -11,6 +11,7 @@ import com.grocerystore.steps.CartSteps;
 import com.grocerystore.steps.ClientSteps;
 import com.grocerystore.steps.OrderSteps;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 import static org.testng.Assert.assertEquals;
 
@@ -23,7 +24,7 @@ public class GetSingleOrderValidationTest extends BaseTest {
         Response response = OrdersApi.getOrderById("invalid_token_12345", "some-order-id");
 
         // Assert
-        assertErrorResponse(response, 401, "bearer token");
+        assertErrorResponse(response, 401, BEARER_TOKEN);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_021: Verify error when retrieving order with non-existent orderId")
@@ -32,25 +33,25 @@ public class GetSingleOrderValidationTest extends BaseTest {
         Response response = OrdersApi.getOrderById(getToken(), "non_existent_order_id_12345");
 
         // Assert
-        assertErrorResponse(response, 404, "No order with id");
+        assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_022: Verify error when retrieving order belonging to another client")
     public void testGetSingleOrderBelongingToDifferentClient() {
         // Arrange - Register another client and place an order under their account
-        String FirstClientToken = ClientSteps.registerClientAndGetToken();
+        String firstClientToken = ClientSteps.registerClientAndGetToken();
         
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        com.grocerystore.models.order.Order order = OrderSteps.createOrderAndGetOrderDetails(FirstClientToken, cartId, "Other Customer");
+        com.grocerystore.models.order.Order order = OrderSteps.createOrderAndGetOrderDetails(firstClientToken, cartId, "Other Customer");
         String orderId = order.getId();
 
         // Act - Attempt to retrieve other client's order using our main token
-        String SecondClientToken = ClientSteps.registerClientAndGetToken();
-        Response response = OrdersApi.getOrderById(SecondClientToken, orderId);
+        String secondClientToken = ClientSteps.registerClientAndGetToken();
+        Response response = OrdersApi.getOrderById(secondClientToken, orderId);
 
         // Assert - Should return 404 Not Found (or 404 No order with id)
-        assertErrorResponse(response, 404, "No order with id");
+        assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
     }
 }

@@ -9,6 +9,7 @@ import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 import static org.testng.Assert.assertEquals;
 
@@ -30,7 +31,7 @@ public class CreateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.createOrder("invalid_token_12345", orderRequest);
 
         // Assert
-        assertErrorResponse(response, 401, "Invalid bearer token");
+        assertErrorResponse(response, 401, INVALID_BEARER_TOKEN);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_004: Verify error when placing order with empty cart")
@@ -46,7 +47,7 @@ public class CreateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
 
         // Assert
-        assertErrorResponse(response, 400, "cart is empty");
+        assertErrorResponse(response, 400, CART_IS_EMPTY);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_005: Verify error when placing order with invalid cartId")
@@ -61,7 +62,7 @@ public class CreateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
 
         // Assert
-        assertErrorResponse(response, 400, "cartId");
+        assertErrorResponse(response, 400, CART_ID_REQUIRED);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_006: Verify error when customerName is missing or null")
@@ -79,7 +80,7 @@ public class CreateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
 
         // Assert
-        assertErrorResponse(response, 400, "customer name");
+        assertErrorResponse(response, 400, CUSTOMER_NAME_REQUIRED);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_007: Verify error when placing duplicate order using same cartId")
@@ -102,7 +103,7 @@ public class CreateOrderValidationTest extends BaseTest {
         Response secondResponse = OrdersApi.createOrder(getToken(), orderRequest);
 
         // Assert
-        assertErrorResponse(secondResponse, 400, "Invalid or missing cartId");
+        assertErrorResponse(secondResponse, 400, INVALID_OR_MISSING_CART_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_008: Verify error when customerName is empty")
@@ -121,7 +122,7 @@ public class CreateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
 
         // Assert
-        assertErrorResponse(response, 400, "customer name");
+        assertErrorResponse(response, 400, CUSTOMER_NAME_REQUIRED);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_009: Verify error when comment is excessively long")
@@ -142,6 +143,6 @@ public class CreateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.createOrder(getToken(), orderRequest);
 
         // Assert
-        assertErrorResponse(response, 400, "comment");
+        assertErrorResponse(response, 400, COMMENT_LIMIT);
     }
 }

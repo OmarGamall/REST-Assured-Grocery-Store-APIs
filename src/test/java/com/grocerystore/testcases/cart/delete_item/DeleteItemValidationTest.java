@@ -9,6 +9,7 @@ import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ public class DeleteItemValidationTest extends BaseTest {
 
         // 3. Assert
         assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
-        assertErrorResponse(secondDeleteResponse, 404, "No item with id");
+        assertErrorResponse(secondDeleteResponse, 404, NO_ITEM_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_016: Verify error when deleting with invalid cartId")
@@ -45,7 +46,7 @@ public class DeleteItemValidationTest extends BaseTest {
         Response deleteResponse = CartApi.deleteCartItem(invalidCartId, itemId);
 
         // 3. Assert
-        assertErrorResponse(deleteResponse, 404, "No cart with id");
+        assertErrorResponse(deleteResponse, 404, NO_CART_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_017: Verify error when deleting with invalid itemId")
@@ -59,7 +60,7 @@ public class DeleteItemValidationTest extends BaseTest {
         Response deleteResponse = CartApi.deleteCartItem(cartId, invalidItemId);
 
         // 3. Assert
-        assertErrorResponse(deleteResponse, 404, "No item with id");
+        assertErrorResponse(deleteResponse, 404, NO_ITEM_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_018: Verify error when deleting item from empty cart")
@@ -72,7 +73,7 @@ public class DeleteItemValidationTest extends BaseTest {
         Response deleteResponse = CartApi.deleteCartItem(cartId, itemId);
 
         // 3. Assert
-        assertErrorResponse(deleteResponse, 404, "No item with id");
+        assertErrorResponse(deleteResponse, 404, NO_ITEM_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_019: Verify error when deleting item using mismatched cartId")
@@ -87,6 +88,6 @@ public class DeleteItemValidationTest extends BaseTest {
         Response deleteResponse = CartApi.deleteCartItem(cartBId, itemIdA);
 
         // 3. Assert
-        assertErrorResponse(deleteResponse, 404, "No item with id");
+        assertErrorResponse(deleteResponse, 404, NO_ITEM_WITH_ID);
     }
 }

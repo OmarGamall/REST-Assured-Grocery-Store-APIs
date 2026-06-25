@@ -9,6 +9,7 @@ import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
 import com.grocerystore.steps.CartSteps;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 @Test(groups = {"cart", "validation"})
 public class ModifyItemValidationTest extends BaseTest {
@@ -27,7 +28,7 @@ public class ModifyItemValidationTest extends BaseTest {
         Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), quantityExceedingStock);
 
         // 3. Assert
-        assertErrorResponse(response, 400, "The quantity requested is not available in stock");
+        assertErrorResponse(response, 400, QUANTITY_NOT_AVAILABLE);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_023: Verify error when modifying quantity to 0")
@@ -40,7 +41,7 @@ public class ModifyItemValidationTest extends BaseTest {
         Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), 0);
 
         // 3. Assert
-        assertErrorResponse(response, 400, "Invalid or missing quantity");
+        assertErrorResponse(response, 400, INVALID_QUANTITY);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_024: Verify error when modifying quantity to negative")
@@ -53,7 +54,7 @@ public class ModifyItemValidationTest extends BaseTest {
         Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), -5);
 
         // 3. Assert
-        assertErrorResponse(response, 400, "Invalid or missing quantity");
+        assertErrorResponse(response, 400, INVALID_QUANTITY);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_025: Verify error when modifying with invalid itemId")
@@ -67,7 +68,7 @@ public class ModifyItemValidationTest extends BaseTest {
         Response response = CartApi.modifyCartItem(cartId, invalidItemId, 2);
 
         // 3. Assert
-        assertErrorResponse(response, 404, "No item with id");
+        assertErrorResponse(response, 404, NO_ITEM_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_026: Verify error when modifying with invalid cartId")
@@ -81,7 +82,7 @@ public class ModifyItemValidationTest extends BaseTest {
         Response response = CartApi.modifyCartItem(invalidCartId, cartItem.getItemId(), 2);
 
         // 3. Assert
-        assertErrorResponse(response, 404, "No cart with id");
+        assertErrorResponse(response, 404, NO_CART_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_027: Verify error when modified quantity is missing or null")
@@ -94,7 +95,7 @@ public class ModifyItemValidationTest extends BaseTest {
         Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), null); // Pass null for quantity
 
         // 3. Assert
-        assertErrorResponse(response, 404, "Invalid or missing quantity");
+        assertErrorResponse(response, 404, INVALID_QUANTITY);
     }
 
     @Test(groups = {"regression"}, description = "TC_CART_028: Verify error when modifying item with mismatched cartId")
@@ -108,6 +109,6 @@ public class ModifyItemValidationTest extends BaseTest {
         Response response = CartApi.modifyCartItem(cartBId, cartItem.getItemId(), 2);
 
         // 3. Assert
-        assertErrorResponse(response, 404, "No item with id");
+        assertErrorResponse(response, 404, NO_ITEM_WITH_ID);
     }
 }

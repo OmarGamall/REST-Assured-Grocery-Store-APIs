@@ -11,6 +11,7 @@ import com.grocerystore.steps.CartSteps;
 import com.grocerystore.steps.ClientSteps;
 import com.grocerystore.steps.OrderSteps;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 import static org.testng.Assert.assertEquals;
 
@@ -23,7 +24,7 @@ public class DeleteOrderValidationTest extends BaseTest {
         Response response = OrdersApi.deleteOrder("invalid_token_12345", "some-order-id");
 
         // Assert
-        assertErrorResponse(response, 401, "bearer token");
+        assertErrorResponse(response, 401, BEARER_TOKEN);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_012: Verify error when deleting order with missing token")
@@ -31,7 +32,7 @@ public class DeleteOrderValidationTest extends BaseTest {
         // Act
         Response response = OrdersApi.deleteOrder(null, "some-order-id");
         // Assert
-        assertErrorResponse(response, 401, "bearer token");
+        assertErrorResponse(response, 401, BEARER_TOKEN);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_013: Verify error when deleting same order a second time")
@@ -47,7 +48,7 @@ public class DeleteOrderValidationTest extends BaseTest {
         Response secondDeleteResponse = OrdersApi.deleteOrder(getToken(), orderId);
 
         // Assert - Should return 404 (No order with id) since it's already deleted
-        assertErrorResponse(secondDeleteResponse, 404, "No order with id " + orderId);
+        assertErrorResponse(secondDeleteResponse, 404, NO_ORDER_WITH_ID + " " + orderId);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_014: Verify error when deleting non-existent orderId")
@@ -56,25 +57,25 @@ public class DeleteOrderValidationTest extends BaseTest {
         Response response = OrdersApi.deleteOrder(getToken(), "non_existent_order_id_12345");
 
         // Assert
-        assertErrorResponse(response, 404, "No order with id");
+        assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_015: Verify error when deleting order belonging to another client")
     public void testDeleteOrderBelongingToDifferentClient() {
         // Arrange - Register other client and place an order
-        String FirstClientToken = ClientSteps.registerClientAndGetToken();
+        String firstClientToken = ClientSteps.registerClientAndGetToken();
         
         String cartId = CartSteps.createCartAndGetId();
         CartSteps.addRandomItemToCart(cartId);
 
-        com.grocerystore.models.order.Order order = OrderSteps.createOrderAndGetOrderDetails(FirstClientToken, cartId, "Original Name");
+        com.grocerystore.models.order.Order order = OrderSteps.createOrderAndGetOrderDetails(firstClientToken, cartId, "Original Name");
         String orderId = order.getId();
 
         // Act - Attempt to delete First client's order using other client's token
-        String SecondClientToken = ClientSteps.registerClientAndGetToken();
-        Response response = OrdersApi.deleteOrder(SecondClientToken, orderId);
+        String secondClientToken = ClientSteps.registerClientAndGetToken();
+        Response response = OrdersApi.deleteOrder(secondClientToken, orderId);
 
         // Assert - Should return 404 (No order with id)
-        assertErrorResponse(response, 404, "No order with id");
+        assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
     }
 }

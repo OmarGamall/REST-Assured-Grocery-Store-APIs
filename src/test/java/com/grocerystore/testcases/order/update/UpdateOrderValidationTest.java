@@ -12,6 +12,7 @@ import com.grocerystore.steps.CartSteps;
 import com.grocerystore.steps.ClientSteps;
 import com.grocerystore.steps.OrderSteps;
 import com.grocerystore.testcases.BaseTest;
+import static com.grocerystore.constants.ErrorMessages.*;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -32,7 +33,7 @@ public class UpdateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.updateOrder("invalid_token_12345", order.getId(), updateRequest);
 
         // Assert
-        assertErrorResponse(response, 401, "bearer token");
+        assertErrorResponse(response, 401, BEARER_TOKEN);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_025: Verify error when updating order with non-existent orderId")
@@ -47,7 +48,7 @@ public class UpdateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.updateOrder(getToken(), "non_existent_order_id_12345", updateRequest);
 
         // Assert
-        assertErrorResponse(response, 404, "No order with id");
+        assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
     }
 
     @Test(groups = {"regression"}, description = "TC_ORDER_026: Verify error when updating order belonging to another client")
@@ -73,7 +74,7 @@ public class UpdateOrderValidationTest extends BaseTest {
         Response response = OrdersApi.updateOrder(secondClientToken, orderId, updateRequest);
 
         // Assert - Should return 404 (No order with id)
-        assertErrorResponse(response, 404, "No order with id");
+        assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
 
     }
 }
