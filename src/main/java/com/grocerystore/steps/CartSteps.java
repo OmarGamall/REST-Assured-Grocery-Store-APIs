@@ -96,7 +96,7 @@ public class CartSteps {
     /**
      * Adds multiple items to the cart and returns the updated list of cart items.
      */
-    public static CartItem[] AddMultipleRandomItemsToCart(String cartId , int numberOfItemsToAdd) {
+    public static CartItem[] addMultipleRandomItemsToCart(String cartId , int numberOfItemsToAdd) {
         Product[] products = new Product[numberOfItemsToAdd];
         Product productToAdd = null;
         int[] quantities = new int[numberOfItemsToAdd];

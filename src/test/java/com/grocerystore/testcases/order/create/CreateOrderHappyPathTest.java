@@ -65,7 +65,7 @@ public class CreateOrderHappyPathTest extends BaseTest {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
         int numberOfItemsToAdd = 5;
-        CartItem[] cartItems = CartSteps.AddMultipleRandomItemsToCart(cartId, numberOfItemsToAdd); // Add 5 random items to the cart
+        CartItem[] cartItems = CartSteps.addMultipleRandomItemsToCart(cartId, numberOfItemsToAdd); // Add 5 random items to the cart
         String customerName = FAKER.name().fullName();
         String comment = FAKER.lorem().sentence();
         OrderRequest orderRequest = OrderRequest.builder()
