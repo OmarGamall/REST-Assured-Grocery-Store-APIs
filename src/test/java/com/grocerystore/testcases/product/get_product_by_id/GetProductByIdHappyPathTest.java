@@ -2,6 +2,7 @@ package com.grocerystore.testcases.product.get_product_by_id;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.ProductApi;
 import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
@@ -27,9 +28,11 @@ public class GetProductByIdHappyPathTest extends BaseTest {
         Product responseProduct = response.as(Product.class);
         
         // Test the Response Body
-        assertEquals(responseProduct.getId(), product.getId(), "Product ID is not correct");
-        assertEquals(responseProduct.getCategory(), product.getCategory(), "Product category is not correct");
-        assertEquals(responseProduct.getName(), product.getName(), "Product name is not correct");
-        assertTrue(responseProduct.isInStock(), "Product stock status is not correct");
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(responseProduct.getId(), product.getId(), "Product ID is not correct");
+        softAssert.assertEquals(responseProduct.getCategory(), product.getCategory(), "Product category is not correct");
+        softAssert.assertEquals(responseProduct.getName(), product.getName(), "Product name is not correct");
+        softAssert.assertTrue(responseProduct.isInStock(), "Product stock status is not correct");
+        softAssert.assertAll();
     }
 }
