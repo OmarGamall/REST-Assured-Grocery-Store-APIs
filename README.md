@@ -263,23 +263,30 @@ You can also run pre-configured TestNG XML suites defined in the root folder:
   ```
 
 ### Generating Allure Reports
-Allure generates raw test execution results under the `target/allure-results` directory. You can generate and view the interactive HTML report using the Allure Command Line Tool.
+Allure generates raw test execution results under the `target/allure-results` directory (configured via `src/test/resources/allure.properties` so it applies to both Maven CLI and IDE test runs).
 
-1. **Prerequisite**: Ensure Allure CLI is installed on your machine.
-2. **Execute Tests**: Run the Maven test command to generate the raw test execution results:
-   ```bash
-   mvn clean test
-   ```
-3. **Generate & Open Report**:
-   - To build and view the report dynamically in a local web browser server immediately:
-     ```bash
-     allure serve target/allure-results
-     ```
-   - To build a static, self-contained HTML report in the `allure-report` folder:
-     ```bash
-     allure generate target/allure-results --clean -o allure-report
-     allure open allure-report
-     ```
+#### Option A: Using the Allure Maven Plugin (Recommended)
+You do not need to install the Allure CLI locally. Run the following Maven commands:
+* **To build and serve the report dynamically in your default browser:**
+  ```bash
+  mvn allure:serve
+  ```
+* **To build a static, self-contained HTML report in the `target/allure-report` folder:**
+  ```bash
+  mvn allure:report
+  ```
+
+#### Option B: Using the Local Allure CLI Tool
+If you have the Allure Command Line Tool installed locally, you can run:
+* **To serve the report:**
+  ```bash
+  allure serve target/allure-results
+  ```
+* **To generate a static report inside `target/allure-report`:**
+  ```bash
+  allure generate target/allure-results --clean -o target/allure-report
+  allure open target/allure-report
+  ```
 
 ---
 
