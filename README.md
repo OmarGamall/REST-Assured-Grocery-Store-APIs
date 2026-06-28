@@ -43,7 +43,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 
 ### 4. Parallel Execution & Thread Safety
 - **Independent Test Design & Parallel Execution**: Engineered for high-throughput concurrency by executing test methods in parallel threads via TestNG XML suite files. Every automated test case is written to be fully independent—utilizing isolated, dynamic runtime data (such as fresh cart IDs, order IDs, and Faker data) so that parallel tests never experience resource conflicts or cross-test state leaks.
-- **Automatic & Shared Token Caching**: Dynamically resolves and caches a single authentication token globally using a thread-safe, volatile static reference. It checks for a pre-configured `api.token` in `config.properties`, or lazily registers a new client once per suite execution using Faker-generated values, caching the token at the class level to eliminate duplicate registration requests and avoid memory leaks.
+- **Automatic & Shared Token Caching**: Dynamically resolves and caches a single authentication token globally using a thread-safe, volatile static reference. It checks for a pre-configured `api.token` in `client.properties`, or lazily registers a new client once per suite execution using Faker-generated values, caching the token at the class level to eliminate duplicate registration requests and avoid memory leaks.
 
 ### 5. Data Generation & Serialization
 - **Dynamic Test Data**: Leverages JavaFaker to dynamically produce unique names, emails, and comments for registration and order creation.
@@ -113,13 +113,15 @@ The automation suite covers the following API modules:
     │               ├── services/   # Business logic helper services (e.g. Products availability)
     │               ├── steps/      # Reusable business workflow steps implementing the Facade pattern
     │               └── utils/      # Technical utility tools
-    │                   ├── ConfigLoader.java # Properties loader configuration manager
+    │                   ├── PropertyReader.java # Properties loader configuration manager
     │                   ├── TokenManager.java # Dynamic token lifecycle management
     │                   ├── RestHelper.java   # Centralized HTTP builder client
     │                   └── Client_Token_Generation_Flow.png # Authentication flow diagram
     └── test/
         ├── resources/
-        │   ├── config.properties       # Configuration details (token, client details, retry limit)
+        │   ├── env.properties          # Target environment and base URLs configuration
+        │   ├── client.properties       # API client credentials configuration
+        │   ├── retry.properties        # Test retry limit configuration
         │   ├── META-INF/services/
         │   │   └── org.testng.ITestNGListener # SPI registration for listeners
         │   └── schemas/                # Predefined JSON schemas for contract testing & validation
@@ -152,11 +154,11 @@ Before running the tests, ensure you have the following installed on your machin
   - **Linux (Apt)**: `sudo apt-get install allure`
 
 ### Configuration Setup
-Update the values in the [config.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/config.properties) file to establish target execution defaults:
-- **`env`**: The target execution environment (`production` or `testing`). Defaults to `production`.
-- **`api.token`**: If left blank, the suite dynamically registers a fresh client once per suite run. Provide a pre-existing token here to run all tests under that single token.
-- **`client.name` / `client.email`**: Default client credentials for registrations. Leave blank to generate dynamically via JavaFaker.
-- **`retry.limit`**: The maximum number of automatic retries for a failed test. Defaults to `2`. Set to `0` to disable retries.
+Update the values in the split properties files under [src/test/resources](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources) to establish target execution defaults:
+- **`env`** (in [env.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/env.properties)): The target execution environment (`production` or `testing`). Defaults to `production`.
+- **`api.token`** (in [client.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/client.properties)): If left blank, the suite dynamically registers a fresh client once per suite run. Provide a pre-existing token here to run all tests under that single token.
+- **`client.name` / `client.email`** (in [client.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/client.properties)): Default client credentials for registrations. Leave blank to generate dynamically via JavaFaker.
+- **`retry.limit`** (in [retry.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/retry.properties)): The maximum number of automatic retries for a failed test. Defaults to `2`. Set to `0` to disable retries.
 
 ---
 
@@ -288,7 +290,7 @@ To handle transient network latency, random timeouts, or minor server glitches, 
 ### Architectural Flow
 1. **Dynamic Registration**: The framework registers the [AnnotationTransformer](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/java/com/grocerystore/listeners/AnnotationTransformer.java) using Java's Service Provider Interface (SPI) at [org.testng.ITestNGListener](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/META-INF/services/org.testng.ITestNGListener).
 2. **Annotation Binding**: At suite startup, the transformer programmatically assigns the [Retry](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/java/com/grocerystore/listeners/Retry.java) class to every test method.
-3. **Execution**: If a test fails, the retry logic reads the configured limit from [config.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/config.properties), logs the attempt, and triggers a retry if the limit isn't exceeded.
+3. **Execution**: If a test fails, the retry logic reads the configured limit from [retry.properties](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/test/resources/retry.properties), logs the attempt, and triggers a retry if the limit isn't exceeded.
 
 ### Overriding at Runtime
 To change the retry threshold dynamically from your CLI (for example, in your GitHub Actions pipeline), you can pass a system property override:

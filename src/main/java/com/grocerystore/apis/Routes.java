@@ -1,19 +1,19 @@
 package com.grocerystore.apis;
 
-import com.grocerystore.utils.ConfigLoader;
+import com.grocerystore.utils.PropertyReader;
 
 public class Routes {
     // Base URL dynamically resolved via system property or configuration
     public static final String BASE_URI = resolveBaseUri();
 
     private static String resolveBaseUri() {
-        String env = ConfigLoader.getProperty("env");
+        String env = PropertyReader.getProperty("env");
         if (env == null || env.trim().isEmpty()) {
             env = "production";
         }
         
         env = env.trim().toLowerCase();
-        String baseUrl = ConfigLoader.getProperty(env + ".baseUrl");
+        String baseUrl = PropertyReader.getProperty(env + ".baseUrl");
         if (baseUrl != null && !baseUrl.trim().isEmpty()) {
             return baseUrl;
         }

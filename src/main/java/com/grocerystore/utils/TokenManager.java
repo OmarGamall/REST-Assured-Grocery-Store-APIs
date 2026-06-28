@@ -19,15 +19,15 @@ public class TokenManager {
                 /* If another thread registered the client and updated cachedToken while this
                 /thread was waiting for the lock, this check prevents registering another client */
                 if (cachedToken == null) {
-                    String token = ConfigLoader.getProperty("api.token");
+                    String token = PropertyReader.getProperty("api.token");
 
                     if (token == null || token.trim().isEmpty()) {
                         System.out.println(String.format("[TokenManager - Thread: %s] " +
                                 "No custom api.token found. Resolving client credentials for registration...",
                                 Thread.currentThread().getName()));
                         
-                        String clientName = ConfigLoader.getProperty("client.name");
-                        String clientEmail = ConfigLoader.getProperty("client.email");
+                        String clientName = PropertyReader.getProperty("client.name");
+                        String clientEmail = PropertyReader.getProperty("client.email");
 
                         // Fallback to Faker for missing credentials
                         Faker faker = new Faker();

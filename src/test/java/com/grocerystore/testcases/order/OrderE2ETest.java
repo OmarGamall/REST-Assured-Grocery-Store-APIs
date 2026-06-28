@@ -46,6 +46,7 @@ public class OrderE2ETest extends BaseTest {
         // 4. Act & Assert - Retrieve Single Order
         Response getResponse = OrdersApi.getOrderById(getToken(), orderId);
         assertEquals(getResponse.getStatusCode(), 200, "Expected 200 status code for retrieving order");
+        assertResponseSchema(getResponse, "schemas/order-schema.json");
         Order order = getResponse.as(Order.class);
         softAssert.assertEquals(order.getId(), orderId, "Order ID mismatch in response");
         softAssert.assertEquals(order.getCustomerName(), "Omar Gamal", "Customer name mismatch in response");
@@ -89,9 +90,9 @@ public class OrderE2ETest extends BaseTest {
         // 7. Assert - Delete Order
         softAssert.assertEquals(deleteResponse.getStatusCode(), 204, "Expected 204 status code for successful deletion");
 
-        // 8. Verify Deletion Softly
+        // 8. Verify Deletion
         Response verifyGetResponse = OrdersApi.getOrderById(getToken(), orderId);
-        softAssert.assertEquals(verifyGetResponse.getStatusCode(), 404, "Expected 404 status code for deleted order");
+        assertErrorResponse(verifyGetResponse, 404, "No order with id " + orderId);
         
         softAssert.assertAll();
     }

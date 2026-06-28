@@ -1,6 +1,6 @@
 package com.grocerystore.listeners;
 
-import com.grocerystore.utils.ConfigLoader;
+import com.grocerystore.utils.PropertyReader;
 import com.grocerystore.utils.TokenManager;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
@@ -12,7 +12,7 @@ public class Retry implements IRetryAnalyzer {
     static {
         int limit = 0; // Default to 0 retries
         try {
-            String limitProp = ConfigLoader.getProperty("retry.limit");
+            String limitProp = PropertyReader.getProperty("retry.limit");
             if (limitProp != null) {
                 limit = Integer.parseInt(limitProp.trim());
             }
