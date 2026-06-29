@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.cart.CartItemResponse;
@@ -27,7 +28,6 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         Product initialProduct = ProductService.getRandomAvailableProduct();
         Product replacementProduct = ProductService.getRandomAvailableProductDifferentFromWithStock(initialProduct.getId(), 2);
 
-
         int initialQuantity = 1;
         int replacementQuantity = 2;
 
@@ -35,15 +35,19 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         String itemId = addResponse.getItemId();
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId(), replacementQuantity);
+        Response replaceResponse = Allure.step("Act: Replace cart item with new product ID: " + replacementProduct.getId() + " and quantity: " + replacementQuantity, () -> {
+            return CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId(), replacementQuantity);
+        });
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
-        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(replacementQuantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        Allure.step("Assert: Verify response status code is 204 and item in cart is updated with new product and quantity", () -> {
+            assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
+            assertEquals(cartItems[0].getQuantity(), Integer.valueOf(replacementQuantity), "Quantity mismatch after replacement");
+            assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -61,15 +65,19 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         String itemId = addResponse.getItemId();
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), product.getId(), replacementQuantity);
+        Response replaceResponse = Allure.step("Act: Replace cart item with same product and new quantity: " + replacementQuantity, () -> {
+            return CartApi.replaceCartItem(cartId, String.valueOf(itemId), product.getId(), replacementQuantity);
+        });
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch after replacement");
-        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(replacementQuantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        Allure.step("Assert: Verify response status code is 204 and quantity in cart is updated to 2", () -> {
+            assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch after replacement");
+            assertEquals(cartItems[0].getQuantity(), Integer.valueOf(replacementQuantity), "Quantity mismatch after replacement");
+            assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -86,15 +94,19 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         String itemId = addResponse.getItemId();
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId(), quantity);
+        Response replaceResponse = Allure.step("Act: Replace cart item with new product ID: " + replacementProduct.getId() + " and same quantity", () -> {
+            return CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId(), quantity);
+        });
 
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
-        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        Allure.step("Assert: Verify response status code is 204 and product ID in cart is updated", () -> {
+            assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
+            assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch after replacement");
+            assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -111,13 +123,18 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         String itemId = addResponse.getItemId();
 
         // 2. Act
-        Response replaceResponse = CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId()); // Pass null for quantity
+        Response replaceResponse = Allure.step("Act: Replace cart item with new product and missing quantity parameter", () -> {
+            return CartApi.replaceCartItem(cartId, String.valueOf(itemId), replacementProduct.getId()); // Pass null for quantity
+        });
+
         // 3. Assert
-        assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
-        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch after replacement");
-        assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        Allure.step("Assert: Verify response status code is 204 and product ID is updated while quantity remains 2", () -> {
+            assertEquals(replaceResponse.getStatusCode(), 204, "Expected status code 204 for successful item replacement");
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            assertEquals(cartItems[0].getProductId(), replacementProduct.getId(), "Product ID mismatch after replacement");
+            assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch after replacement");
+            assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
+        });
     }
 }

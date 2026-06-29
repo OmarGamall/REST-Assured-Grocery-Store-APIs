@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.cart.CartItemResponse;
@@ -28,14 +29,18 @@ public class ModifyItemHappyPathTest extends BaseTest {
         CartItem cartItem = CartSteps.addItemToCart(cartId, product.getId(), 1);
 
         // 2. Act
-        Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), 2);
+        Response response = Allure.step("Act: Modify item quantity to 2", () -> {
+            return CartApi.modifyCartItem(cartId, cartItem.getItemId(), 2);
+        });
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 204, "Expected status code 204 for successful item modification");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
-        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(2), "Expected updated quantity to be 2");
+        Allure.step("Assert: Verify response status code is 204 and item quantity is updated to 2", () -> {
+            assertEquals(response.getStatusCode(), 204, "Expected status code 204 for successful item modification");
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
+            assertEquals(cartItems[0].getQuantity(), Integer.valueOf(2), "Expected updated quantity to be 2");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -47,13 +52,17 @@ public class ModifyItemHappyPathTest extends BaseTest {
         CartItem cartItem = CartSteps.addItemToCart(cartId, product.getId(), 1);
 
         // 2. Act
-        Response response = CartApi.modifyCartItem(cartId, cartItem.getItemId(), 1); // Modify to the same quantity
+        Response response = Allure.step("Act: Modify item quantity to same value (1)", () -> {
+            return CartApi.modifyCartItem(cartId, cartItem.getItemId(), 1);
+        });
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 204, "Expected status code 204 for modifying item to the same quantity");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
-        assertEquals(cartItems[0].getQuantity(), Integer.valueOf(1), "Expected quantity to remain unchanged at 1");
+        Allure.step("Assert: Verify response status code is 204 and quantity remains unchanged at 1", () -> {
+            assertEquals(response.getStatusCode(), 204, "Expected status code 204 for modifying item to the same quantity");
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
+            assertEquals(cartItems[0].getQuantity(), Integer.valueOf(1), "Expected quantity to remain unchanged at 1");
+        });
     }
 }

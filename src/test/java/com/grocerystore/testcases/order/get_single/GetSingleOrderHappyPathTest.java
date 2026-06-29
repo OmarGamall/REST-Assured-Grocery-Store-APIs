@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.Order;
@@ -38,23 +39,25 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         String orderId = createdOrder.getId();
 
         // Act
-        Response response = OrdersApi.getOrderById(getToken(), orderId);
+        Response response = Allure.step("Act: Get order by ID: " + orderId, () -> {
+            return OrdersApi.getOrderById(getToken(), orderId);
+        });
 
         // Assert
-        assertEquals(response.getStatusCode(), 200, "Expected 200 status code for order lookup");
-        
-        // Validate the response JSON schema
-        assertResponseSchema(response, "schemas/order-schema.json");
-        
-        Order order = response.as(Order.class);
-        assertEquals(order.getId(), orderId, "Order ID mismatch in lookup");
-        assertEquals(order.getCustomerName(), customerName, "Customer name mismatch");
-        assertEquals(order.getComment(), comment, "Comment mismatch");
-        assertNotNull(order.getCreated(), "Created timestamp should not be null");
-        assertNotNull(order.getItems(), "Order items list should not be null");
-        assertEquals(order.getItems().size(), 1);
-        assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
-        assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
+        Allure.step("Assert: Verify response status code is 200 and matches order details schema", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected 200 status code for order lookup");
+            assertResponseSchema(response, "schemas/order-schema.json");
+            
+            Order order = response.as(Order.class);
+            assertEquals(order.getId(), orderId, "Order ID mismatch in lookup");
+            assertEquals(order.getCustomerName(), customerName, "Customer name mismatch");
+            assertEquals(order.getComment(), comment, "Comment mismatch");
+            assertNotNull(order.getCreated(), "Created timestamp should not be null");
+            assertNotNull(order.getItems(), "Order items list should not be null");
+            assertEquals(order.getItems().size(), 1);
+            assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
+            assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -75,19 +78,23 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         String orderId = createdOrder.getId();
 
         // Act
-        Response response = OrdersApi.getOrderById(getToken(), orderId, true); // Pass 'true' to request invoice details
+        Response response = Allure.step("Act: Get order by ID: " + orderId + " with invoice query parameter", () -> {
+            return OrdersApi.getOrderById(getToken(), orderId, true); // Pass 'true' to request invoice details
+        });
 
         // Assert
-        assertEquals(response.getStatusCode(), 200, "Expected 200 status code for order lookup");
-        Order order = response.as(Order.class);
-        assertEquals(order.getId(), orderId, "Order ID mismatch in lookup");
-        assertEquals(order.getCustomerName(), customerName, "Customer name mismatch");
-        assertEquals(order.getComment(), comment, "Comment mismatch");
-        assertNotNull(order.getCreated(), "Created timestamp should not be null");
-        assertNotNull(order.getItems(), "Order items list should not be null");
-        assertEquals(order.getItems().size(), 1);
-        assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
-        assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
-        assertNotNull(order.getInvoice(), "Invoice details should be present when requested");
+        Allure.step("Assert: Verify response status code is 200 and invoice details are returned", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected 200 status code for order lookup");
+            Order order = response.as(Order.class);
+            assertEquals(order.getId(), orderId, "Order ID mismatch in lookup");
+            assertEquals(order.getCustomerName(), customerName, "Customer name mismatch");
+            assertEquals(order.getComment(), comment, "Comment mismatch");
+            assertNotNull(order.getCreated(), "Created timestamp should not be null");
+            assertNotNull(order.getItems(), "Order items list should not be null");
+            assertEquals(order.getItems().size(), 1);
+            assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
+            assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
+            assertNotNull(order.getInvoice(), "Invoice details should be present when requested");
+        });
     }
 }

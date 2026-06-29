@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.Order;
@@ -44,17 +45,23 @@ public class UpdateOrderHappyPathTest extends BaseTest {
                 .build();
 
         // Act
-        Response updateResponse = OrdersApi.updateOrder(getToken(), orderId, updateRequest);
+        Response updateResponse = Allure.step("Act: Update order customerName to '" + updatedName + "' and comment to '" + updatedComment + "'", () -> {
+            return OrdersApi.updateOrder(getToken(), orderId, updateRequest);
+        });
 
         // Assert update status
-        assertEquals(updateResponse.getStatusCode(), 204, "Expected 204 status code for order update");
+        Allure.step("Assert: Verify response status code is 204 No Content", () -> {
+            assertEquals(updateResponse.getStatusCode(), 204, "Expected 204 status code for order update");
+        });
 
         // Verify changes are persisted
         Response getResponse = OrdersApi.getOrderById(getToken(), orderId);
-        assertEquals(getResponse.getStatusCode(), 200);
-        Order updatedOrder = getResponse.as(Order.class);
-        assertEquals(updatedOrder.getCustomerName(), updatedName, "Customer name was not updated");
-        assertEquals(updatedOrder.getComment(), updatedComment, "Comment was not updated");
-
+        
+        Allure.step("Assert: Verify updated order details are persisted correctly", () -> {
+            assertEquals(getResponse.getStatusCode(), 200);
+            Order updatedOrder = getResponse.as(Order.class);
+            assertEquals(updatedOrder.getCustomerName(), updatedName, "Customer name was not updated");
+            assertEquals(updatedOrder.getComment(), updatedComment, "Comment was not updated");
+        });
     }
 }

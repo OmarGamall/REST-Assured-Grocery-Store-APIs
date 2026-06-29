@@ -5,6 +5,7 @@ import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.*;
 import com.grocerystore.models.product.Product;
 import com.grocerystore.services.ProductService;
+import io.qameta.allure.Step;
 
 import static com.grocerystore.services.ProductService.isProductAlreadySelected;
 
@@ -13,6 +14,7 @@ public class CartSteps {
     /**
      * Creates a cart and returns its valid ID.
      */
+    @Step("Step: Create a new cart and get its ID")
     public static String createCartAndGetId() {
         Response response = CartApi.createCart();
         if (response.getStatusCode() != 201) {
@@ -28,6 +30,7 @@ public class CartSteps {
     /**
      * Adds an item to the cart and returns the response metadata.
      */
+    @Step("Step: Add product {productId} (qty: {quantity}) to cart ID: {cartId} and get response metadata")
     public static CartItemResponse addItemToCartAndGetResponse(String cartId, Integer productId, Integer quantity) {
         CartItem cartItem = CartItem.builder()
                 .cartId(cartId)
@@ -38,6 +41,7 @@ public class CartSteps {
     }
 
     // Overloaded method to allow passing a CartItem object directly
+    @Step("Step: Add CartItem details to cart ID: {cartItem.cartId} and get response metadata")
     public static CartItemResponse addItemToCartAndGetResponse(CartItem cartItem) {
         Response response = CartApi.addItemToCart(cartItem);
         if (response.getStatusCode() != 201) {
@@ -54,6 +58,7 @@ public class CartSteps {
     /**
      * Adds an item to the cart and returns the fully populated CartItem with itemId.
      */
+    @Step("Step: Add product {productId} (qty: {quantity}) to cart ID: {cartId}")
     public static CartItem addItemToCart(String cartId, Integer productId, Integer quantity) {
         CartItem cartItem = CartItem.builder()
                 .cartId(cartId)
@@ -68,6 +73,7 @@ public class CartSteps {
     /**
      * Adds a random available product to the cart and returns the fully populated CartItem.
      */
+    @Step("Step: Add a random available product to cart ID: {cartId}")
     public static CartItem addRandomItemToCart(String cartId) {
         Product product = ProductService.getRandomAvailableProduct();
         int quantity = ProductService.getRandomQuantity(product);
@@ -77,6 +83,7 @@ public class CartSteps {
     /**
      * Adds a random available product to the cart with a specific quantity and returns the fully populated CartItem.
      */
+    @Step("Step: Add a random available product (qty: {quantity}) to cart ID: {cartId}")
     public static CartItem addRandomItemToCart(String cartId, Integer quantity) {
         Product product = ProductService.getRandomAvailableProduct();
         return addItemToCart(cartId, product.getId(), quantity);
@@ -85,6 +92,7 @@ public class CartSteps {
     /**
      * Fetches the list of items inside a cart.
      */
+    @Step("Step: Get items in cart ID: {cartId}")
     public static CartItem[] getCartItems(String cartId) {
         Response response = CartApi.getCartItems(cartId);
         if (response.getStatusCode() != 200) {
@@ -96,6 +104,7 @@ public class CartSteps {
     /**
      * Adds multiple items to the cart and returns the updated list of cart items.
      */
+    @Step("Step: Add {numberOfItemsToAdd} random unique products to cart ID: {cartId}")
     public static CartItem[] addMultipleRandomItemsToCart(String cartId , int numberOfItemsToAdd) {
         Product[] products = new Product[numberOfItemsToAdd];
         Product productToAdd = null;
@@ -118,6 +127,7 @@ public class CartSteps {
     /**
      * Deletes an item from the cart and verifies the status code.
      */
+    @Step("Step: Delete item {itemId} from cart ID: {cartId}")
     public static Response deleteCartItem(String cartId, String itemId) {
         Response response = CartApi.deleteCartItem(cartId, itemId);
         if (response.getStatusCode() != 204) {
@@ -129,6 +139,7 @@ public class CartSteps {
     /**
      * Deletes all items from the cart.
      */
+    @Step("Step: Delete all items from cart ID: {cartId}")
     public static void deleteAllCartItems(String cartId) {
         CartItem[] items = getCartItems(cartId);
         for (CartItem item : items) {

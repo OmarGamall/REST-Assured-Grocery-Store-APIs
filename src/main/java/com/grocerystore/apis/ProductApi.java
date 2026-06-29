@@ -4,10 +4,12 @@ import io.restassured.response.Response;
 import com.grocerystore.models.product.ProductsQueryParams;
 import com.grocerystore.utils.RestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.Step;
 import java.util.Map;
 
 public class ProductApi extends BaseApi {
 
+    @Step("API: Get all products using query parameters filter")
     public static Response getAllProducts(ProductsQueryParams queryParams) {
         // Convert the POJO into a Map cleanly using Jackson
         ObjectMapper mapper = new ObjectMapper();
@@ -18,6 +20,7 @@ public class ProductApi extends BaseApi {
                 .get();
     }
 
+    @Step("API: Get all products (category: {category}, available: {available}, results: {results})")
     public static Response getAllProducts(String category, Boolean available, Integer results) {
         return RestHelper.build()
                 .endpoint(Routes.PRODUCTS_ENDPOINT)
@@ -28,6 +31,7 @@ public class ProductApi extends BaseApi {
                 .get();
     }
 
+    @Step("API: Get product by ID: {productId}")
     public static Response getProductById(Integer productId) {
         return RestHelper.build()
                 .endpoint(Routes.PRODUCT_BY_ID_ENDPOINT)

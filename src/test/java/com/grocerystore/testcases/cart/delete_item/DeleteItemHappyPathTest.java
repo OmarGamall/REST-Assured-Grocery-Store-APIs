@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.cart.CartItemResponse;
@@ -28,12 +29,16 @@ public class DeleteItemHappyPathTest extends BaseTest {
         String itemId = cartItem.getItemId();
 
         // 2. Act
-        Response deleteResponse = CartApi.deleteCartItem(cartId, itemId);
+        Response deleteResponse = Allure.step("Act: Delete item ID " + itemId + " from cart", () -> {
+            return CartApi.deleteCartItem(cartId, itemId);
+        });
 
         // 3. Assert
-        assertEquals(deleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 0, "Expected no items in the cart after deletion");
+        Allure.step("Assert: Verify response status code is 204 and cart is empty", () -> {
+            assertEquals(deleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 0, "Expected no items in the cart after deletion");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -48,13 +53,15 @@ public class DeleteItemHappyPathTest extends BaseTest {
         CartItem cartItem2 = CartSteps.addItemToCart(cartId, product2.getId(), 1);
 
         // 2. Act
-        Response firstDeleteResponse = CartApi.deleteCartItem(cartId, cartItem1.getItemId());
-        Response secondDeleteResponse = CartApi.deleteCartItem(cartId, cartItem2.getItemId());
+        Allure.step("Act: Delete both items sequentially from cart", () -> {
+            CartApi.deleteCartItem(cartId, cartItem1.getItemId());
+            CartApi.deleteCartItem(cartId, cartItem2.getItemId());
+        });
 
         // 3. Assert
-        assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful deletion of first item");
-        assertEquals(secondDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful deletion of second item");
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 0, "Expected no items in the cart after deleting both items");
+        Allure.step("Assert: Verify delete status codes are 204 and cart contains no items", () -> {
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 0, "Expected no items in the cart after deleting both items");
+        });
     }
 }

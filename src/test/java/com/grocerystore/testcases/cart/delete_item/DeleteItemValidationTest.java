@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItemResponse;
 import com.grocerystore.models.cart.CartItem;
@@ -33,7 +34,9 @@ public class DeleteItemValidationTest extends BaseTest {
         Response secondDeleteResponse = CartApi.deleteCartItem(cartId, itemId);
 
         // 3. Assert
-        assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
+        Allure.step("Assert: Verify first delete request is 204 successfully", () -> {
+            assertEquals(firstDeleteResponse.getStatusCode(), 204, "Expected status code 204 for successful item deletion");
+        });
         assertErrorResponse(secondDeleteResponse, 404, NO_ITEM_WITH_ID);
     }
 

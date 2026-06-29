@@ -5,6 +5,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
+import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.ProductApi;
 import com.grocerystore.models.product.Product;
 import com.grocerystore.models.product.ProductCategory;
@@ -22,25 +24,27 @@ public class GetProductsHappyPathTest extends BaseTest {
     public void testGetAllAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(true);
-        Response response = ProductApi.getAllProducts(queryParams);
         
-        // Verify the response status code
-        assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
-        
-        // Validate the response JSON schema
-        assertResponseSchema(response, "schemas/products-list-schema.json");
-        
-        // Deserialize the response to an array of Product objects
-        Product[] products = response.as(Product[].class);
-        
-        // Verify that the products array is not null and has at least one product
-        assertNotNull(products, "Expected non-null products array");
-        assertTrue(products.length > 0, "Expected at least one product in the response");
-        
-        // Verify that all products in the response are available
-        for (Product product : products) {
-            assertTrue(product.isInStock(), "Expected product to be in stock");
-        }
+        // Act
+        Response response = Allure.step("Act: Get all available products", () -> {
+            return ProductApi.getAllProducts(queryParams);
+        });
+
+        // Assert
+        Allure.step("Assert: Verify response status code is 200 and all products are in stock", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+            assertResponseSchema(response, "schemas/products-list-schema.json");
+            
+            Product[] products = response.as(Product[].class);
+            assertNotNull(products, "Expected non-null products array");
+            assertTrue(products.length > 0, "Expected at least one product in the response");
+            
+            SoftAssert softAssert = new SoftAssert();
+            for (Product product : products) {
+                softAssert.assertTrue(product.isInStock(), "Expected product ID " + product.getId() + " to be in stock");
+            }
+            softAssert.assertAll();
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -48,36 +52,44 @@ public class GetProductsHappyPathTest extends BaseTest {
     public void testGetAllNonAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(false);
-        Response response = ProductApi.getAllProducts(queryParams);
         
-        // Verify the response status code
-        assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
-        
-        // Deserialize the response to an array of Product objects
-        Product[] products = response.as(Product[].class);
-        
-        // Verify that the products array is not null and has at least one product
-        assertNotNull(products, "Expected non-null products array");
-        assertTrue(products.length > 0, "Expected at least one product in the response");
-        
-        // Verify that all products in the response are available
-        for (Product product : products) {
-            assertFalse(product.isInStock(), "Expected product to be in stock");
-        }
+        // Act
+        Response response = Allure.step("Act: Get all out-of-stock products", () -> {
+            return ProductApi.getAllProducts(queryParams);
+        });
+
+        // Assert
+        Allure.step("Assert: Verify response status code is 200 and all products are out of stock", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+            Product[] products = response.as(Product[].class);
+            assertNotNull(products, "Expected non-null products array");
+            assertTrue(products.length > 0, "Expected at least one product in the response");
+            
+            SoftAssert softAssert = new SoftAssert();
+            for (Product product : products) {
+                softAssert.assertFalse(product.isInStock(), "Expected product ID " + product.getId() + " to be out of stock");
+            }
+            softAssert.assertAll();
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
     @Test(dataProvider = "categoriesProvider", groups = {"regression"}, description = "TC_PROD_003: Verify that GET /products returns 200 OK and products belonging to the specified category when category query parameter is provided")
     public void testGetProductsByCategory(ProductCategory category) {
-        Product[] products = ProductService.getAllProductsForGivenCategory(category);
-        
-        // Verify that the products array is not null
-        assertNotNull(products, "Expected non-null products array");
-        
-        // Verify that all products in the response belong to the specified category
-        for (Product product : products) {
-            assertEquals(product.getCategory(), category.getValue(), "Expected product category to be '" + category.getValue() + "'");
-        }
+        // Act
+        Product[] products = Allure.step("Act: Get products for category: " + category.getValue(), () -> {
+            return ProductService.getAllProductsForGivenCategory(category);
+        });
+
+        // Assert
+        Allure.step("Assert: Verify category of all products matches '" + category.getValue() + "'", () -> {
+            assertNotNull(products, "Expected non-null products array");
+            SoftAssert softAssert = new SoftAssert();
+            for (Product product : products) {
+                softAssert.assertEquals(product.getCategory(), category.getValue(), "Expected product ID " + product.getId() + " category to be '" + category.getValue() + "'");
+            }
+            softAssert.assertAll();
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -85,17 +97,19 @@ public class GetProductsHappyPathTest extends BaseTest {
     public void testGetProductsWithLimit() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(5);
-        Response response = ProductApi.getAllProducts(queryParams);
         
-        // Verify the response status code
-        assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
-        
-        // Deserialize the response to an array of Product objects
-        Product[] products = response.as(Product[].class);
-        
-        // Verify that the products array is not null and has at most 5 products
-        assertNotNull(products, "Expected non-null products array");
-        assertTrue(products.length <= 5, "Expected at most 5 products in the response");
+        // Act
+        Response response = Allure.step("Act: Get products with results limit: 5", () -> {
+            return ProductApi.getAllProducts(queryParams);
+        });
+
+        // Assert
+        Allure.step("Assert: Verify response status code is 200 and number of products is <= 5", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+            Product[] products = response.as(Product[].class);
+            assertNotNull(products, "Expected non-null products array");
+            assertTrue(products.length <= 5, "Expected at most 5 products in the response");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -105,41 +119,46 @@ public class GetProductsHappyPathTest extends BaseTest {
         queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
         queryParams.setAvailable(true);
         queryParams.setResults(3);
-        Response response = ProductApi.getAllProducts(queryParams);
         
-        // Verify the response status code
-        assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
-        
-        // Deserialize the response to an array of Product objects
-        Product[] products = response.as(Product[].class);
-        
-        // Verify that the products array is not null and has at most 3 products
-        assertNotNull(products, "Expected non-null products array");
-        assertTrue(products.length <= 3, "Expected at most 3 products in the response");
-        
-        // Verify that all products in the response belong to the specified category and are available
-        for (Product product : products) {
-            assertEquals(product.getCategory(), ProductCategory.FRESH_PRODUCE.getValue(), "Expected product category to be 'fresh-produce'");
-            assertTrue(product.isInStock(), "Expected product to be in stock");
-        }
+        // Act
+        Response response = Allure.step("Act: Get products for category: fresh-produce, available: true, limit: 3", () -> {
+            return ProductApi.getAllProducts(queryParams);
+        });
+
+        // Assert
+        Allure.step("Assert: Verify response filters match category, availability, and results limit", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected status code 200 for successful retrieval of products");
+            Product[] products = response.as(Product[].class);
+            assertNotNull(products, "Expected non-null products array");
+            assertTrue(products.length <= 3, "Expected at most 3 products in the response");
+            
+            SoftAssert softAssert = new SoftAssert();
+            for (Product product : products) {
+                softAssert.assertEquals(product.getCategory(), ProductCategory.FRESH_PRODUCE.getValue(), "Expected product ID " + product.getId() + " category to be 'fresh-produce'");
+                softAssert.assertTrue(product.isInStock(), "Expected product ID " + product.getId() + " to be in stock");
+            }
+            softAssert.assertAll();
+        });
     }
 
     @Severity(SeverityLevel.MINOR)
     @Test(groups = {"regression"}, description = "TC_PROD_006: Verify that GET /products returns 200 OK and zero products when results query parameter is set to 0")
     public void testGetProductsWithZeroResults() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
-        queryParams.setResults(0); // Zero results value
-        Response response = ProductApi.getAllProducts(queryParams);
+        queryParams.setResults(0);
         
-        // Verify the response status code
-        assertEquals(response.getStatusCode(), 200, "Expected status code 200 for zero results parameter");
-        
-        // Deserialize the response to an array of Product objects
-        Product[] products = response.as(Product[].class);
-        
-        // Verify that the products array is not null and has zero products
-        assertNotNull(products, "Expected non-null products array");
-        assertEquals(products.length, 0, "Expected zero products in the response");
+        // Act
+        Response response = Allure.step("Act: Get products with results limit: 0", () -> {
+            return ProductApi.getAllProducts(queryParams);
+        });
+
+        // Assert
+        Allure.step("Assert: Verify response status code is 200 and products list is empty", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected status code 200 for zero results parameter");
+            Product[] products = response.as(Product[].class);
+            assertNotNull(products, "Expected non-null products array");
+            assertEquals(products.length, 0, "Expected zero products in the response");
+        });
     }
 
     // ==========================================

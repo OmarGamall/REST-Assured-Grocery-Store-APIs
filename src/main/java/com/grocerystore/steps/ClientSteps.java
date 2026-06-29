@@ -4,15 +4,15 @@ import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import com.grocerystore.apis.UserApi;
 import com.grocerystore.models.client.Client;
+import io.qameta.allure.Step;
 
 public class ClientSteps {
-
-
 
     /**
      * Overloaded method: Registers a client with custom details and returns details including token.
      * Useful for negative and custom scenario testing.
      */
+    @Step("Step: Register client and get client details (email: {clientData.clientEmail})")
     public static Client registerClientAndGetClientDetails(Client clientData) {
         Response response = UserApi.registerClient(clientData);
         
@@ -35,6 +35,7 @@ public class ClientSteps {
     /**
      * Registers a random client and returns the client details.
      */
+    @Step("Step: Register a random client and get client details")
     public static Client registerClientAndGetClientDetails() {
         Faker faker = new Faker();
         String randomClientName = faker.name().fullName();
@@ -50,6 +51,7 @@ public class ClientSteps {
     /**
      * Registers a random client and returns only the Access Token.
      */
+    @Step("Step: Register a random client and get access token")
     public static String registerClientAndGetToken() {
         return registerClientAndGetClientDetails().getAccessToken();
     }

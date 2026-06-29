@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
@@ -28,25 +29,29 @@ public class AddItemHappyPathTest extends BaseTest {
         int quantity = ProductService.getRandomQuantity(product);
 
         // 2. Act
-        Response response = CartApi.addItemToCart(cartId, product.getId(), quantity);
+        Response response = Allure.step("Act: Add product ID " + product.getId() + " (qty: " + quantity + ") to cart", () -> {
+            return CartApi.addItemToCart(cartId, product.getId(), quantity);
+        });
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
-        CartItemResponse addResponse = response.as(CartItemResponse.class);
-        
-        SoftAssert softAssert = new SoftAssert();
-        softAssert.assertTrue(addResponse.getCreated(), "Expected 'created' to be true in response");
-        softAssert.assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
+        Allure.step("Assert: Verify response status code is 201 and the item is in the cart details", () -> {
+            assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
+            CartItemResponse addResponse = response.as(CartItemResponse.class);
+            
+            SoftAssert softAssert = new SoftAssert();
+            softAssert.assertTrue(addResponse.getCreated(), "Expected 'created' to be true in response");
+            softAssert.assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
 
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        
-        if (cartItems.length == 1) {
-            softAssert.assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
-            softAssert.assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in cart");
-            softAssert.assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
-        }
-        softAssert.assertAll();
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            
+            if (cartItems.length == 1) {
+                softAssert.assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
+                softAssert.assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in cart");
+                softAssert.assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
+            }
+            softAssert.assertAll();
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -58,25 +63,29 @@ public class AddItemHappyPathTest extends BaseTest {
         int quantity = product.getCurrentStock(); // Use the current stock as the quantity
 
         // 2. Act
-        Response response = CartApi.addItemToCart(cartId, product.getId(), quantity);
+        Response response = Allure.step("Act: Add product ID " + product.getId() + " with quantity same as stock (" + quantity + ") to cart", () -> {
+            return CartApi.addItemToCart(cartId, product.getId(), quantity);
+        });
 
         // 3. Assert
-        assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
-        CartItemResponse addResponse = response.as(CartItemResponse.class);
-        
-        SoftAssert softAssert = new SoftAssert();
-        softAssert.assertTrue(addResponse.getCreated(), "Expected 'created' to be true in response");
-        softAssert.assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
+        Allure.step("Assert: Verify status code is 201 and item is added successfully", () -> {
+            assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition");
+            CartItemResponse addResponse = response.as(CartItemResponse.class);
+            
+            SoftAssert softAssert = new SoftAssert();
+            softAssert.assertTrue(addResponse.getCreated(), "Expected 'created' to be true in response");
+            softAssert.assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
 
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
-        
-        if (cartItems.length == 1) {
-            softAssert.assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
-            softAssert.assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in cart");
-            softAssert.assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
-        }
-        softAssert.assertAll();
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            
+            if (cartItems.length == 1) {
+                softAssert.assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
+                softAssert.assertEquals(cartItems[0].getQuantity(), Integer.valueOf(quantity), "Quantity mismatch in cart");
+                softAssert.assertEquals(cartItems[0].getItemId(), addResponse.getItemId(), "Item ID mismatch in cart");
+            }
+            softAssert.assertAll();
+        });
     }
 
     @Severity(SeverityLevel.BLOCKER)
@@ -97,22 +106,26 @@ public class AddItemHappyPathTest extends BaseTest {
         }
 
         // 2. Act
-        for (int i = 0; i < numberOfItemsToAdd; i++) {
-            Response response = CartApi.addItemToCart(cartId, products[i].getId(), quantities[i]);
-            assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition at index " + (i + 1));
-        }
+        Allure.step("Act: Add " + numberOfItemsToAdd + " unique products sequentially to cart ID: " + cartId, () -> {
+            for (int i = 0; i < numberOfItemsToAdd; i++) {
+                Response response = CartApi.addItemToCart(cartId, products[i].getId(), quantities[i]);
+                assertEquals(response.getStatusCode(), 201, "Expected status code 201 for successful item addition at index " + (i + 1));
+            }
+        });
 
         // 3. Assert
-        CartItem[] cartItems = CartSteps.getCartItems(cartId);
-        assertEquals(cartItems.length, numberOfItemsToAdd, "Expected exactly " + numberOfItemsToAdd + " items in the cart");
+        Allure.step("Assert: Verify all " + numberOfItemsToAdd + " products are present in the cart details", () -> {
+            CartItem[] cartItems = CartSteps.getCartItems(cartId);
+            assertEquals(cartItems.length, numberOfItemsToAdd, "Expected exactly " + numberOfItemsToAdd + " items in the cart");
 
-        SoftAssert softAssert = new SoftAssert();
-        if (cartItems.length == numberOfItemsToAdd) {
-            for (int i = 0; i < numberOfItemsToAdd; i++) {
-                softAssert.assertEquals(cartItems[i].getProductId(), products[i].getId(), "Product ID mismatch for item " + i);
-                softAssert.assertEquals(cartItems[i].getQuantity(), Integer.valueOf(quantities[i]), "Quantity mismatch for item " + i);
+            SoftAssert softAssert = new SoftAssert();
+            if (cartItems.length == numberOfItemsToAdd) {
+                for (int i = 0; i < numberOfItemsToAdd; i++) {
+                    softAssert.assertEquals(cartItems[i].getProductId(), products[i].getId(), "Product ID mismatch for item " + i);
+                    softAssert.assertEquals(cartItems[i].getQuantity(), Integer.valueOf(quantities[i]), "Quantity mismatch for item " + i);
+                }
             }
-        }
-        softAssert.assertAll();
+            softAssert.assertAll();
+        });
     }
 }

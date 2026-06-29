@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartResponse;
 import com.grocerystore.models.cart.CartItem;
@@ -22,26 +23,25 @@ public class CreateCartTest extends BaseTest {
         Response createResponse = CartApi.createCart();
 
         // 2. Assert (Verify creation response)
-        assertEquals(createResponse.getStatusCode(), 201, "Expected status code 201 for successful cart creation");
-        
-        // Validate cart creation response schema
-        assertResponseSchema(createResponse, "schemas/cart-created-schema.json");
-        
-        CartResponse cartResponse = createResponse.as(CartResponse.class);
-        assertNotNull(cartResponse.getCartId(), "Expected non-null cartId");
-        assertTrue(cartResponse.getCreated(), "Expected 'created' field to be true");
+        CartResponse cartResponse = Allure.step("Assert: Verify cart creation response is 201 and contains cart ID", () -> {
+            assertEquals(createResponse.getStatusCode(), 201, "Expected status code 201 for successful cart creation");
+            assertResponseSchema(createResponse, "schemas/cart-created-schema.json");
+            CartResponse res = createResponse.as(CartResponse.class);
+            assertNotNull(res.getCartId(), "Expected non-null cartId");
+            assertTrue(res.getCreated(), "Expected 'created' field to be true");
+            return res;
+        });
 
         // 3. Act (Retrieve the created Cart by ID)
         Response getResponse = CartApi.getCartById(cartResponse.getCartId());
 
         // 4. Assert (Verify retrieved cart payload details)
-        assertEquals(getResponse.getStatusCode(), 200, "Expected status code 200 for retrieving cart by ID");
-        
-        // Validate retrieved cart schema
-        assertResponseSchema(getResponse, "schemas/cart-schema.json");
-        
-        assertNotNull(getResponse.jsonPath().getString("created"), "Expected 'created' timestamp to be present");
-        assertTrue(getResponse.jsonPath().getList("items").isEmpty(), "Expected new cart to have an empty items list");
+        Allure.step("Assert: Verify retrieved cart details match empty cart state", () -> {
+            assertEquals(getResponse.getStatusCode(), 200, "Expected status code 200 for retrieving cart by ID");
+            assertResponseSchema(getResponse, "schemas/cart-schema.json");
+            assertNotNull(getResponse.jsonPath().getString("created"), "Expected 'created' timestamp to be present");
+            assertTrue(getResponse.jsonPath().getList("items").isEmpty(), "Expected new cart to have an empty items list");
+        });
     }
 
     @Severity(SeverityLevel.CRITICAL)
@@ -54,7 +54,9 @@ public class CreateCartTest extends BaseTest {
         CartItem[] cartItems = CartSteps.getCartItems(cartId);
 
         // 3. Assert
-        assertNotNull(cartItems, "Expected non-null array of cart items");
-        assertEquals(cartItems.length, 0, "Expected no items in the cart");
+        Allure.step("Assert: Verify that the items list in the empty cart is non-null and empty", () -> {
+            assertNotNull(cartItems, "Expected non-null array of cart items");
+            assertEquals(cartItems.length, 0, "Expected no items in the cart");
+        });
     }
 }

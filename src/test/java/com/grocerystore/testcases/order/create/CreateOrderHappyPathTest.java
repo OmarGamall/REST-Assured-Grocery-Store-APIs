@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.apis.OrdersApi;
@@ -36,41 +37,46 @@ public class CreateOrderHappyPathTest extends BaseTest {
                 .build();
 
         // Act
-        Response response = OrdersApi.createOrder(getToken(), orderRequest);
+        Response response = Allure.step("Act: Create order with 1 item for cart ID: " + cartId, () -> {
+            return OrdersApi.createOrder(getToken(), orderRequest);
+        });
 
         // Assert - Creation Status first
-        assertEquals(response.getStatusCode(), 201, "Expected 201 status code for order creation");
-        
-        // Validate order creation response schema
-        assertResponseSchema(response, "schemas/order-created-schema.json");
-        
-        OrderResponse orderResponse = response.as(OrderResponse.class);
-        
+        String orderId = Allure.step("Assert: Verify order creation status is 201 and order ID is generated", () -> {
+            assertEquals(response.getStatusCode(), 201, "Expected 201 status code for order creation");
+            assertResponseSchema(response, "schemas/order-created-schema.json");
+            OrderResponse orderResponse = response.as(OrderResponse.class);
+            assertTrue(orderResponse.getCreated(), "Expected 'created' flag to be true");
+            String id = orderResponse.getOrderId();
+            assertNotNull(id, "Expected a non-null order ID");
+            return id;
+        });
+
         SoftAssert softAssert = new SoftAssert();
-        softAssert.assertTrue(orderResponse.getCreated(), "Expected 'created' flag to be true");
-        String orderId = orderResponse.getOrderId();
-        assertNotNull(orderId, "Expected a non-null order ID");
 
         // Verify the cart has been automatically deleted after order placement
-        Response getCartResponse = CartApi.getCartById(cartId);
-        softAssert.assertEquals(getCartResponse.getStatusCode(), 404, "Expected status code 404 for deleted cart");
-
+        Allure.step("Assert: Verify cart " + cartId + " is automatically deleted (returns 404)", () -> {
+            Response getCartResponse = CartApi.getCartById(cartId);
+            softAssert.assertEquals(getCartResponse.getStatusCode(), 404, "Expected status code 404 for deleted cart");
+        });
 
         // Retrieve the order details
         Order createdOrder = OrderSteps.getOrderById(getToken(), orderId);
 
         // Assert - Order details validation
-        softAssert.assertEquals(createdOrder.getId(), orderId, "Expected the created order ID to match the response");
-        softAssert.assertEquals(createdOrder.getCustomerName(), customerName, "Expected customer name to match");
-        softAssert.assertEquals(createdOrder.getComment(), comment, "Expected comment to match");
-        softAssert.assertNotNull(createdOrder.getItems(), "Expected order items to be present");
-        if (createdOrder.getItems() != null) {
-            softAssert.assertEquals(createdOrder.getItems().size(), 1, "Expected exactly one item in the order");
-            if (!createdOrder.getItems().isEmpty()) {
-                softAssert.assertEquals(createdOrder.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
-                softAssert.assertEquals(createdOrder.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
+        Allure.step("Assert: Verify created order details match original customer name and items", () -> {
+            softAssert.assertEquals(createdOrder.getId(), orderId, "Expected the created order ID to match the response");
+            softAssert.assertEquals(createdOrder.getCustomerName(), customerName, "Expected customer name to match");
+            softAssert.assertEquals(createdOrder.getComment(), comment, "Expected comment to match");
+            softAssert.assertNotNull(createdOrder.getItems(), "Expected order items to be present");
+            if (createdOrder.getItems() != null) {
+                softAssert.assertEquals(createdOrder.getItems().size(), 1, "Expected exactly one item in the order");
+                if (!createdOrder.getItems().isEmpty()) {
+                    softAssert.assertEquals(createdOrder.getItems().get(0).getProductId(), cartItem.getProductId(), "Expected product ID to match");
+                    softAssert.assertEquals(createdOrder.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
+                }
             }
-        }
+        });
         softAssert.assertAll();
     }
 
@@ -90,42 +96,49 @@ public class CreateOrderHappyPathTest extends BaseTest {
                 .build();
 
         // Act
-        Response response = OrdersApi.createOrder(getToken(), orderRequest);
+        Response response = Allure.step("Act: Create order with multiple items for cart ID: " + cartId, () -> {
+            return OrdersApi.createOrder(getToken(), orderRequest);
+        });
 
         // Assert - Creation Status first
-        assertEquals(response.getStatusCode(), 201, "Expected 201 status code for order creation");
-        OrderResponse orderResponse = response.as(OrderResponse.class);
-        
-        SoftAssert softAssert = new SoftAssert();
-        softAssert.assertTrue(orderResponse.getCreated(), "Expected 'created' flag to be true");
-        String orderId = orderResponse.getOrderId();
-        assertNotNull(orderId, "Expected a non-null order ID");
+        String orderId = Allure.step("Assert: Verify order creation status is 201 and order ID is generated", () -> {
+            assertEquals(response.getStatusCode(), 201, "Expected 201 status code for order creation");
+            OrderResponse orderResponse = response.as(OrderResponse.class);
+            assertTrue(orderResponse.getCreated(), "Expected 'created' flag to be true");
+            String id = orderResponse.getOrderId();
+            assertNotNull(id, "Expected a non-null order ID");
+            assertResponseSchema(response, "schemas/order-created-schema.json");
+            return id;
+        });
 
-        // Validate order creation response schema
-        assertResponseSchema(response, "schemas/order-created-schema.json");
+        SoftAssert softAssert = new SoftAssert();
 
         // Verify the cart has been automatically deleted after order placement
-        Response getCartResponse = CartApi.getCartById(cartId);
-        softAssert.assertEquals(getCartResponse.getStatusCode(), 404, "Expected status code 404 for deleted cart");
-
+        Allure.step("Assert: Verify cart " + cartId + " is automatically deleted (returns 404)", () -> {
+            Response getCartResponse = CartApi.getCartById(cartId);
+            softAssert.assertEquals(getCartResponse.getStatusCode(), 404, "Expected status code 404 for deleted cart");
+        });
 
         // Retrieve the order details
         Order createdOrder = OrderSteps.getOrderById(getToken(), orderId);
+
         // Assert - Order details validation
-        softAssert.assertEquals(createdOrder.getId(), orderId, "Expected the created order ID to match the response");
-        softAssert.assertEquals(createdOrder.getCustomerName(), customerName, "Expected customer name to match");
-        softAssert.assertEquals(createdOrder.getComment(), comment, "Expected comment to match");
-        softAssert.assertNotNull(createdOrder.getItems(), "Expected order items to be present");
-        if (createdOrder.getItems() != null) {
-            assertEquals(createdOrder.getItems().size(), numberOfItemsToAdd, "Expected number of items in the order to match the cart");
-            if (createdOrder.getItems().size() == numberOfItemsToAdd) {
-                // Validate each item in the order matches the corresponding item in the cart
-                for (int i = 0; i < numberOfItemsToAdd; i++) {
-                    softAssert.assertEquals(createdOrder.getItems().get(i).getProductId(), cartItems[i].getProductId(), "Expected product ID to match for item " + (i + 1));
-                    softAssert.assertEquals(createdOrder.getItems().get(i).getQuantity(), cartItems[i].getQuantity(), "Expected quantity to match for item " + (i + 1));
+        Allure.step("Assert: Verify multiple items in created order match the cart contents", () -> {
+            softAssert.assertEquals(createdOrder.getId(), orderId, "Expected the created order ID to match the response");
+            softAssert.assertEquals(createdOrder.getCustomerName(), customerName, "Expected customer name to match");
+            softAssert.assertEquals(createdOrder.getComment(), comment, "Expected comment to match");
+            softAssert.assertNotNull(createdOrder.getItems(), "Expected order items to be present");
+            if (createdOrder.getItems() != null) {
+                softAssert.assertEquals(createdOrder.getItems().size(), numberOfItemsToAdd, "Expected number of items in the order to match the cart");
+                if (createdOrder.getItems().size() == numberOfItemsToAdd) {
+                    // Validate each item in the order matches the corresponding item in the cart
+                    for (int i = 0; i < numberOfItemsToAdd; i++) {
+                        softAssert.assertEquals(createdOrder.getItems().get(i).getProductId(), cartItems[i].getProductId(), "Expected product ID to match for item " + (i + 1));
+                        softAssert.assertEquals(createdOrder.getItems().get(i).getQuantity(), cartItems[i].getQuantity(), "Expected quantity to match for item " + (i + 1));
+                    }
                 }
             }
-        }
+        });
         softAssert.assertAll();
     }
 }

@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import io.restassured.response.Response;
 import com.grocerystore.models.ErrorResponse;
 import com.grocerystore.utils.TokenManager;
+import io.qameta.allure.Step;
 
 import static org.testng.Assert.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -22,6 +23,7 @@ public class BaseTest {
      * @param response   The RestAssured Response object.
      * @param schemaPath The path to the schema file relative to classpath (e.g. "schemas/product-schema.json").
      */
+    @Step("Assert: Verify response matches JSON schema '{schemaPath}'")
     protected void assertResponseSchema(Response response, String schemaPath) {
         response.then().assertThat().body(matchesJsonSchemaInClasspath(schemaPath));
     }
@@ -34,6 +36,7 @@ public class BaseTest {
      * @param expectedStatusCode   The expected HTTP status code (e.g. 400, 404).
      * @param expectedErrorMessage The substring expected to be present in the error message.
      */
+    @Step("Assert: Verify error status code is {expectedStatusCode} and message contains '{expectedErrorMessage}'")
     protected void assertErrorResponse(Response response, int expectedStatusCode, String expectedErrorMessage) {
         assertEquals(response.getStatusCode(), expectedStatusCode, 
             String.format("Expected status code %d but got %d", expectedStatusCode, response.getStatusCode()));

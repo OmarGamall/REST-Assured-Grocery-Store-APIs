@@ -3,6 +3,7 @@ package com.grocerystore.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import io.qameta.allure.restassured.AllureRestAssured;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +53,8 @@ public class RestHelper {
     }
 
     private Response execute(String method) {
-        RequestSpecification spec = RestAssured.given().relaxedHTTPSValidation();
+        RequestSpecification spec = RestAssured.given()
+                .relaxedHTTPSValidation();
 
         if (body != null) {
             spec.body(body);

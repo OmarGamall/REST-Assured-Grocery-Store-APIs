@@ -4,6 +4,8 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
+import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.Order;
@@ -38,26 +40,32 @@ public class GetAllOrdersHappyPathTest extends BaseTest {
         String orderId = createdOrder.getId();
 
         // Act
-        Response response = OrdersApi.getAllOrders(getToken());
+        Response response = Allure.step("Act: Get all orders", () -> {
+            return OrdersApi.getAllOrders(getToken());
+        });
 
         // Assert
-        assertEquals(response.getStatusCode(), 200, "Expected 200 status code for retrieving all orders");
-        Order[] orders = response.as(Order[].class);
-        assertNotNull(orders, "Expected non-null array of orders");
-        assertTrue(orders.length > 0, "Expected list of orders to contain at least one order");
+        Allure.step("Assert: Verify listed orders include the created order with correct details", () -> {
+            assertEquals(response.getStatusCode(), 200, "Expected 200 status code for retrieving all orders");
+            Order[] orders = response.as(Order[].class);
+            assertNotNull(orders, "Expected non-null array of orders");
+            assertTrue(orders.length > 0, "Expected list of orders to contain at least one order");
 
-        // Verify our created order is present in the list
-        boolean orderFound = false;
-        for (Order order : orders) {
-            if (orderId.equals(order.getId())) {
-                orderFound = true;
-                assertEquals(order.getCustomerName(), customerName, "Customer name mismatch in listed order");
-                assertEquals(order.getComment(), comment, "Comment mismatch in listed order");
-                assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Product ID mismatch in listed order");
-                assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Product quantity mismatch in listed order");
-                break;
+            // Verify our created order is present in the list
+            boolean orderFound = false;
+            for (Order order : orders) {
+                if (orderId.equals(order.getId())) {
+                    orderFound = true;
+                    SoftAssert softAssert = new SoftAssert();
+                    softAssert.assertEquals(order.getCustomerName(), customerName, "Customer name mismatch in listed order");
+                    softAssert.assertEquals(order.getComment(), comment, "Comment mismatch in listed order");
+                    softAssert.assertEquals(order.getItems().get(0).getProductId(), cartItem.getProductId(), "Product ID mismatch in listed order");
+                    softAssert.assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Product quantity mismatch in listed order");
+                    softAssert.assertAll();
+                    break;
+                }
             }
-        }
-        assertTrue(orderFound, "Expected created order to be found in the orders list");
+            assertTrue(orderFound, "Expected created order to be found in the orders list");
+        });
     }
 }

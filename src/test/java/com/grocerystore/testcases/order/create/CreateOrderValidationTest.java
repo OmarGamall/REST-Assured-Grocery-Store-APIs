@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.OrderRequest;
@@ -104,7 +105,9 @@ public class CreateOrderValidationTest extends BaseTest {
 
         // Act - First order creation
         Response firstResponse = OrdersApi.createOrder(getToken(), orderRequest);
-        assertEquals(firstResponse.getStatusCode(), 201, "Expected 201 status code for first order creation");
+        Allure.step("Assert: Verify first order creation response code is 201", () -> {
+            assertEquals(firstResponse.getStatusCode(), 201, "Expected 201 status code for first order creation");
+        });
 
         // Act - Attempt to create a duplicate order with the same cart
         Response secondResponse = OrdersApi.createOrder(getToken(), orderRequest);

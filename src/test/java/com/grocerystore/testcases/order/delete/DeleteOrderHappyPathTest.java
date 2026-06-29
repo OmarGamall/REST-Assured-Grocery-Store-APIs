@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Allure;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.OrderRequest;
@@ -26,14 +27,17 @@ public class DeleteOrderHappyPathTest extends BaseTest {
         String orderId = OrderSteps.createRandomOrderAndGetId();
 
         // Act
-        Response deleteResponse = OrdersApi.deleteOrder(getToken(), orderId);
+        Response deleteResponse = Allure.step("Act: Delete order ID: " + orderId, () -> {
+            return OrdersApi.deleteOrder(getToken(), orderId);
+        });
 
         // Assert
-        assertEquals(deleteResponse.getStatusCode(), 204, "Expected 204 status code for order deletion");
+        Allure.step("Assert: Verify response status code is 204 No Content", () -> {
+            assertEquals(deleteResponse.getStatusCode(), 204, "Expected 204 status code for order deletion");
+        });
 
         // Verify deletion by attempting to retrieve it
         Response getResponse = OrdersApi.getOrderById(getToken(), orderId);
         assertErrorResponse(getResponse, 404, "No order with id " + orderId);
     }
-
 }
