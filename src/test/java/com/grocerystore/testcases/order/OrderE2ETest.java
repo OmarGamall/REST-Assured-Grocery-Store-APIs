@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.order.*;
@@ -16,7 +18,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"orders", "happy-path"})
 public class OrderE2ETest extends BaseTest {
 
-    @Test(groups = {"e2e", "regression"}, description = "TC_ORDER_027: Verify end-to-end flow of creating, retrieving, and deleting an order")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"e2e", "regression"}, description = "TC_ORDER_027: Verify the end-to-end flow of creating a new order, retrieving it by ID, verifying it in the orders list, deleting it, and verifying its deletion returns 404")
     public void testCreateRetrieveAndDeleteOrder() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

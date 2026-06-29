@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.delete_item;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItemResponse;
 import com.grocerystore.models.cart.CartItem;
@@ -18,7 +20,8 @@ import static org.testng.Assert.assertEquals;
 @Test(groups = {"cart", "validation"})
 public class DeleteItemValidationTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_CART_015: Verify error when deleting same cart item twice")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_015: Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to delete the same item a second time")
     public void testDeleteSameCartItemTwice() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -34,7 +37,8 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(secondDeleteResponse, 404, NO_ITEM_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_016: Verify error when deleting with invalid cartId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_016: Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the cartId is invalid or non-existent")
     public void testDeleteCartItemWithInvalidCartId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -49,7 +53,8 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(deleteResponse, 404, NO_CART_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_017: Verify error when deleting with invalid itemId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_017: Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the itemId is invalid or non-existent")
     public void testDeleteCartItemWithInvalidItemId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -63,7 +68,8 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(deleteResponse, 404, NO_ITEM_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_018: Verify error when deleting item from empty cart")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_018: Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to delete an item from an empty cart")
     public void testDeleteCartItemFromEmptyCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -76,7 +82,8 @@ public class DeleteItemValidationTest extends BaseTest {
         assertErrorResponse(deleteResponse, 404, NO_ITEM_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_019: Verify error when deleting item using mismatched cartId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_019: Verify that DELETE /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to delete an item using a different cartId than the one it belongs to")
     public void testDeleteCartItemWithMismatchedCartAndItemId() {
         // 1. Arrange
         String cartAId = CartSteps.createCartAndGetId();

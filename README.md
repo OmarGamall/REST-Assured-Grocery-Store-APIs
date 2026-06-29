@@ -51,7 +51,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Boilerplate Reduction & Fluent Builders**: Integrates Project Lombok to eliminate verbose DTO boilerplate (getters, setters, toString) and implements the **Builder Design Pattern** (`@Builder`) for highly readable, flexible, and type-safe object instantiations, replacing rigid overloaded constructors.
 
 ### 6. Execution Reporting & Diagnostics
-- **Interactive HTML Test Reports (Allure)**: Integrated Allure TestNG for producing highly visual, interactive HTML test execution reports. Captured report features include dynamic failure categorizations, historical trend lines, execution timelines, and custom test steps.
+- **Interactive HTML Test Reports (Allure)**: Integrated Allure TestNG for producing highly visual, interactive HTML test execution reports. Captured report features include dynamic failure categorizations, historical trend lines, execution timelines, custom test steps, and **test case severity levels** (`BLOCKER`, `CRITICAL`, `NORMAL`, `MINOR`).
 - **Automated API Request & Response Logger (Allure Rest-Assured)**: Utilizes the `AllureRestAssured` filter to automatically capture HTTP request/response payloads, headers, parameters, and status codes, attaching them directly to test steps inside Allure reports for simplified debugging and diagnosis.
 
 ---
@@ -116,6 +116,7 @@ The automation suite covers the following API modules:
     │                   ├── PropertyReader.java # Properties loader configuration manager
     │                   ├── TokenManager.java # Dynamic token lifecycle management
     │                   ├── RestHelper.java   # Centralized HTTP builder client
+    │                   ├── AllureUtilities.java # Utility to clean Allure results programmatically
     │                   └── Client_Token_Generation_Flow.png # Authentication flow diagram
     └── test/
         ├── resources/
@@ -205,7 +206,7 @@ To support high-throughput parallel execution with minimal overhead, the [TokenM
 
 ##### 2. Lifecycle Cleanup and Run Isolation
 * **TokenCleanupListener:** We registered a TestNG execution listener (`TokenCleanupListener` implementing `IExecutionListener`) via SPI. 
-  * At the start of a run (`onExecutionStart`), it clears the token to prevent token bleed when Surefire reuses JVMs.
+  * At the start of a run (`onExecutionStart`), it clears the token to prevent token bleed when Surefire reuses JVMs, and calls `AllureUtilities.cleanAllureResults()` to clear stale allure results programmatically.
   * At the end of a run (`onExecutionFinish`), it clears the token from memory to prevent memory leaks.
 
 ##### 3. Conditional Stale Token Refresh
@@ -264,6 +265,8 @@ You can also run pre-configured TestNG XML suites defined in the root folder:
 
 ### Generating Allure Reports
 Allure generates raw test execution results under the `target/allure-results` directory (configured via `src/test/resources/allure.properties` so it applies to both Maven CLI and IDE test runs).
+
+To prevent old test executions from accumulating in subsequent runs (especially when running directly in IDEs without a Maven `clean` command), the framework features `AllureUtilities.cleanAllureResults()` which is executed automatically at suite startup by the global TestNG listener to programmatically clear out the directory.
 
 #### Option A: Using the Allure Maven Plugin (Recommended)
 You do not need to install the Allure CLI locally. Run the following Maven commands:

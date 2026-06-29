@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.modify_item;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItemResponse;
 import com.grocerystore.models.cart.CartItem;
@@ -14,7 +16,8 @@ import static com.grocerystore.constants.ErrorMessages.*;
 @Test(groups = {"cart", "validation"})
 public class ModifyItemValidationTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_CART_022: Verify error when modified quantity exceeds stock")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_022: Verify that PATCH /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when the modified quantity exceeds the product's current stock")
     public void testModifyCartItemQuantityExceedingStock() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -31,7 +34,8 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, QUANTITY_NOT_AVAILABLE);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_023: Verify error when modifying quantity to 0")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_023: Verify that PATCH /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when modifying the quantity of an item to 0")
     public void testModifyCartItemQuantityToZero() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -44,7 +48,8 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, INVALID_QUANTITY);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_024: Verify error when modifying quantity to negative")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_024: Verify that PATCH /carts/{cartId}/items/{itemId} returns 400 Bad Request and validation error when modifying the quantity of an item to a negative number")
     public void testModifyCartItemQuantityToNegative() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -57,7 +62,8 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, INVALID_QUANTITY);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_025: Verify error when modifying with invalid itemId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_025: Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the itemId is invalid or non-existent")
     public void testModifyCartItemWithInvalidItemId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -71,7 +77,8 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 404, NO_ITEM_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_026: Verify error when modifying with invalid cartId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_026: Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the cartId is invalid or non-existent")
     public void testModifyCartItemWithInvalidCartId() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -85,7 +92,8 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 404, NO_CART_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_027: Verify error when modified quantity is missing or null")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_027: Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when the quantity parameter is missing or null")
     public void testModifyCartItemWithMissingQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -98,7 +106,8 @@ public class ModifyItemValidationTest extends BaseTest {
         assertErrorResponse(response, 404, INVALID_QUANTITY);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_028: Verify error when modifying item with mismatched cartId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_028: Verify that PATCH /carts/{cartId}/items/{itemId} returns 404 Not Found and validation error when attempting to modify an item using a different cartId than the one it belongs to")
     public void testModifyCartItemWithMismatchedCartAndItemId() {
         // 1. Arrange
         String cartAId = CartSteps.createCartAndGetId();

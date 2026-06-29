@@ -2,6 +2,8 @@ package com.grocerystore.testcases.auth;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.UserApi;
 import com.grocerystore.models.client.Client;
 import com.grocerystore.testcases.BaseTest;
@@ -10,7 +12,8 @@ import static com.grocerystore.constants.ErrorMessages.*;
 @Test(groups = {"auth", "validation"})
 public class AuthValidationTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_AUTH_002: Verify error when clientEmail is missing")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_AUTH_002: Verify that POST /api-clients returns 400 Bad Request and validation error when clientEmail is missing")
     public void testRegisterApiClientWithNoEmail() {
         String randomClientName = FAKER.name().fullName(); // Generate a random full name as client name
         Client clientData = Client.builder()
@@ -22,7 +25,8 @@ public class AuthValidationTest extends BaseTest {
         assertErrorResponse(response, 400, MISSING_CLIENT_EMAIL);
     }
 
-    @Test(groups = {"regression"}, description = "TC_AUTH_003: Verify error when clientName is missing")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_AUTH_003: Verify that POST /api-clients returns 400 Bad Request and validation error when clientName is missing")
     public void testRegisterApiClientWithNoClientName() {
         Client clientData = Client.builder()
                 .clientEmail("test@example.com")
@@ -33,7 +37,8 @@ public class AuthValidationTest extends BaseTest {
         assertErrorResponse(response, 400, MISSING_CLIENT_NAME);
     }
 
-    @Test(groups = {"regression"}, description = "TC_AUTH_004: Verify error when clientEmail has invalid format")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_AUTH_004: Verify that POST /api-clients returns 400 Bad Request and validation error when clientEmail has an invalid email format")
     public void testRegisterApiClientWithInvalidEmailFormat() {
         String randomClientName = FAKER.name().fullName(); // Generate a random full name as client name
         Client clientData = Client.builder()
@@ -46,7 +51,8 @@ public class AuthValidationTest extends BaseTest {
         assertErrorResponse(response, 400, INVALID_CLIENT_EMAIL);
     }
 
-    @Test(groups = {"regression"}, description = "TC_AUTH_005: Verify error when client email already exists")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_AUTH_005: Verify that POST /api-clients returns 409 Conflict and validation error when registering a client with an email address that is already registered")
     public void testRegisterApiClientWithEmailAlreadyExists() {
         String randomClientName1 = FAKER.name().fullName();
         String randomEmail = FAKER.internet().emailAddress();

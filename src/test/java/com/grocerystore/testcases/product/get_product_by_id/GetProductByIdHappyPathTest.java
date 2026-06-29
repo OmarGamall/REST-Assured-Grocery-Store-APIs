@@ -2,6 +2,8 @@ package com.grocerystore.testcases.product.get_product_by_id;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.ProductApi;
 import com.grocerystore.models.product.Product;
@@ -13,7 +15,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"products", "happy-path"})
 public class GetProductByIdHappyPathTest extends BaseTest {
 
-    @Test(groups = {"smoke"}, description = "TC_PROD_010: Verify retrieving product details by valid ID")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"smoke"}, description = "TC_PROD_010: Verify that GET /products/{productId} returns 200 OK and product details when a valid product ID is requested")
     public void testGetSingleProductById() {
         Product product = ProductService.getRandomAvailableProduct();
         Response response = ProductApi.getProductById(product.getId());

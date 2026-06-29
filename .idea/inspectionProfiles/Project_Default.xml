@@ -1,6 +1,36 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="VulnerableLibrariesLocal" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="isIgnoringEnabled" value="true" />
+      <option name="ignoredModules">
+        <list>
+          <option value="GroceryStoreAPIs" />
+          <option value="GroceryStoreAPIs" />
+          <option value="GroceryStoreAPIs" />
+          <option value="GroceryStoreAPIs" />
+          <option value="GroceryStoreAPIs" />
+        </list>
+      </option>
+      <option name="ignoredPackages">
+        <list>
+          <option value="commons-codec:commons-codec:1.11" />
+          <option value="org.mozilla:rhino:1.7.7.2" />
+          <option value="com.fasterxml.jackson.core:jackson-core:2.17.0" />
+          <option value="org.apache.commons:commons-lang3:3.5" />
+          <option value="org.yaml:snakeyaml:1.23" />
+        </list>
+      </option>
+      <option name="ignoredReasons">
+        <list>
+          <option value="Not exploitable" />
+          <option value="Not exploitable" />
+          <option value="Not exploitable" />
+          <option value="Not exploitable" />
+          <option value="Not exploitable" />
+        </list>
+      </option>
+    </inspection_tool>
     <inspection_tool class="YAMLSchemaValidation" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="groupsTestNG" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="groups">

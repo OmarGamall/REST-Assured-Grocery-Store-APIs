@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.create;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartResponse;
 import com.grocerystore.models.cart.CartItem;
@@ -13,7 +15,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"cart", "happy-path"})
 public class CreateCartTest extends BaseTest {
 
-    @Test(groups = {"smoke"}, description = "TC_CART_001: Verify creating a new cart and retrieving it")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"smoke"}, description = "TC_CART_001: Verify that POST /carts returns 201 Created and cartId when creating a new cart, and GET /carts/{cartId} returns 200 OK and empty items list")
     public void testCreateCart() {
         // 1. Act (Create the Cart)
         Response createResponse = CartApi.createCart();
@@ -41,7 +44,8 @@ public class CreateCartTest extends BaseTest {
         assertTrue(getResponse.jsonPath().getList("items").isEmpty(), "Expected new cart to have an empty items list");
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_002: Verify retrieving items from a new empty cart")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_002: Verify that GET /carts/{cartId}/items returns 200 OK and an empty items list when a new empty cart is requested")
     public void testGetCartItemsForEmptyCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

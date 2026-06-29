@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.replace_item;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.cart.CartItemResponse;
@@ -17,7 +19,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"cart", "happy-path"})
 public class ReplaceItemHappyPathTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_CART_029: Verify replacing both product and quantity")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_029: Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and successfully replaces both the product and its quantity")
     public void testReplaceCartItemProductAndQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -43,7 +46,8 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_030: Verify replacing quantity with same productId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_030: Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and updates the quantity when the productId is unchanged but the quantity is modified")
     public void testReplaceCartItemWithSameProductIdButDifferentQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -68,7 +72,8 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_031: Verify replacing product and keeping same quantity")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_031: Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and replaces the product while keeping the quantity unchanged")
     public void testReplaceCartItemProductAndKeepSameQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -92,7 +97,8 @@ public class ReplaceItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getItemId(), itemId, "Item ID mismatch after replacement");
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_032: Verify replacing product with missing quantity parameter")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_032: Verify that PUT /carts/{cartId}/items/{itemId} returns 204 No Content and replaces the product while keeping the previous quantity when the quantity parameter is omitted")
     public void testReplaceCartItemProductAndMissingQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

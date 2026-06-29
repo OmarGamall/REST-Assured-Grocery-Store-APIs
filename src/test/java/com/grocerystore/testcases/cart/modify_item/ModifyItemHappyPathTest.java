@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.modify_item;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.cart.CartItemResponse;
@@ -15,7 +17,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"cart", "happy-path"})
 public class ModifyItemHappyPathTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_CART_020: Verify modifying cart item quantity")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_020: Verify that PATCH /carts/{cartId}/items/{itemId} returns 204 No Content and successfully updates the quantity of an item in the cart")
     public void testModifyCartItemQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -35,7 +38,8 @@ public class ModifyItemHappyPathTest extends BaseTest {
         assertEquals(cartItems[0].getQuantity(), Integer.valueOf(2), "Expected updated quantity to be 2");
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_021: Verify modifying cart item to the same quantity")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_021: Verify that PATCH /carts/{cartId}/items/{itemId} returns 204 No Content when updating the quantity to the same value")
     public void testModifyCartItemToSameQuantity() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

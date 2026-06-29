@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.get_single;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.Order;
@@ -18,7 +20,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"orders", "happy-path"})
 public class GetSingleOrderHappyPathTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_018: Verify retrieving single order by ID")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_018: Verify that GET /orders/{orderId} returns 200 OK and order details when retrieving a valid order by ID")
     public void testGetSingleOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -54,7 +57,8 @@ public class GetSingleOrderHappyPathTest extends BaseTest {
         assertEquals(order.getItems().get(0).getQuantity(), cartItem.getQuantity(), "Expected quantity to match");
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_019: Verify retrieving single order with invoice details")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_019: Verify that GET /orders/{orderId} returns 200 OK and includes invoice details when query parameter invoice is set to true")
     public void testGetSingleOrderInvoiceSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

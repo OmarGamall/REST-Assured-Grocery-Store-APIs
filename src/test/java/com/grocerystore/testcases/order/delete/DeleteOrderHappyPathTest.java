@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.delete;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.OrderRequest;
@@ -17,7 +19,8 @@ import static org.testng.Assert.assertEquals;
 @Test(groups = {"orders", "happy-path"})
 public class DeleteOrderHappyPathTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_010: Verify successfully deleting an order")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_010: Verify that DELETE /orders/{orderId} returns 204 No Content and successfully deletes the order")
     public void testDeleteOrderSuccessfully() {
         // Arrange
         String orderId = OrderSteps.createRandomOrderAndGetId();

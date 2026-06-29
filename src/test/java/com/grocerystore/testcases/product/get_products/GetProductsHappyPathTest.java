@@ -3,6 +3,8 @@ package com.grocerystore.testcases.product.get_products;
 import io.restassured.response.Response;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.ProductApi;
 import com.grocerystore.models.product.Product;
 import com.grocerystore.models.product.ProductCategory;
@@ -15,7 +17,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"products", "happy-path"})
 public class GetProductsHappyPathTest extends BaseTest {
 
-    @Test(groups = {"smoke"}, description = "TC_PROD_001: Verify retrieving only in-stock products")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"smoke"}, description = "TC_PROD_001: Verify that GET /products returns 200 OK and only in-stock products when available query parameter is set to true")
     public void testGetAllAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(true);
@@ -40,7 +43,8 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(groups = {"regression"}, description = "TC_PROD_002: Verify retrieving only out-of-stock products")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_PROD_002: Verify that GET /products returns 200 OK and only out-of-stock products when available query parameter is set to false")
     public void testGetAllNonAvailableProducts() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setAvailable(false);
@@ -62,7 +66,8 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(dataProvider = "categoriesProvider", groups = {"regression"}, description = "TC_PROD_003: Verify filtering products by category")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(dataProvider = "categoriesProvider", groups = {"regression"}, description = "TC_PROD_003: Verify that GET /products returns 200 OK and products belonging to the specified category when category query parameter is provided")
     public void testGetProductsByCategory(ProductCategory category) {
         Product[] products = ProductService.getAllProductsForGivenCategory(category);
         
@@ -75,7 +80,8 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(groups = {"regression"}, description = "TC_PROD_004: Verify limiting products list size")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_PROD_004: Verify that GET /products returns 200 OK and limits the number of products to the value of results query parameter when results parameter is between 1 and 20")
     public void testGetProductsWithLimit() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(5);
@@ -92,7 +98,8 @@ public class GetProductsHappyPathTest extends BaseTest {
         assertTrue(products.length <= 5, "Expected at most 5 products in the response");
     }
 
-    @Test(groups = {"regression"}, description = "TC_PROD_005: Verify filtering products by category, availability, and limit")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_PROD_005: Verify that GET /products returns 200 OK and filters products by category, availability, and limit when category, available, and results query parameters are provided")
     public void testGetAvailableProductsByCategoryWithLimit() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setCategory(ProductCategory.FRESH_PRODUCE);
@@ -117,7 +124,8 @@ public class GetProductsHappyPathTest extends BaseTest {
         }
     }
 
-    @Test(groups = {"regression"}, description = "TC_PROD_006: Verify retrieving empty list when results parameter is 0")
+    @Severity(SeverityLevel.MINOR)
+    @Test(groups = {"regression"}, description = "TC_PROD_006: Verify that GET /products returns 200 OK and zero products when results query parameter is set to 0")
     public void testGetProductsWithZeroResults() {
         ProductsQueryParams queryParams = new ProductsQueryParams();
         queryParams.setResults(0); // Zero results value

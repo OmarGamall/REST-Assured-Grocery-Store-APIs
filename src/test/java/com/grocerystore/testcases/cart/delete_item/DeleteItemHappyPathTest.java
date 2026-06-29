@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.delete_item;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.cart.CartItemResponse;
@@ -17,7 +19,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"cart", "happy-path"})
 public class DeleteItemHappyPathTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_CART_013: Verify deleting an item from cart")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_CART_013: Verify that DELETE /carts/{cartId}/items/{itemId} returns 204 No Content and successfully deletes the item from the cart")
     public void testDeleteCartItem() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -33,7 +36,8 @@ public class DeleteItemHappyPathTest extends BaseTest {
         assertEquals(cartItems.length, 0, "Expected no items in the cart after deletion");
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_014: Verify sequential deletions of multiple items")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_014: Verify that DELETE /carts/{cartId}/items/{itemId} returns 204 No Content for sequential deletions of multiple items in the same cart")
     public void testDeleteMoreThanOneItemFromCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

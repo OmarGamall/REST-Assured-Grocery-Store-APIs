@@ -8,6 +8,7 @@ public class TokenCleanupListener implements IExecutionListener {
     public void onExecutionStart() {
         System.out.println("[TokenCleanupListener] Initializing token manager. Ensuring clean slate...");
         TokenManager.clearToken();
+        com.grocerystore.utils.AllureUtilities.cleanAllureResults();
     }
 
     @Override

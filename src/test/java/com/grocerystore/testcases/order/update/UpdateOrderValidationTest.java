@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.update;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.order.Order;
 import com.grocerystore.models.order.OrderRequest;
@@ -20,7 +22,8 @@ import static org.testng.Assert.assertTrue;
 @Test(groups = {"orders", "validation"})
 public class UpdateOrderValidationTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_024: Verify error when updating order with invalid token")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_024: Verify that PATCH /orders/{orderId} returns 401 Unauthorized and validation error when an invalid bearer token is used")
     public void testUpdateOrderWithInvalidToken() {
         // Arrange
         Order order = OrderSteps.createOrderAndGetOrderDetails();
@@ -36,7 +39,8 @@ public class UpdateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, BEARER_TOKEN);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_025: Verify error when updating order with non-existent orderId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_025: Verify that PATCH /orders/{orderId} returns 404 Not Found and validation error when the orderId is invalid or non-existent")
     public void testUpdateOrderWithNonExistentId() {
         // Arrange
         OrderRequest updateRequest = OrderRequest.builder()
@@ -51,7 +55,8 @@ public class UpdateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_026: Verify error when updating order belonging to another client")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_026: Verify that PATCH /orders/{orderId} returns 404 Not Found and validation error when attempting to update an order belonging to a different API client")
     public void testUpdateOrderBelongingToDifferentClient() {
         // Arrange - Register other client and place an order
         String firstClientToken = ClientSteps.registerClientAndGetToken();

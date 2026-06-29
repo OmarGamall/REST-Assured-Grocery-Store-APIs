@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.get_all;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.Order;
@@ -18,7 +20,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"orders", "happy-path"})
 public class GetAllOrdersHappyPathTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_016: Verify retrieving all orders for authenticated client")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_016: Verify that GET /orders returns 200 OK and an array containing all orders placed by the authenticated API client")
     public void testGetAllOrdersForCustomerSuccessfully() {
         // Arrange - Ensure there is at least one order
         String cartId = CartSteps.createCartAndGetId();

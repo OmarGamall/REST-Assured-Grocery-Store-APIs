@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.create;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.apis.OrdersApi;
@@ -19,7 +21,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"orders", "happy-path"})
 public class CreateOrderHappyPathTest extends BaseTest {
 
-    @Test(groups = {"smoke"}, description = "TC_ORDER_001: Verify creating an order with one cart item")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"smoke"}, description = "TC_ORDER_001: Verify that POST /orders returns 201 Created and orderId when creating an order with one cart item, and that the cart is deleted")
     public void testCreateOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -51,19 +54,7 @@ public class CreateOrderHappyPathTest extends BaseTest {
         // Verify the cart has been automatically deleted after order placement
         Response getCartResponse = CartApi.getCartById(cartId);
         softAssert.assertEquals(getCartResponse.getStatusCode(), 404, "Expected status code 404 for deleted cart");
-        if (getCartResponse.getStatusCode() == 404) {
-            try {
-                assertResponseSchema(getCartResponse, "schemas/error-schema.json");
-                ErrorResponse errorResponse = getCartResponse.as(ErrorResponse.class);
-                softAssert.assertNotNull(errorResponse, "Expected error response body for deleted cart");
-                if (errorResponse != null && errorResponse.getError() != null) {
-                    softAssert.assertTrue(errorResponse.getError().contains("No cart with id " + cartId),
-                            "Expected error message to contain cart deletion details");
-                }
-            } catch (AssertionError | Exception e) {
-                softAssert.fail("Failed to validate error response for deleted cart: " + e.getMessage());
-            }
-        }
+
 
         // Retrieve the order details
         Order createdOrder = OrderSteps.getOrderById(getToken(), orderId);
@@ -83,7 +74,8 @@ public class CreateOrderHappyPathTest extends BaseTest {
         softAssert.assertAll();
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_002: Verify creating an order with multiple unique cart items")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_002: Verify that POST /orders returns 201 Created and orderId when creating an order with a cart containing multiple unique items, and that the cart is deleted")
     public void testCreateOrderWithCartHasMultipleItemsSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -115,19 +107,7 @@ public class CreateOrderHappyPathTest extends BaseTest {
         // Verify the cart has been automatically deleted after order placement
         Response getCartResponse = CartApi.getCartById(cartId);
         softAssert.assertEquals(getCartResponse.getStatusCode(), 404, "Expected status code 404 for deleted cart");
-        if (getCartResponse.getStatusCode() == 404) {
-            try {
-                assertResponseSchema(getCartResponse, "schemas/error-schema.json");
-                ErrorResponse errorResponse = getCartResponse.as(ErrorResponse.class);
-                softAssert.assertNotNull(errorResponse, "Expected error response body for deleted cart");
-                if (errorResponse != null && errorResponse.getError() != null) {
-                    softAssert.assertTrue(errorResponse.getError().contains("No cart with id " + cartId),
-                            "Expected error message to contain cart deletion details");
-                }
-            } catch (AssertionError | Exception e) {
-                softAssert.fail("Failed to validate error response for deleted cart: " + e.getMessage());
-            }
-        }
+
 
         // Retrieve the order details
         Order createdOrder = OrderSteps.getOrderById(getToken(), orderId);

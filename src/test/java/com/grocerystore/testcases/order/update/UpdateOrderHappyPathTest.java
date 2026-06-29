@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.update;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.Order;
@@ -18,7 +20,8 @@ import static org.testng.Assert.*;
 @Test(groups = {"orders", "happy-path"})
 public class UpdateOrderHappyPathTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_023: Verify updating order customerName and comment")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_023: Verify that PATCH /orders/{orderId} returns 204 No Content and updates the order's customerName and comment fields")
     public void testUpdateOrderSuccessfully() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();

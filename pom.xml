@@ -9,34 +9,66 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <!-- Compiler Settings -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Test Groups Defaults -->
+        <groups></groups>
+        <excludedGroups></excludedGroups>
+
+        <!-- Dependency Versions -->
+        <lombok.version>1.18.32</lombok.version>
+        <rest-assured.version>5.5.6</rest-assured.version>
+        <jackson.version>2.17.0</jackson.version>
+        <javafaker.version>1.0.2</javafaker.version>
+        <testng.version>7.10.2</testng.version>
+        <commons-io.version>2.16.1</commons-io.version>
         <allure.version>2.24.0</allure.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
+
+        <!-- Plugin Versions -->
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <allure-maven.version>2.12.0</allure-maven.version>
     </properties>
 
     <build>
         <plugins>
-            <!-- surefire plugin for running tests in parallel -->
+            <!-- Surefire plugin for running tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.6</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <suiteXmlFiles>
                         <suiteXmlFile>testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     <groups>${groups}</groups>
                     <excludedGroups>${excludedGroups}</excludedGroups>
+                    <!-- Configure AspectJ weaver Java agent -->
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                     <systemPropertyVariables>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
+            <!-- Allure reporting plugin -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.12.0</version>
+                <version>${allure-maven.version}</version>
                 <configuration>
                     <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
                     <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
@@ -46,73 +78,65 @@
     </build>
 
     <dependencies>
-        <!-- Lombok to eliminate boilerplate code -->
+        <!-- Annotation Processors / Compile Helpers -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.32</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Rest Assured for API testing -->
+        <!-- API Testing & Validation -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>5.5.6</version>
+            <version>${rest-assured.version}</version>
         </dependency>
-
-        <!-- Rest Assured JSON Schema Validator -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>5.5.6</version>
+            <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- TestNG for testing framework -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>7.10.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Jackson Databind for JSON processing -->
+        <!-- JSON Processing -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.17.0</version>
+            <version>${jackson.version}</version>
         </dependency>
 
-        <!-- Java Faker for generating fake data -->
+        <!-- Testing Framework & Test Helpers -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
+            <version>${javafaker.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
 
-
-        <!-- Allure for Reporting -->
+        <!-- Allure Reporting Integration -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
             <version>${allure.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-rest-assured</artifactId>
             <version>${allure.version}</version>
             <scope>compile</scope>
-        </dependency>
-
-        <!-- Apache Commons IO for file search/load utilities -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
         </dependency>
     </dependencies>
 </project>

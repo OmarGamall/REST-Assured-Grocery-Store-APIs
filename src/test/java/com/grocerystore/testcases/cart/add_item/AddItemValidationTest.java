@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.add_item;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.product.Product;
@@ -13,7 +15,8 @@ import static com.grocerystore.constants.ErrorMessages.*;
 @Test(groups = {"cart", "validation"})
 public class AddItemValidationTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_CART_006: Verify error when adding duplicate product to cart")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_006: Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when attempting to add a product that has already been added to the cart")
     public void testAddDuplicateItemToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -28,7 +31,8 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(duplicateAddResponse, 400, DUPLICATE_PRODUCT);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_007: Verify error when adding out-of-stock product")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_007: Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when attempting to add an out-of-stock product")
     public void testAddNonAvailableProductToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -42,7 +46,8 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, PRODUCT_OUT_OF_STOCK);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_008: Verify error when quantity exceeds product stock")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_008: Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when the requested quantity exceeds the product's current stock")
     public void testAddQuantityExceedingStockToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -56,7 +61,8 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, QUANTITY_EXCEEDS_STOCK);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_009: Verify error when adding item with quantity 0")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_009: Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when adding an item with a quantity of 0")
     public void testAddItemWithZeroQuantityToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -70,7 +76,8 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, QUANTITY_MINIMUM);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_010: Verify error when adding item with negative quantity")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_010: Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when adding an item with a negative quantity")
     public void testAddItemWithNegativeQuantityToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -84,7 +91,8 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, QUANTITY_MINIMUM);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_011: Verify error when adding invalid productId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_011: Verify that POST /carts/{cartId}/items returns 400 Bad Request and validation error when adding an item with an invalid or non-existent productId")
     public void testAddItemWithInvalidProductIdToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -98,7 +106,8 @@ public class AddItemValidationTest extends BaseTest {
         assertErrorResponse(response, 400, INVALID_PRODUCT_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_012: Verify error when adding item with invalid cartId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_012: Verify that POST /carts/{cartId}/items returns 404 Not Found and validation error when the cartId is invalid or non-existent")
     public void testAddItemWithInvalidCartId() {
         // 1. Arrange
         String invalidCartId = "invalid-cart-id";

@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.delete;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.order.OrderRequest;
 import com.grocerystore.models.order.OrderResponse;
@@ -18,7 +20,8 @@ import static org.testng.Assert.assertEquals;
 @Test(groups = {"orders", "validation"})
 public class DeleteOrderValidationTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_011: Verify error when deleting order with invalid token")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_011: Verify that DELETE /orders/{orderId} returns 401 Unauthorized and validation error when an invalid bearer token is used")
     public void testDeleteOrderWithInvalidToken() {
         // Act
         Response response = OrdersApi.deleteOrder("invalid_token_12345", "some-order-id");
@@ -27,7 +30,8 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, BEARER_TOKEN);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_012: Verify error when deleting order with missing token")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_012: Verify that DELETE /orders/{orderId} returns 401 Unauthorized and validation error when bearer token is missing or null")
     public void testDeleteOrderWithMissingToken() {
         // Act
         Response response = OrdersApi.deleteOrder(null, "some-order-id");
@@ -35,7 +39,8 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, BEARER_TOKEN);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_013: Verify error when deleting same order a second time")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_013: Verify that DELETE /orders/{orderId} returns 404 Not Found and validation error when attempting to delete the same order a second time")
     public void testDeleteSameOrderMultipleTimes() {
         // Arrange - Create an order to delete
         String orderId = OrderSteps.createRandomOrderAndGetId();
@@ -51,7 +56,8 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(secondDeleteResponse, 404, NO_ORDER_WITH_ID + " " + orderId);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_014: Verify error when deleting non-existent orderId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_014: Verify that DELETE /orders/{orderId} returns 404 Not Found and validation error when the orderId is invalid or non-existent")
     public void testDeleteOrderWithInvalidOrderId() {
         // Act
         Response response = OrdersApi.deleteOrder(getToken(), "non_existent_order_id_12345");
@@ -60,7 +66,8 @@ public class DeleteOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 404, NO_ORDER_WITH_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_015: Verify error when deleting order belonging to another client")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_015: Verify that DELETE /orders/{orderId} returns 404 Not Found and validation error when attempting to delete an order belonging to a different API client")
     public void testDeleteOrderBelongingToDifferentClient() {
         // Arrange - Register other client and place an order
         String firstClientToken = ClientSteps.registerClientAndGetToken();

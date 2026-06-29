@@ -2,6 +2,8 @@ package com.grocerystore.testcases.cart.add_item;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.testng.asserts.SoftAssert;
 import com.grocerystore.apis.CartApi;
 import com.grocerystore.models.cart.CartItem;
@@ -17,7 +19,8 @@ import static com.grocerystore.services.ProductService.isProductAlreadySelected;
 @Test(groups = {"cart", "happy-path"})
 public class AddItemHappyPathTest extends BaseTest {
 
-    @Test(groups = {"smoke"}, description = "TC_CART_003: Verify adding an item to cart successfully")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"smoke"}, description = "TC_CART_003: Verify that POST /carts/{cartId}/items returns 201 Created and successfully adds an item when a valid productId and quantity are provided")
     public void testAddItemToCart() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -46,7 +49,8 @@ public class AddItemHappyPathTest extends BaseTest {
         softAssert.assertAll();
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_004: Verify adding item with quantity equal to stock")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_CART_004: Verify that POST /carts/{cartId}/items returns 201 Created and adds the item when quantity is exactly equal to the product's current stock")
     public void testAddItemToCartWithQuantitySameAsStock() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -75,7 +79,8 @@ public class AddItemHappyPathTest extends BaseTest {
         softAssert.assertAll();
     }
 
-    @Test(groups = {"regression"}, description = "TC_CART_005: Verify adding multiple unique products to cart")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_CART_005: Verify that POST /carts/{cartId}/items returns 201 Created for multiple unique products added sequentially to the same cart")
     public void testAddMultipleItemsToCartNoDuplicates() {
         // 1. Arrange
         String cartId = CartSteps.createCartAndGetId();

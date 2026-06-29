@@ -2,6 +2,8 @@ package com.grocerystore.testcases.order.create;
 
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import com.grocerystore.apis.OrdersApi;
 import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.models.order.OrderRequest;
@@ -16,7 +18,8 @@ import static org.testng.Assert.assertEquals;
 @Test(groups = {"orders", "validation"})
 public class CreateOrderValidationTest extends BaseTest {
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_003: Verify error when creating order with invalid token")
+    @Severity(SeverityLevel.BLOCKER)
+    @Test(groups = {"regression"}, description = "TC_ORDER_003: Verify that POST /orders returns 401 Unauthorized and validation error when an invalid bearer token is used")
     public void testCreateOrderWithInvalidToken() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -34,7 +37,8 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 401, INVALID_BEARER_TOKEN);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_004: Verify error when placing order with empty cart")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_004: Verify that POST /orders returns 400 Bad Request and validation error when attempting to place an order with an empty cart")
     public void testCreateOrderWithEmptyCart() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -50,7 +54,8 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, CART_IS_EMPTY);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_005: Verify error when placing order with invalid cartId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_005: Verify that POST /orders returns 400 Bad Request and validation error when placing an order with an invalid or non-existent cartId")
     public void testCreateOrderWithInvalidCartId() {
         // Arrange
         OrderRequest orderRequest = OrderRequest.builder()
@@ -65,7 +70,8 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, CART_ID_REQUIRED);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_006: Verify error when customerName is missing or null")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_006: Verify that POST /orders returns 400 Bad Request and validation error when customerName parameter is missing or null")
     public void testCreateOrderWithoutCustomerName() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -83,7 +89,8 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, CUSTOMER_NAME_REQUIRED);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_007: Verify error when placing duplicate order using same cartId")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_007: Verify that POST /orders returns 400 Bad Request and validation error when attempting to place a duplicate order using the same cartId")
     public void testCreateDuplicateOrder() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -106,7 +113,8 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(secondResponse, 400, INVALID_OR_MISSING_CART_ID);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_008: Verify error when customerName is empty")
+    @Severity(SeverityLevel.CRITICAL)
+    @Test(groups = {"regression"}, description = "TC_ORDER_008: Verify that POST /orders returns 400 Bad Request and validation error when customerName is empty")
     public void testCreateOrderWithInvalidCustomerName() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
@@ -125,7 +133,8 @@ public class CreateOrderValidationTest extends BaseTest {
         assertErrorResponse(response, 400, CUSTOMER_NAME_REQUIRED);
     }
 
-    @Test(groups = {"regression"}, description = "TC_ORDER_009: Verify error when comment is excessively long")
+    @Severity(SeverityLevel.MINOR)
+    @Test(groups = {"regression"}, description = "TC_ORDER_009: Verify that POST /orders returns 400 Bad Request and validation error when the comment length is excessively long")
     public void testCreateOrderWithExcessiveCommentLength() {
         // Arrange
         String cartId = CartSteps.createCartAndGetId();
