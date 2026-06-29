@@ -15,5 +15,6 @@ public class TokenCleanupListener implements IExecutionListener {
     public void onExecutionFinish() {
         System.out.println("[TokenCleanupListener] Cleaning up token manager to prevent memory leaks...");
         TokenManager.clearToken();
+        com.grocerystore.utils.AllureUtilities.writeEnvironmentProperties();
     }
 }

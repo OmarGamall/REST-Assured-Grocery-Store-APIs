@@ -43,7 +43,7 @@ public class AddItemHappyPathTest extends BaseTest {
             softAssert.assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
 
             CartItem[] cartItems = CartSteps.getCartItems(cartId);
-            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            softAssert.assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
             
             if (cartItems.length == 1) {
                 softAssert.assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
@@ -77,7 +77,7 @@ public class AddItemHappyPathTest extends BaseTest {
             softAssert.assertNotNull(addResponse.getItemId(), "Expected 'itemId' to be returned");
 
             CartItem[] cartItems = CartSteps.getCartItems(cartId);
-            assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
+            softAssert.assertEquals(cartItems.length, 1, "Expected exactly 1 item in the cart");
             
             if (cartItems.length == 1) {
                 softAssert.assertEquals(cartItems[0].getProductId(), product.getId(), "Product ID mismatch in cart");
