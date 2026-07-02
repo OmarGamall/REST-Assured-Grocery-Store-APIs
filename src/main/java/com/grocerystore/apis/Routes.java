@@ -1,6 +1,7 @@
 package com.grocerystore.apis;
 
 import com.grocerystore.utils.PropertyReader;
+import com.grocerystore.utils.LogsManager;
 
 public class Routes {
     // Base URL dynamically resolved via system property or configuration
@@ -23,7 +24,7 @@ public class Routes {
             return env;
         }
         
-        System.out.println("[Routes] Warning: Unknown environment '" + env + "'. Defaulting to Production.");
+        LogsManager.warn("Unknown environment '{}'. Defaulting to Production.", env);
         return "https://simple-grocery-store-api.click";
     }
 

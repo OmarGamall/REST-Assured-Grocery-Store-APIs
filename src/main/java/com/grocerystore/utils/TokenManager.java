@@ -22,9 +22,7 @@ public class TokenManager {
                     String token = PropertyReader.getProperty("api.token");
 
                     if (token == null || token.trim().isEmpty()) {
-                        System.out.println(String.format("[TokenManager - Thread: %s] " +
-                                "No custom api.token found. Resolving client credentials for registration...",
-                                Thread.currentThread().getName()));
+                        LogsManager.info("No custom api.token found. Resolving client credentials for registration...");
                         
                         String clientName = PropertyReader.getProperty("client.name");
                         String clientEmail = PropertyReader.getProperty("client.email");
@@ -38,9 +36,7 @@ public class TokenManager {
                             clientEmail = faker.internet().emailAddress();
                         }
 
-                        System.out.println(String.format("[TokenManager - Thread: %s] Registering client with " +
-                                "details: [Name: %s, Email: %s]",
-                                Thread.currentThread().getName(), clientName, clientEmail));
+                        LogsManager.info("Registering client with details: [Name: {}, Email: {}]", clientName, clientEmail);
                         Client clientData = Client.builder()
                                 .clientName(clientName)
                                 .clientEmail(clientEmail)
@@ -48,9 +44,7 @@ public class TokenManager {
                         Client registered = ClientSteps.registerClientAndGetClientDetails(clientData);
                         token = registered.getAccessToken();
                     } else {
-                        System.out.println(String.format("[TokenManager - Thread: %s] " +
-                                "Using custom api.token specified in configuration: %s",
-                                Thread.currentThread().getName(), token));
+                        LogsManager.info("Using custom api.token specified in configuration: {}", token);
                     }
                     cachedToken = token;
                 }
@@ -65,9 +59,10 @@ public class TokenManager {
     public static void clearToken() {
         synchronized (TokenManager.class) {
             if (cachedToken != null) {
-                System.out.println(String.format("[TokenManager - Thread: %s] Clearing cached token...", Thread.currentThread().getName()));
+                LogsManager.info("Clearing cached token...");
                 cachedToken = null;
             }
         }
     }
 }
+

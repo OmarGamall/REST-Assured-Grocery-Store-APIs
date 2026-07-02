@@ -17,20 +17,20 @@ public class AllureUtilities {
         String resultsDir = PropertyReader.getProperty("allure.results.directory", "target/allure-results");
         File resultsDirectory = new File(resultsDir);
         if (resultsDirectory.exists()) {
-            System.out.println("[AllureUtilities] Cleaning allure results directory: " + resultsDirectory.getAbsolutePath());
+            LogsManager.info("Cleaning allure results directory: {}", resultsDirectory.getAbsolutePath());
             FileUtils.deleteQuietly(resultsDirectory);
         } else {
-            System.out.println("[AllureUtilities] Allure results directory does not exist or already clean: " + resultsDirectory.getAbsolutePath());
+            LogsManager.info("Allure results directory does not exist or already clean: {}", resultsDirectory.getAbsolutePath());
         }
 
         // 2. Clean Allure Report Directory
         String reportDir = PropertyReader.getProperty("allure.report.directory", "target/allure-report");
         File reportDirectory = new File(reportDir);
         if (reportDirectory.exists()) {
-            System.out.println("[AllureUtilities] Cleaning allure report directory: " + reportDirectory.getAbsolutePath());
+            LogsManager.info("Cleaning allure report directory: {}", reportDirectory.getAbsolutePath());
             FileUtils.deleteQuietly(reportDirectory);
         } else {
-            System.out.println("[AllureUtilities] Allure report directory does not exist or already clean: " + reportDirectory.getAbsolutePath());
+            LogsManager.info("Allure report directory does not exist or already clean: {}", reportDirectory.getAbsolutePath());
         }
     }
 
@@ -64,9 +64,10 @@ public class AllureUtilities {
 
         try (FileOutputStream fos = new FileOutputStream(propertiesFile)) {
             properties.store(fos, "Allure Environment Properties");
-            System.out.println("[AllureUtilities] environment.properties successfully written to: " + propertiesFile.getAbsolutePath());
+            LogsManager.info("environment.properties successfully written to: {}", propertiesFile.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("[AllureUtilities] Failed to write environment.properties: " + e.getMessage());
+            LogsManager.error("Failed to write environment.properties: {}", e.getMessage());
         }
     }
 }
+

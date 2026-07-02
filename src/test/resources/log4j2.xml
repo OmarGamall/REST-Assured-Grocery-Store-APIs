@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_PATTERN">[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%X{testName}] [%logger{36}] - %msg%n</Property>
+        <Property name="LOG_PATH">target/logs</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 1. Console Appender with colored level highlighting -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{[%-5level]}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue} %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%X{testName}] [%logger{36}] - %msg%n"/>
+        </Console>
+
+        <!-- 2. File Appender writing to target/logs/execution.log -->
+        <File name="FileAppender" fileName="${LOG_PATH}/execution.log" append="false">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <!-- Default Root Logger -->
+        <Root level="INFO">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+
+        <!-- Suppress overly verbose library logging -->
+        <Logger name="org.apache.http" level="WARN" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        <Logger name="io.restassured" level="WARN" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+    </Loggers>
+</Configuration>

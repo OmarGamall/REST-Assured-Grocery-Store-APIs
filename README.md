@@ -50,9 +50,12 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Object-Oriented Mapping**: Uses Jackson Databind for smooth serialization and deserialization of JSON request/response payloads to strongly typed DTOs.
 - **Boilerplate Reduction & Fluent Builders**: Integrates Project Lombok to eliminate verbose DTO boilerplate (getters, setters, toString) and implements the **Builder Design Pattern** (`@Builder`) for highly readable, flexible, and type-safe object instantiations, replacing rigid overloaded constructors.
 
-### 6. Execution Reporting & Diagnostics
+### 6. Execution Reporting, Logging & Diagnostics
 - **Interactive HTML Test Reports (Allure)**: Integrated Allure TestNG for producing highly visual, interactive HTML test execution reports. Captured report features include dynamic failure categorizations, historical trend lines, execution timelines, custom test steps, and **test case severity levels** (`BLOCKER`, `CRITICAL`, `NORMAL`, `MINOR`).
 - **Automated API Request & Response Logger (Allure Rest-Assured)**: Utilizes the `AllureRestAssured` filter to automatically capture HTTP request/response payloads, headers, parameters, and status codes, attaching them directly to test steps inside Allure reports for simplified debugging and diagnosis.
+- **Thread-Safe Logging Framework (SLF4J & Log4j2)**: Integrates a custom logging utility (`LogsManager`) backed by Log4j2 and SLF4J, outputting to a colored console layout and `target/logs/execution.log`.
+- **MDC (Mapped Diagnostic Context) Test Tagging**: Statically binds active TestNG test case names to thread execution contexts using SLF4J MDC, enabling clean log isolation and filtering (`grep`/`Select-String`) during parallel executions.
+- **Atomic HTTP Logging Filter**: Intercepts RestAssured traffic, printing combined request info + body and response status + body as atomic log statements to prevent line interleaving, pretty-printing JSON bodies, and truncating large payloads (exceeding 3,000 characters).
 
 ---
 
@@ -80,6 +83,8 @@ The automation suite covers the following API modules:
 - **JSON Processing**: Jackson Databind (v2.17.0)
 - **Data Generation**: JavaFaker (v1.0.2)
 - **Boilerplate Reduction**: Project Lombok (v1.18.32)
+- **Logging Facade**: SLF4J (v2.0.13)
+- **Logging Engine**: Apache Log4j2 (v2.23.1)
 - **Reporting**: Allure (v2.24.0) via `allure-testng` and `allure-rest-assured`
 - **Build Tool**: Maven
 
@@ -116,6 +121,7 @@ The automation suite covers the following API modules:
     │                   ├── PropertyReader.java # Properties loader configuration manager
     │                   ├── TokenManager.java # Dynamic token lifecycle management
     │                   ├── RestHelper.java   # Centralized HTTP builder client
+    │                   ├── LogsManager.java  # Thread-safe SLF4J Logging Utility
     │                   ├── AllureUtilities.java # Utility to clean Allure results programmatically
     │                   └── Client_Token_Generation_Flow.png # Authentication flow diagram
     └── test/
@@ -125,14 +131,16 @@ The automation suite covers the following API modules:
         │   ├── retry.properties        # Test retry limit configuration
         │   ├── META-INF/services/
         │   │   └── org.testng.ITestNGListener # SPI registration for listeners
+        │   ├── log4j2.xml              # Log4j2 Logger configuration XML
         │   └── schemas/                # Predefined JSON schemas for contract testing & validation
         └── java/
             └── com/
                 └── grocerystore/
-                    ├── listeners/      # TestNG Custom Listeners (Retry, AnnotationTransformer, TokenCleanupListener)
+                    ├── listeners/      # TestNG Custom Listeners (Retry, AnnotationTransformer, TokenCleanupListener, TestLogListener)
                     │   ├── AnnotationTransformer.java
                     │   ├── Retry.java
-                    │   └── TokenCleanupListener.java
+                    │   ├── TokenCleanupListener.java
+                    │   └── TestLogListener.java
                     └── testcases/  # TestNG Suites (Auth, Cart, Order, Product)
                         ├── auth/   # Client registration and validation suites
                         ├── cart/   # Cart management and boundary suites

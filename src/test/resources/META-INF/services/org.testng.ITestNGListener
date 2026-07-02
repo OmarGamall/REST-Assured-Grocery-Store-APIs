@@ -1,2 +1,3 @@
 com.grocerystore.listeners.AnnotationTransformer
 com.grocerystore.listeners.TokenCleanupListener
+com.grocerystore.listeners.TestLogListener

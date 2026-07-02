@@ -29,6 +29,8 @@
         <commons-io.version>2.16.1</commons-io.version>
         <allure.version>2.24.0</allure.version>
         <aspectj.version>1.9.22.1</aspectj.version>
+        <slf4j.version>2.0.13</slf4j.version>
+        <log4j.version>2.23.1</log4j.version>
 
         <!-- Plugin Versions -->
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
@@ -137,6 +139,28 @@
             <artifactId>allure-rest-assured</artifactId>
             <version>${allure.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- Logging Framework (SLF4J Facade + Log4j2 Engine) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
     </dependencies>
 </project>
