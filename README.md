@@ -11,7 +11,13 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 ## Table of Contents
 
 - [Features](#features)
-- [Module Coverage](#module-coverage)
+  - [1. Test Coverage & Functional Scope](#1-test-coverage--functional-scope)
+  - [2. API Contract Verification](#2-api-contract-verification)
+  - [3. Core Framework Architecture](#3-core-framework-architecture)
+  - [4. Parallel Execution & Thread Safety](#4-parallel-execution--thread-safety)
+  - [5. Data Generation & Serialization](#5-data-generation--serialization)
+  - [6. Execution Reporting & Diagnostics](#6-execution-reporting--diagnostics)
+  - [7. Thread-Safe Logging and Diagnostics](#7-thread-safe-logging-and-diagnostics)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
@@ -50,27 +56,20 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 - **Object-Oriented Mapping**: Uses Jackson Databind for smooth serialization and deserialization of JSON request/response payloads to strongly typed DTOs.
 - **Boilerplate Reduction & Fluent Builders**: Integrates Project Lombok to eliminate verbose DTO boilerplate (getters, setters, toString) and implements the **Builder Design Pattern** (`@Builder`) for highly readable, flexible, and type-safe object instantiations, replacing rigid overloaded constructors.
 
-### 6. Execution Reporting, Logging & Diagnostics
+### 6. Execution Reporting & Diagnostics
 - **Interactive HTML Test Reports (Allure)**: Integrated Allure TestNG for producing highly visual, interactive HTML test execution reports. Captured report features include dynamic failure categorizations, historical trend lines, execution timelines, custom test steps, and **test case severity levels** (`BLOCKER`, `CRITICAL`, `NORMAL`, `MINOR`).
 - **Automated API Request & Response Logger (Allure Rest-Assured)**: Utilizes the `AllureRestAssured` filter to automatically capture HTTP request/response payloads, headers, parameters, and status codes, attaching them directly to test steps inside Allure reports for simplified debugging and diagnosis.
-- **Thread-Safe Logging Framework (SLF4J & Log4j2)**: Integrates a custom logging utility (`LogsManager`) backed by Log4j2 and SLF4J, outputting to a colored console layout and `target/logs/execution.log`.
-- **MDC (Mapped Diagnostic Context) Test Tagging**: Statically binds active TestNG test case names to thread execution contexts using SLF4J MDC, enabling clean log isolation and filtering (`grep`/`Select-String`) during parallel executions.
+
+### 7. Thread-Safe Logging and Diagnostics
+To facilitate debugging, tracing, and monitoring of test executions (especially during parallel execution), the framework features a thread-safe logging architecture:
+
+- **SLF4J & Log4j2 Backend**: Standardized on SLF4J as the logging API and Log4j2 as the implementation engine.
+- **LogsManager**: A helper facade class that retrieves the active logger class dynamically from the execution call stack (`Thread.currentThread().getStackTrace()`), keeping files clean of static logger declarations.
+- **MDC (Mapped Diagnostic Context) Test Tracking**: Configured to capture the running test name dynamically. The custom `TestLogListener` (registered via TestNG SPI) automatically registers the test name into SLF4J MDC when a test begins and cleans it up when it finishes.
 - **Atomic HTTP Logging Filter**: Intercepts RestAssured traffic, printing combined request info + body and response status + body as atomic log statements to prevent line interleaving, pretty-printing JSON bodies, and truncating large payloads (exceeding 3,000 characters).
-
----
-
-## Module Coverage
-
-The automation suite covers the following API modules:
-
-1. **Authentication & Clients (`/api-clients`)**
-   - Registering new clients, validation on empty name/email, invalid email format, and duplicate emails (409 Conflict).
-2. **Products (`/products`)**
-   - Retrieving all products, filtering by category/availability, results limitation boundaries (-1, 0, 20, 1000), lookup by product ID, and non-existent product ID handling (404).
-3. **Cart (`/carts`)**
-   - Cart creation, adding items, validations (out-of-stock, zero/negative quantity, duplicate items, exceeding stock limits), replacing cart items, updating quantities, and deleting items.
-4. **Orders (`/orders`)**
-   - Order placement (for single or multiple unique cart items), order retrieval (standard and with invoice details), updating customer details/comments, deletion, and cross-client access authorization boundary validations.
+- **Appenders & Outputs**:
+  - **Console Appender**: Logs events to stdout with ANSI color-coding for log levels (INFO in green, WARN in yellow, ERROR/FATAL in red, DEBUG in blue).
+  - **File Appender**: Writes formatted execution records to `target/logs/execution.log` (overwritten on each suite run).
 
 ---
 
