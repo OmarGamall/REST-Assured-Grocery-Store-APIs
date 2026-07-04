@@ -1,25 +1,25 @@
 package com.grocerystore.apis;
 
-import io.qameta.allure.restassured.AllureRestAssured;
-import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
-/*
- this code inside the block runs once at the very beginning of test suite
-*/
+/**
+ * Base API client class providing common REST Assured request configurations.
+ */
 public class BaseApi {
-    protected static final RequestSpecification requestSpec;
 
-    static {
-        requestSpec = new RequestSpecBuilder()
+    /**
+     * Factory method to return a fresh, thread-safe RequestSpecification.
+     *
+     * @return a new RequestSpecification instance
+     */
+    public static RequestSpecification getRequestSpec() {
+        return new RequestSpecBuilder()
                 .setBaseUri(Routes.BASE_URI)
                 .setContentType(ContentType.JSON)
-                .addFilter(new AllureRestAssured()) // Automatically log requests/responses to Allure reports
                 .log(LogDetail.ALL)
                 .build();
-        RestAssured.requestSpecification = requestSpec;
     }
 }

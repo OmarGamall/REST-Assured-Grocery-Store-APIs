@@ -50,6 +50,7 @@ A comprehensive REST API automation project built with Java, Rest-Assured, and T
 ### 4. Parallel Execution & Thread Safety
 - **Independent Test Design & Parallel Execution**: Engineered for high-throughput concurrency by executing test methods in parallel threads via TestNG XML suite files. Every automated test case is written to be fully independent—utilizing isolated, dynamic runtime data (such as fresh cart IDs, order IDs, and Faker data) so that parallel tests never experience resource conflicts or cross-test state leaks.
 - **Automatic & Shared Token Caching**: Dynamically resolves and caches a single authentication token globally using a thread-safe, volatile static reference. It checks for a pre-configured `api.token` in `client.properties`, or lazily registers a new client once per suite execution using Faker-generated values, caching the token at the class level to eliminate duplicate registration requests and avoid memory leaks.
+- **Thread-Safe Request Specifications**: Avoids global static configurations (such as `RestAssured.requestSpecification`) to prevent state leakage and thread collisions. Instead, isolated request specifications are dynamically generated per request using a factory pattern inside the [BaseApi](file:///d:/Edu/Omar%20Courses-Referances/APIs/RestAssured/GroceryStoreAPIs/src/main/java/com/grocerystore/apis/BaseApi.java) class.
 
 ### 5. Data Generation & Serialization
 - **Dynamic Test Data**: Leverages JavaFaker to dynamically produce unique names, emails, and comments for registration and order creation.
