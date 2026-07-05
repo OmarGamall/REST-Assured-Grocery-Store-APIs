@@ -61,7 +61,6 @@ public class RestHelper {
     private Response execute(String method) {
         RequestSpecification spec = RestAssured.given()
                 .spec(BaseApi.getRequestSpec())
-                .relaxedHTTPSValidation()
                 .filter(new AllureRestAssured())
                 .filter(new RestLoggingFilter());
 
