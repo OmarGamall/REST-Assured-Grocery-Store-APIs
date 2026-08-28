@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Step;
 import java.util.Map;
 
-public class ProductApi extends BaseApi {
+public class ProductApi {
 
     @Step("API: Get all products using query parameters filter")
     public static Response getAllProducts(ProductsQueryParams queryParams) {

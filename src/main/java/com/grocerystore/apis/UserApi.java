@@ -4,7 +4,7 @@ import io.restassured.response.Response;
 import com.grocerystore.utils.RestHelper;
 import io.qameta.allure.Step;
 
-public class UserApi extends BaseApi {
+public class UserApi {
 
     @Step("API: Register a new client")
     public static Response registerClient(Object clientData) {

@@ -9,9 +9,13 @@ import io.restassured.specification.RequestSpecification;
 import com.grocerystore.utils.PropertyReader;
 
 /**
- * Base API client class providing common REST Assured request configurations.
+ * API config provider providing common REST Assured request configurations.
  */
-public class BaseApi {
+public class ApiConfigProvider {
+
+    private ApiConfigProvider() {
+        // Private constructor to prevent instantiation
+    }
 
     /**
      * Factory method to return a fresh, thread-safe RequestSpecification.

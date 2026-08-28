@@ -5,7 +5,7 @@ import com.grocerystore.models.cart.CartItem;
 import com.grocerystore.utils.RestHelper;
 import io.qameta.allure.Step;
 
-public class CartApi extends BaseApi {
+public class CartApi {
 
     @Step("API: Create a new cart")
     public static Response createCart() {

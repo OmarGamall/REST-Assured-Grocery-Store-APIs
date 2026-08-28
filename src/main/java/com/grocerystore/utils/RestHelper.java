@@ -1,6 +1,6 @@
 package com.grocerystore.utils;
 
-import com.grocerystore.apis.BaseApi;
+import com.grocerystore.apis.ApiConfigProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -60,7 +60,7 @@ public class RestHelper {
 
     private Response execute(String method) {
         RequestSpecification spec = RestAssured.given()
-                .spec(BaseApi.getRequestSpec())
+                .spec(ApiConfigProvider.getRequestSpec())
                 .filter(new AllureRestAssured())
                 .filter(new RestLoggingFilter());
 

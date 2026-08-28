@@ -5,7 +5,7 @@ import com.grocerystore.models.order.OrderRequest;
 import com.grocerystore.utils.RestHelper;
 import io.qameta.allure.Step;
 
-public class OrdersApi extends BaseApi {
+public class OrdersApi {
 
     @Step("API: Create order for cart ID: {body.cartId} and customer: {body.customerName}")
     public static Response createOrder(String token, OrderRequest body) {
